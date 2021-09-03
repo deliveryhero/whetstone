@@ -1,0 +1,33 @@
+name: Publish release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Cache gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Publish artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.DH_TECH_BOT_TOKEN }}
+
+          # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
+          # If we split on '/' and take the 3rd value,
+          # we can get the release name.
+        run: |
+          NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
+          echo "New version: ${NEW_VERSION}"
+          echo "Github username: ${GITHUB_ACTOR}"
+          ./gradlew clean -PVERSION_NAME=${NEW_VERSION} -x test -x lint publishReleasePublicationToGitHubPackagesRepository

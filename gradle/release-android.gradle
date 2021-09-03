@@ -1,0 +1,52 @@
+apply plugin: 'maven-publish'
+
+version = VERSION_NAME
+group = GROUP
+project.archivesBaseName = POM_ARTIFACT_ID
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += files(android.bootClasspath)
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId GROUP
+            artifactId POM_ARTIFACT_ID
+            description POM_DESCRIPTION
+            version VERSION_NAME
+            afterEvaluate {
+                from components.release
+                artifact javadocJar
+                artifact sourcesJar
+            }
+            pom {
+                name.set(POM_NAME)
+                description.set(POM_DESCRIPTION)
+                url.set("https://github.com/deliveryhero/whetstone")
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/deliveryhero/whetstone")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
