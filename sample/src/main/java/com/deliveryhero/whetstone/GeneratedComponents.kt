@@ -7,8 +7,10 @@ import com.deliveryhero.injection.scope.ApplicationScope
 import com.deliveryhero.injection.scope.FragmentScope
 import com.deliveryhero.injection.scope.ViewModelScope
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.annotations.MergeSubcomponent
 import dagger.Binds
+import dagger.Component
 import dagger.Subcomponent
 
 
@@ -17,19 +19,12 @@ import dagger.Subcomponent
 // We plan to make it to be "auto-generated" during compilation.
 // Therefore, please do not modify it manually.
 
-@MergeSubcomponent(ApplicationScope::class)
+@MergeComponent(ApplicationScope::class)
 @SingleIn(ApplicationScope::class)
 public interface GeneratedApplicationComponent : ApplicationComponent {
 
-    @Subcomponent.Factory
+    @Component.Factory
     public interface Factory : ApplicationComponentFactory
-
-    @dagger.Module(subcomponents = [GeneratedApplicationComponent::class])
-    public interface Module {
-
-        @Binds
-        public fun bindComponent(target: Factory): ApplicationComponentFactory
-    }
 }
 
 @MergeSubcomponent(ViewModelScope::class)

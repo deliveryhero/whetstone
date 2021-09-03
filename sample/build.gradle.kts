@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.squareup.anvil")
+    id("kotlin-kapt")
 }
 
 android {
@@ -12,6 +13,7 @@ android {
 
 dependencies {
     implementation(libs.dagger)
+    kapt(libs.daggerCompiler)
     implementation(projects.injection)
     anvil(projects.injectionCompiler)
 
