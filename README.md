@@ -29,6 +29,10 @@ dependencies {
 
 // TODO
 
+## Creators
+- [Marcello Galhardo](http://github.com/marcellogalhardo)
+- [Kingsley Adio](https://github.com/kingsleyadio)
+
 ## License
 ```
 Copyright 2021 Delivery Hero, GmbH.
