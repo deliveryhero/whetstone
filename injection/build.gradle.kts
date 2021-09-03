@@ -21,3 +21,5 @@ dependencies {
     implementation(libs.androidxActivity)
     implementation(libs.androidxFragment)
 }
+
+apply(from = rootProject.file("gradle/release-android.gradle"))

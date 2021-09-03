@@ -20,3 +20,5 @@ dependencies {
     implementation(libs.autoServiceAnnotations)
     kapt(libs.autoServiceCompiler)
 }
+
+apply(from = rootProject.file("gradle/release-java.gradle"))
