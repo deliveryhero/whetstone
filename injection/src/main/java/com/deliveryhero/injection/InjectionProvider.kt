@@ -20,7 +20,7 @@ public object InjectionProvider {
 
     public fun <T : Any> fromApplication(application: Application): T {
         require(application is ApplicationComponentProvider) {
-            "Application must implement AppComponentProvider to use this Injector"
+            "Application must implement ${ApplicationComponentProvider::class.java.name} to use this Injector"
         }
         return application.getApplicationComponent() as T
     }
