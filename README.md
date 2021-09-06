@@ -60,7 +60,6 @@ Component lifetimes are generally bounded by the creation and destruction of a c
 
 ```kotlin
 @ContributesInjector(ApplicationScope::class)
-// or @ContributesAndroidInjection
 class MyApplication: Application() {
 
     @Inject
@@ -68,7 +67,7 @@ class MyApplication: Application() {
 
     fun onCreate() {
         Whetstone.initialize { TODO("Create root component") }
-        Whetstone.inject(this)
+        Whetstone.inject(application = this)
         super.onCreate()
     }
 }
@@ -78,7 +77,6 @@ class MyApplication: Application() {
 
 ```kotlin
 @ContributesInjector(ServiceScope::class)
-// or @ContributesAndroidInjection
 public class MyService : Service() {
 
     @Inject
@@ -95,7 +93,6 @@ public class MyService : Service() {
 
 ```kotlin
 @ContributesInjector(ActivityScope::class)
-// or @ContributesAndroidInjection
 public class MainActivity : AppCompatActivity() {
 
     @Inject
@@ -111,8 +108,7 @@ public class MainActivity : AppCompatActivity() {
 ### Worker / WorkManager (TODO)
 
 ```kotlin
-@ContributesInjector(WorkerScope::class)
-// or @ContributesAndroidBinding
+@ContributesWorker
 class UploadWorker @Inject constructor(
     @ForScope(WorkerScope::class) context: Context,
     workerParameters: WorkerParameters,
@@ -125,7 +121,6 @@ To let Android use our DI to create a Fragment you must do the following:
 
 ```kotlin
 @ContributesFragment
-// or @ContributesAndroidBinding
 class MyFragment @Inject constructor(
     private val viewModelFactoryProvider: ViewModelFactoryProvider,
 ): Fragment() {
@@ -143,7 +138,6 @@ class MyFragment @Inject constructor(
 
 ```kotlin
 @ContributesViewModel
-// or @ContributesAndroidBinding
 class MyViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ): ViewModel()
