@@ -39,7 +39,57 @@ class MyApplication : Application() {
 }
 ```
 
-After that, you can easily inject any Android class by annotating it with `@ContributesInjector` and calling `Whetstone.inject`.
+After that, you can easily inject into any Android class (see below).
+
+### Guide
+
+Unlike traditional Dagger, you do not need to define or instantiate Dagger components directly. Instead, we offer predefined components that are generated for you. `injection` comes with a built-in set of components (and corresponding scope annotations) that are automatically integrated to the Pandora App. As normal, a binding in a child component can have dependencies on any binding in an ancestor component.
+
+### Component Lifecycle
+
+Component lifetimes are generally bounded by the creation and destruction of a corresponding instance of an important event. The table below lists the scope annotation and bounded lifetime for each component.
+
+| Component | Scope | Created At | Destroyed At |
+| ----------- | -------- | -------- | -------- |
+| ApplicationComponent | @ApplicationScope | Application#onCreate | Application#onDestroy |
+| ActivityComponent | @ActivityScope | Activity#onCreate | Activity#onDestroy |
+| FragmentComponent | @FragmentScope | FragmentFactory#instantiate | Fragment#onDestroy |
+| ViewModelComponent | @ViewModelScope | ViewModelProvider.Factory#create | ViewModel#onCleared |
+
+### Application (TODO)
+
+```kotlin
+@ContributesInjector(ApplicationScope::class)
+class MyApplication: Application() {
+
+    @Inject
+    public lateinit var dependency: MyDependency
+
+    fun onCreate() {
+        Whetstone.initialize { TODO("Create root component") }
+        Whetstone.inject(this)
+        super.onCreate()
+    }
+}
+```
+
+### Service (TODO)
+
+```kotlin
+@ContributesInjector(ServiceScope::class)
+public class MyService : Service() {
+
+    @Inject
+    public lateinit var dependency: MyDependency
+
+    override fun onCreate() {
+        Whetstone.inject(service = this)
+        super.onCreate()
+    }
+}
+```
+
+### Activity (DONE)
 
 ```kotlin
 @ContributesInjector(ActivityScope::class)
@@ -54,6 +104,48 @@ public class MainActivity : AppCompatActivity() {
     }
 }
 ```
+
+### Worker / WorkManager (TODO)
+
+```kotlin
+@ContributesInjector(WorkerScope::class)
+class UploadWorker @Inject constructor(
+    @ForScope(WorkerScope::class) context: Context,
+    workerParameters: WorkerParameters,
+): Worker(appContext, workerParameters)
+```
+
+### Fragments (DONE)
+
+To let Android use our DI to create a Fragment you must do the following:
+
+```kotlin
+@ContributesFragment
+class MyFragment @Inject constructor(
+    private val viewModelFactoryProvider: ViewModelFactoryProvider,
+): Fragment() {
+
+    // Get the contributed ViewModel
+    val viewModel by viewModels<MyViewModel> {
+        // We automatically handle process death and saved state handle wiring
+        viewModelFactoryProvider.getViewModelFactory(this)
+    }
+}
+```
+**Important:** A Fragment should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** Fragments.
+
+### ViewModels (DONE)
+
+```kotlin
+@ContributesViewModel
+class MyViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+): ViewModel()
+```
+
+This will add the ViewModel to `ViewModelFactoryProvider` for usage.
+
+**Important:** A ViewModel should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** ViewModels.
 
 ## Creators
 - [Marcello Galhardo](http://github.com/marcellogalhardo)
