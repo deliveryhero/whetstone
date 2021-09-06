@@ -27,7 +27,33 @@ dependencies {
 
 ## Basic Usage
 
-// TODO
+To use `Whetstone` you must initialized it in your Application class.
+
+```kotlin
+class MyApplication : Application() {
+
+    fun onCreate() {
+        Whetstone.initialize { DaggerGeneratedApplicationComponent.factory().create(this) }
+        super.onCreate()
+    }
+}
+```
+
+After that, you can easily inject any Android class by annotating it with `@ContributesInjector` and calling `Whetstone.inject`.
+
+```kotlin
+@ContributesInjector(ActivityScope::class)
+public class MainActivity : AppCompatActivity() {
+
+    @Inject
+    public lateinit var dependency: MyDependency
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Whetstone.inject(activity = this)
+        super.onCreate(savedInstanceState)
+    }
+}
+```
 
 ## Creators
 - [Marcello Galhardo](http://github.com/marcellogalhardo)
