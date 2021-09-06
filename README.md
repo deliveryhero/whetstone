@@ -43,7 +43,7 @@ After that, you can easily inject into any Android class (see below).
 
 ### Guide
 
-Unlike traditional Dagger, you do not need to define or instantiate Dagger components directly. Instead, we offer predefined components that are generated for you. `injection` comes with a built-in set of components (and corresponding scope annotations) that are automatically integrated to the Pandora App. As normal, a binding in a child component can have dependencies on any binding in an ancestor component.
+Unlike traditional Dagger, you do not need to define or instantiate Dagger components directly. Instead, we offer predefined components that are generated for you. Whetstone comes with a built-in set of components (and corresponding scope annotations) that are automatically integrated to the Pandora App. As normal, a binding in a child component can have dependencies on any binding in an ancestor component.
 
 ### Component Lifecycle
 
