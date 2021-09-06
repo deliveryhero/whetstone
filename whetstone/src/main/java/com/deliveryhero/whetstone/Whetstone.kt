@@ -17,7 +17,7 @@ import com.deliveryhero.whetstone.injector.AnvilInjector
  * Static utility methods for dealing with injection in standard Android components.
  */
 @Suppress("UNCHECKED_CAST")
-public object InjectionProvider {
+public object Whetstone {
 
     public fun <T : Any> fromApplication(application: Application): T {
         require(application is ApplicationComponentProvider) {
