@@ -1,11 +1,11 @@
 package com.deliveryhero.whetstone
 
-import com.deliveryhero.injection.SingleIn
-import com.deliveryhero.injection.component.*
-import com.deliveryhero.injection.scope.ActivityScope
-import com.deliveryhero.injection.scope.ApplicationScope
-import com.deliveryhero.injection.scope.FragmentScope
-import com.deliveryhero.injection.scope.ViewModelScope
+import com.deliveryhero.whetstone.SingleIn
+import com.deliveryhero.whetstone.component.*
+import com.deliveryhero.whetstone.scope.ActivityScope
+import com.deliveryhero.whetstone.scope.ApplicationScope
+import com.deliveryhero.whetstone.scope.FragmentScope
+import com.deliveryhero.whetstone.scope.ViewModelScope
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.annotations.MergeSubcomponent

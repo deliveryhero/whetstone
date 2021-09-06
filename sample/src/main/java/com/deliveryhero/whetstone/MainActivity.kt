@@ -1,11 +1,10 @@
 package com.deliveryhero.whetstone
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import com.deliveryhero.injection.InjectionProvider
-import com.deliveryhero.injection.injector.ContributesInjector
-import com.deliveryhero.injection.scope.ActivityScope
+import androidx.appcompat.app.AppCompatActivity
+import com.deliveryhero.whetstone.injector.ContributesInjector
+import com.deliveryhero.whetstone.scope.ActivityScope
 import javax.inject.Inject
 
 @ContributesInjector(ActivityScope::class)
@@ -15,7 +14,7 @@ public class MainActivity : AppCompatActivity() {
     public lateinit var helloWorldFactory: HelloWorldFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        InjectionProvider.injectActivity(this)
+        Whetstone.inject(activity = this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<TextView>(R.id.hello_world_text_view).text = helloWorldFactory.getText()
