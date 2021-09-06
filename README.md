@@ -117,8 +117,6 @@ class UploadWorker @Inject constructor(
 
 ### Fragments (DONE)
 
-To let Android use our DI to create a Fragment you must do the following:
-
 ```kotlin
 @ContributesFragment
 class MyFragment @Inject constructor(
@@ -142,8 +140,6 @@ class MyViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ): ViewModel()
 ```
-
-This will add the ViewModel to `ViewModelFactoryProvider` for usage.
 
 **Important:** A ViewModel should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** ViewModels.
 
