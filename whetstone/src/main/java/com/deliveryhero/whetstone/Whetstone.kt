@@ -7,11 +7,11 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
-import com.deliveryhero.injection.R
 import com.deliveryhero.whetstone.component.ActivityComponent
 import com.deliveryhero.whetstone.component.ApplicationComponent
-import com.deliveryhero.whetstone.component.ApplicationComponentProvider
 import com.deliveryhero.whetstone.injector.AnvilInjector
+import com.deliveryhero.whetstone.injector.ContributesInjector
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Static utility methods for dealing with injection in standard Android components.
@@ -19,11 +19,14 @@ import com.deliveryhero.whetstone.injector.AnvilInjector
 @Suppress("UNCHECKED_CAST")
 public object Whetstone {
 
+    private val root = AtomicReference<ApplicationComponent>()
+
+    public fun initialize(initializer: () -> ApplicationComponent) {
+        root.updateAndGet { component -> component ?: initializer() }
+    }
+
     public fun <T : Any> fromApplication(application: Application): T {
-        require(application is ApplicationComponentProvider) {
-            "Application must implement ${ApplicationComponentProvider::class.java.name} to use this Injector"
-        }
-        return application.getApplicationComponent() as T
+        return requireNotNull(root.get()) { "Whetstone must be initialized to be used." } as T
     }
 
     /**
@@ -62,18 +65,13 @@ public object Whetstone {
      * and they must have at least 1 `@Inject` field or method. Otherwise, calling this method
      * will result in an [IllegalStateException]
      */
-    public fun injectActivity(activity: Activity) {
-        if (activity is FragmentActivity) {
-            installFragmentFactory(activity)
-        }
+    public fun inject(activity: FragmentActivity) {
+        installFragmentFactory(activity)
 
-        val anvilInjector = fromActivity<ActivityComponent>(activity)
-            .getAnvilInjectorMap()
-            .getOrElse(activity.javaClass) {
-                error("Activity must be annotated with @ContributesInjector and have at least 1 @Inject field/method")
-            } as AnvilInjector<Activity>
+        val injector = fromActivity<ActivityComponent>(activity)
+            .getAnvilInjectorMap()[activity.javaClass] as? AnvilInjector<Activity>
 
-        anvilInjector.inject(activity)
+        injector?.inject(activity)
     }
 
     /**
@@ -84,7 +82,7 @@ public object Whetstone {
      * **Note**: This method must be invoked before the super [Activity.onCreate] is called.
      * Any invocation thereafter will result in an [IllegalStateException].
      */
-    public fun installFragmentFactory(activity: FragmentActivity) {
+    private fun installFragmentFactory(activity: FragmentActivity) {
         check(activity.lifecycle.currentState == Lifecycle.State.INITIALIZED) {
             "installFragmentFactory must be called before activity's super.onCreate."
         }

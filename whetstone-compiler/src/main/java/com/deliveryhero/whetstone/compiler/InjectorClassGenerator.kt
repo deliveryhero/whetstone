@@ -18,9 +18,9 @@ import javax.inject.Inject
 
 @AutoService(CodeGenerator::class)
 public class InjectorClassGenerator : CodeGenerator {
-    private val contributesInjectorFn = FqName("com.deliveryhero.injection.injector.ContributesInjector")
+    private val contributesInjectorFn = FqName("com.deliveryhero.whetstone.injector.ContributesInjector")
     private val membersInjectorCn = MembersInjector::class.asClassName()
-    private val anvilInjectorCn = ClassName("com.deliveryhero.injection.injector", "AnvilInjector")
+    private val anvilInjectorCn = ClassName("com.deliveryhero.whetstone.injector", "AnvilInjector")
 
     override fun isApplicable(context: AnvilContext): Boolean = true
 

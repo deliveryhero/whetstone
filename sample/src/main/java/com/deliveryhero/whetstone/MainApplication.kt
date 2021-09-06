@@ -1,12 +1,11 @@
 package com.deliveryhero.whetstone
 
 import android.app.Application
-import com.deliveryhero.injection.component.ApplicationComponent
-import com.deliveryhero.injection.component.ApplicationComponentProvider
 
-public class MainApplication : Application(), ApplicationComponentProvider {
+public class MainApplication : Application() {
 
-    private val applicationComponent = DaggerGeneratedApplicationComponent.factory().create(this)
-
-    override fun getApplicationComponent(): ApplicationComponent = applicationComponent
+    override fun onCreate() {
+        Whetstone.initialize { DaggerGeneratedApplicationComponent.factory().create(this) }
+        super.onCreate()
+    }
 }
