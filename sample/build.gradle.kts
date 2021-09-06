@@ -14,8 +14,8 @@ android {
 dependencies {
     implementation(libs.dagger)
     kapt(libs.daggerCompiler)
-    implementation(projects.injection)
-    anvil(projects.injectionCompiler)
+    implementation(":whetstone")
+    anvil(":whetstone-compiler")
 
     implementation("androidx.core:core-ktx:1.5.0")
     implementation("androidx.appcompat:appcompat:1.3.0")

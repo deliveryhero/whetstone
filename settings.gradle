@@ -1,4 +1,4 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+//enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS") - FIXME: It is failing for no-reason.
 enableFeaturePreview("VERSION_CATALOGS")
 
 dependencyResolutionManagement {
@@ -10,5 +10,5 @@ dependencyResolutionManagement {
 }
 
 include ':sample'
-include ':injection'
-include ':injection-compiler'
+include ':whetstone'
+include ':whetstone-compiler'
