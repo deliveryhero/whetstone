@@ -42,7 +42,7 @@ public class BindingsModuleGenerator : CodeGenerator {
         var result: ModuleInfoProvider? = null
         for (annotation in clas.annotationEntries) {
             for (provider in providers) {
-                val classAnnotation = annotation.requireFqName(module)
+                val classAnnotation = annotation.fqNameOrNull(module)
                 if (classAnnotation == provider.supportedAnnotation) {
                     require(result == null) {
                         "Found more than 1 Contributes* annotation in class '${clas.fqName}'"
