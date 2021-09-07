@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @OptIn(InternalInjectApi::class)
 @ContributesBinding(ApplicationScope::class)
-public class MultibindingViewModelFactoryProvider @Inject constructor(
+public class MultibindingViewModelFactoryProducer @Inject constructor(
     private val viewModelComponentFactory: ViewModelComponentFactory,
 ) : ViewModelFactoryProducer {
 
