@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
 import com.deliveryhero.whetstone.component.ActivityComponent
 import com.deliveryhero.whetstone.component.ApplicationComponent
+import com.deliveryhero.whetstone.component.ApplicationComponentOwner
 import com.deliveryhero.whetstone.injector.AnvilInjector
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import java.util.concurrent.atomic.AtomicReference
@@ -26,7 +27,10 @@ public object Whetstone {
     }
 
     public fun <T : Any> fromApplication(application: Application): T {
-        return requireNotNull(root.get()) { "Whetstone must be initialized to be used." } as T
+        require(application is ApplicationComponentOwner) {
+            "Application must implement ${ApplicationComponentOwner::class.java.name} to use this Injector"
+        }
+        return application.applicationComponent as T
     }
 
     /**
