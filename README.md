@@ -30,11 +30,10 @@ dependencies {
 To use `Whetstone` you must initialized it in your Application class.
 
 ```kotlin
-class MyApplication : Application() {
+class MyApplication : Application(), ApplicationComponentOwner {
 
-    fun onCreate() {
-        Whetstone.initialize { DaggerGeneratedApplicationComponent.factory().create(this) }
-        super.onCreate()
+    val applicationComponent by lazy {
+        DaggerGeneratedApplicationComponent.factory().create(this)
     }
 }
 ```
@@ -60,13 +59,16 @@ Component lifetimes are generally bounded by the creation and destruction of a c
 
 ```kotlin
 @ContributesInjector(ApplicationScope::class)
-class MyApplication: Application() {
+class MyApplication: Application(), ApplicationComponentOwner {
+
+    val applicationComponent by lazy {
+        TODO("Create application component.")
+    }
 
     @Inject
     public lateinit var dependency: MyDependency
 
     fun onCreate() {
-        Whetstone.initialize { TODO("Create root component") }
         Whetstone.inject(application = this)
         super.onCreate()
     }
