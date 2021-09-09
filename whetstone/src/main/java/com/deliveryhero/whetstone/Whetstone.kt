@@ -13,6 +13,10 @@ import com.deliveryhero.whetstone.component.ApplicationComponentOwner
 import com.deliveryhero.whetstone.injector.AnvilInjector
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import java.util.concurrent.atomic.AtomicReference
+import android.content.ContextWrapper
+
+
+
 
 /**
  * Static utility methods for dealing with injection in standard Android components.
@@ -78,6 +82,16 @@ public object Whetstone {
         injector?.inject(activity)
     }
 
+    public fun inject(view: View) {
+        val activity = view.findActivity()
+        val injector = fromActivity<ActivityComponent>(activity)
+            .getViewComponentFactory()
+            .create(view)
+            .getAnvilInjectorMap()[view.javaClass] as? AnvilInjector<View>
+
+        requireNotNull(injector).inject(view)
+    }
+
     /**
      * Installs a default multi-binding [FragmentFactory] into the [activity]'s [FragmentFactory].
      *
@@ -105,4 +119,17 @@ private fun <V> View.getTagOrSet(@IdRes key: Int, defaultValue: () -> V): V {
     } else {
         value
     }
+}
+
+private fun View.findActivity(): Activity = requireNotNull(findActivityOrNull())
+
+private fun View.findActivityOrNull(): Activity? {
+    var context = context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
 }

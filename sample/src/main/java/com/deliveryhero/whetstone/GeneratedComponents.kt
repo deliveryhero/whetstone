@@ -1,11 +1,20 @@
 package com.deliveryhero.whetstone
 
-import com.deliveryhero.whetstone.SingleIn
-import com.deliveryhero.whetstone.component.*
+import com.deliveryhero.whetstone.component.ActivityComponent
+import com.deliveryhero.whetstone.component.ActivityComponentFactory
+import com.deliveryhero.whetstone.component.ApplicationComponent
+import com.deliveryhero.whetstone.component.ApplicationComponentFactory
+import com.deliveryhero.whetstone.component.FragmentComponent
+import com.deliveryhero.whetstone.component.FragmentComponentFactory
+import com.deliveryhero.whetstone.component.ViewComponent
+import com.deliveryhero.whetstone.component.ViewComponentFactory
+import com.deliveryhero.whetstone.component.ViewModelComponent
+import com.deliveryhero.whetstone.component.ViewModelComponentFactory
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.deliveryhero.whetstone.scope.FragmentScope
 import com.deliveryhero.whetstone.scope.ViewModelScope
+import com.deliveryhero.whetstone.scope.ViewScope
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.annotations.MergeSubcomponent
@@ -56,6 +65,22 @@ public interface GeneratedActivityComponent : ActivityComponent {
 
         @Binds
         public fun bindComponent(target: Factory): ActivityComponentFactory
+    }
+}
+
+@MergeSubcomponent(ViewScope::class)
+@SingleIn(ViewScope::class)
+public interface GeneratedViewComponent : ViewComponent {
+
+    @Subcomponent.Factory
+    public interface Factory : ViewComponentFactory
+
+    @ContributesTo(ActivityScope::class)
+    @dagger.Module(subcomponents = [GeneratedViewComponent::class])
+    public interface Module {
+
+        @Binds
+        public fun bindComponent(target: Factory): ViewComponentFactory
     }
 }
 

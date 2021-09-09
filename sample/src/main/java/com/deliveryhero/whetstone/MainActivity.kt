@@ -1,7 +1,7 @@
 package com.deliveryhero.whetstone
 
 import android.os.Bundle
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import com.deliveryhero.whetstone.scope.ActivityScope
@@ -11,16 +11,12 @@ import javax.inject.Inject
 public class MainActivity : AppCompatActivity() {
 
     @Inject
-    public lateinit var helloWorldFactory: HelloWorldFactory
+    public lateinit var dependency: MainDependency
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Whetstone.inject(activity = this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        findViewById<TextView>(R.id.hello_world_text_view).text = helloWorldFactory.getText()
+        Toast.makeText(this, dependency.getUpdatedHelloWorld(), Toast.LENGTH_SHORT).show()
     }
-}
-
-public class HelloWorldFactory @Inject constructor() {
-    public fun getText(): String = "Updated Hello World!"
 }
