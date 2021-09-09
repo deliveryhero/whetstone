@@ -48,12 +48,15 @@ Unlike traditional Dagger, you do not need to define or instantiate Dagger compo
 
 Component lifetimes are generally bounded by the creation and destruction of a corresponding instance of an important event. The table below lists the scope annotation and bounded lifetime for each component.
 
-| Component | Scope | Created At | Destroyed At |
-| ----------- | -------- | -------- | -------- |
-| ApplicationComponent | @ApplicationScope | Application#onCreate | Application#onDestroy |
-| ActivityComponent | @ActivityScope | Activity#onCreate | Activity#onDestroy |
-| FragmentComponent | @FragmentScope | FragmentFactory#instantiate | Fragment#onDestroy |
-| ViewModelComponent | @ViewModelScope | ViewModelProvider.Factory#create | ViewModel#onCleared |
+| Component            | Scope             | Created At                       | Destroyed At            |
+| -------------------- | ----------------- | -------------------------------- | ----------------------- |
+| ApplicationComponent | @ApplicationScope | Application#onCreate             | Application#onTerminate |
+| ActivityComponent    | @ActivityScope    | Activity#onCreate                | Activity#onDestroy      |
+| FragmentComponent    | @FragmentScope    | FragmentFactory#instantiate      | Fragment#onDestroy      |
+| ViewModelComponent   | @ViewModelScope   | ViewModelProvider.Factory#create | ViewModel#onCleared     |
+| ViewComponent        | @ViewScope        | View#init                        | View#finalize           |
+
+![whetstone-scopes](art/whetstone-scopes.png?raw=true)
 
 ### Application (TODO)
 
