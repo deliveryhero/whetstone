@@ -14,6 +14,7 @@ import dagger.multibindings.Multibinds
  * A Dagger component that has the lifetime of the [android.app.Activity].
  */
 public interface ActivityComponent {
+    public fun getViewComponentFactory(): ViewComponentFactory
     public fun getViewModelFactoryProducer(): ViewModelFactoryProducer
     public fun getFragmentFactory(): FragmentFactory
     public fun getAnvilInjectorMap(): AnvilInjectorMap
