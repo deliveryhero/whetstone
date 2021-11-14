@@ -20,6 +20,10 @@ dependencies {
     implementation(libs.androidxAppCompat)
     implementation(libs.androidxActivity)
     implementation(libs.androidxFragment)
+
+    testImplementation(kotlin("test-junit"))
+    testImplementation(testFixtures(libs.anvilCompilerUtils))
+    testImplementation(projects.whetstoneCompiler)
 }
 
 apply(from = rootProject.file("gradle/release-android.gradle"))
