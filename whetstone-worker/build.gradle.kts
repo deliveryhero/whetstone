@@ -7,7 +7,7 @@ plugins {
 dependencies {
     implementation(projects.whetstone)
     implementation(libs.dagger)
-    implementation(libs.androidxWorkRuntime)
+    api(libs.androidxWorkRuntime)
 
     testImplementation(kotlin("test-junit"))
     testImplementation(testFixtures(libs.anvilCompilerUtils))
