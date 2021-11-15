@@ -49,16 +49,18 @@ public class BindingsModuleGenerator : CodeGenerator {
         var result: ModuleInfoProvider? = null
         for (annotation in clas.annotationEntries) {
             val annotationFqName = annotation.fqNameOrNull(module) ?: continue
-            require(result == null) {
-                "Found more than 1 Contributes* annotation in class '${clas.fqName}'"
-            }
-            result = dynamicProviderMap.getOrPutNullable(annotationFqName) {
+            dynamicProviderMap.getOrPutNullable(annotationFqName) {
                 val metaInfo = annotationFqName.requireClassDescriptor(module).annotationOrNull(meta)
                     ?: return@getOrPutNullable null
                 val base = metaInfo.getValue("base", module)
                 val scope = metaInfo.getValue("scope", module)
                 val multibindingKey = metaInfo.getValue("multibindingKey", module)
                 InstanceModuleInfoProvider(annotationFqName, scope, multibindingKey, base)
+            }?.let { provider ->
+                require(result == null) {
+                    "Found more than 1 Contributes* annotation in class '${clas.fqName}'"
+                }
+                result = provider
             }
         }
         return result
