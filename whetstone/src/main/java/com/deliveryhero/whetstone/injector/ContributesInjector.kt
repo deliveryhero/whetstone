@@ -1,9 +1,10 @@
 package com.deliveryhero.whetstone.injector
 
+import dagger.MembersInjector
 import kotlin.reflect.KClass
 
 /**
- * Marker annotation signalling that the compiler should generate necessary [AnvilInjector]
+ * Marker annotation signalling that the compiler should generate necessary [MembersInjector]
  * bindings for the annotated class.
  *
  * For example:
@@ -14,13 +15,7 @@ import kotlin.reflect.KClass
  *     @Inject lateinit var someEntity: SomeEntity
  * }
  * ```
- * an injector class will be generated
- * ```
- * class MyActivityInjector @Inject constructor(
- *     override val membersInjector: MembersInjector<MyActivity>
- * ) : AnvilInjector<MyActivity>
- * ```
- * as well as a complementary module
+ * a complementary module will be generated
  * ```
  * @Module
  * @ContributesTo(ActivityScope::class)
@@ -28,7 +23,7 @@ import kotlin.reflect.KClass
  *     @Binds
  *     @IntoMap
  *     @ClassKey(MyActivity::class)
- *     fun binds(target: MyActivityInjector): AnvilInjector<*>
+ *     fun binds(target: MembersInjector<MyActivity>): MembersInjector<*>
  * }
  * ```
  */

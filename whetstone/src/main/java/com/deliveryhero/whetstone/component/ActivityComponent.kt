@@ -2,7 +2,7 @@ package com.deliveryhero.whetstone.component
 
 import android.app.Activity
 import androidx.fragment.app.FragmentFactory
-import com.deliveryhero.whetstone.injector.AnvilInjectorMap
+import com.deliveryhero.whetstone.injector.MembersInjectorMap
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.deliveryhero.whetstone.viewmodel.ViewModelFactoryProducer
 import com.squareup.anvil.annotations.ContributesTo
@@ -17,7 +17,7 @@ public interface ActivityComponent {
     public fun getViewComponentFactory(): ViewComponentFactory
     public fun getViewModelFactoryProducer(): ViewModelFactoryProducer
     public fun getFragmentFactory(): FragmentFactory
-    public fun getAnvilInjectorMap(): AnvilInjectorMap
+    public fun getMembersInjectorMap(): MembersInjectorMap
 }
 
 /**
@@ -32,5 +32,5 @@ public interface ActivityComponentFactory {
 public interface ActivityModule {
 
     @Multibinds
-    public fun anvilInjectors(): AnvilInjectorMap
+    public fun membersInjectors(): MembersInjectorMap
 }

@@ -2,6 +2,7 @@ package com.deliveryhero.whetstone
 
 import android.app.Activity
 import android.app.Application
+import android.content.ContextWrapper
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
@@ -10,12 +11,9 @@ import androidx.lifecycle.Lifecycle
 import com.deliveryhero.whetstone.component.ActivityComponent
 import com.deliveryhero.whetstone.component.ApplicationComponent
 import com.deliveryhero.whetstone.component.ApplicationComponentOwner
-import com.deliveryhero.whetstone.injector.AnvilInjector
 import com.deliveryhero.whetstone.injector.ContributesInjector
+import dagger.MembersInjector
 import java.util.concurrent.atomic.AtomicReference
-import android.content.ContextWrapper
-
-
 
 
 /**
@@ -77,9 +75,9 @@ public object Whetstone {
         installFragmentFactory(activity)
 
         val injector = fromActivity<ActivityComponent>(activity)
-            .getAnvilInjectorMap()[activity.javaClass] as? AnvilInjector<Activity>
+            .getMembersInjectorMap()[activity.javaClass] as? MembersInjector<Activity>
 
-        injector?.inject(activity)
+        injector?.injectMembers(activity)
     }
 
     public fun inject(view: View) {
@@ -87,9 +85,9 @@ public object Whetstone {
         val injector = fromActivity<ActivityComponent>(activity)
             .getViewComponentFactory()
             .create(view)
-            .getAnvilInjectorMap()[view.javaClass] as? AnvilInjector<View>
+            .getMembersInjectorMap()[view.javaClass] as? MembersInjector<View>
 
-        requireNotNull(injector).inject(view)
+        requireNotNull(injector).injectMembers(view)
     }
 
     /**
