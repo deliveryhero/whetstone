@@ -19,7 +19,7 @@ public class MainView @JvmOverloads constructor(
     init {
         if (!isInEditMode) {
             Whetstone.inject(view = this)
-            text = dependency.getUpdatedHelloWorld()
+            text = dependency.getMessage("View")
         }
     }
 }

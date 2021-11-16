@@ -1,5 +1,5 @@
-//enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS") - FIXME: It is failing for no-reason.
 enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -9,6 +9,6 @@ dependencyResolutionManagement {
     }
 }
 
-include ':sample'
-include ':whetstone'
-include ':whetstone-compiler'
+include(":sample")
+include(":whetstone")
+include(":whetstone-compiler")
