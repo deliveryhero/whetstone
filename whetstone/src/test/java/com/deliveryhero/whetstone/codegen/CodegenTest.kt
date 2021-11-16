@@ -1,13 +1,10 @@
 package com.deliveryhero.whetstone.codegen
 
-import com.deliveryhero.whetstone.injector.AnvilInjector
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
-import com.squareup.anvil.compiler.internal.testing.extends
 import com.tschuchort.compiletesting.KotlinCompilation
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 internal class CodegenTest {
 
@@ -63,9 +60,6 @@ internal class CodegenTest {
 
             val module = classLoader.loadClass("MyActivityBindingsModule")
             assertNotNull(module.declaredMethods.find { it.name == "binds" })
-
-            val injector = classLoader.loadClass("MyActivityInjector")
-            assertTrue(injector.extends(AnvilInjector::class.java))
         }
     }
 }

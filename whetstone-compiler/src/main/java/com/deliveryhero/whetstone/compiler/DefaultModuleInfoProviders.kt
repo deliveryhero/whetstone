@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asClassName
+import dagger.MembersInjector
 import dagger.multibindings.ClassKey
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
@@ -16,7 +17,7 @@ import org.jetbrains.kotlin.psi.KtAnnotationEntry
 
 internal class InjectorModuleInfoProvider : ModuleInfoProvider {
     private val multibindingKeyCn = ClassKey::class.asClassName()
-    private val anvilInjectorCn = ClassName("com.deliveryhero.whetstone.injector", "AnvilInjector")
+    private val membersInjectorCn = MembersInjector::class.asClassName()
 
     override val supportedAnnotation = FqName("com.deliveryhero.whetstone.injector.ContributesInjector")
 
@@ -27,9 +28,9 @@ internal class InjectorModuleInfoProvider : ModuleInfoProvider {
 
     override fun getMultibindingKey() = multibindingKeyCn
 
-    override fun getTarget(annotatedClass: ClassName) = annotatedClass.peerClass(annotatedClass.simpleName + "Injector")
+    override fun getTarget(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(annotatedClass)
 
-    override fun getOutput(annotatedClass: ClassName) = anvilInjectorCn.parameterizedBy(STAR)
+    override fun getOutput(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(STAR)
 }
 
 internal class InstanceModuleInfoProvider(

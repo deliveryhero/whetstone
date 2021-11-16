@@ -1,7 +1,7 @@
 package com.deliveryhero.whetstone.component
 
 import android.view.View
-import com.deliveryhero.whetstone.injector.AnvilInjectorMap
+import com.deliveryhero.whetstone.injector.MembersInjectorMap
 import com.deliveryhero.whetstone.scope.ViewScope
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.BindsInstance
@@ -12,7 +12,7 @@ import dagger.multibindings.Multibinds
  * A Dagger component that has the lifetime of the [android.view.View].
  */
 public interface ViewComponent {
-    public fun getAnvilInjectorMap(): AnvilInjectorMap
+    public fun getMembersInjectorMap(): MembersInjectorMap
 }
 
 /**
@@ -27,5 +27,5 @@ public interface ViewComponentFactory {
 public interface ViewModule {
 
     @Multibinds
-    public fun anvilInjectors(): AnvilInjectorMap
+    public fun membersInjectors(): MembersInjectorMap
 }
