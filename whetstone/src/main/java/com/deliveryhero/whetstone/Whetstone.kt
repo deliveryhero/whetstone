@@ -60,7 +60,7 @@ public object Whetstone {
      *     @Inject lateinit var someDep: SomeDep
      *
      *     override fun onCreate(savedInstanceState: Bundle?) {
-     *         Injector.injectActivity(this)
+     *         Whetstone.inject(this)
      *         super.onCreate(savedInstanceState)
      *     }
      * }

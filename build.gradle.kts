@@ -31,7 +31,6 @@ subprojects {
 
 fun configureKotlinCompile(target: KotlinCompile) = with(target) {
     kotlinOptions {
-        jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xexplicit-api=strict",
             "-Xassertions=jvm",

@@ -14,22 +14,6 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 
-internal fun createDefaultProviders(): List<ModuleInfoProvider> = listOf(
-    InstanceModuleInfoProvider(
-        supportedAnnotation = FqName("com.deliveryhero.whetstone.fragment.ContributesFragment"),
-        scopeCn = ClassName("com.deliveryhero.whetstone.scope", "FragmentScope"),
-        multibindingKeyCn = ClassName("com.deliveryhero.whetstone.fragment", "FragmentKey"),
-        baseClass = ClassName("androidx.fragment.app", "Fragment")
-    ),
-    InstanceModuleInfoProvider(
-        supportedAnnotation = FqName("com.deliveryhero.whetstone.viewmodel.ContributesViewModel"),
-        scopeCn = ClassName("com.deliveryhero.whetstone.scope", "ViewModelScope"),
-        multibindingKeyCn = ClassName("com.deliveryhero.whetstone.viewmodel", "ViewModelKey"),
-        baseClass = ClassName("androidx.lifecycle", "ViewModel")
-    ),
-    InjectorModuleInfoProvider()
-)
-
 internal class InjectorModuleInfoProvider : ModuleInfoProvider {
     private val multibindingKeyCn = ClassKey::class.asClassName()
     private val anvilInjectorCn = ClassName("com.deliveryhero.whetstone.injector", "AnvilInjector")
