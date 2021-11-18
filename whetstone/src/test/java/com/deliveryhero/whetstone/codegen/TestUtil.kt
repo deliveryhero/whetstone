@@ -1,6 +1,7 @@
 package com.deliveryhero.whetstone.codegen
 
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.asClassName
@@ -11,6 +12,7 @@ import dagger.MembersInjector
 import dagger.Module
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import org.intellij.lang.annotations.Language
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
@@ -18,6 +20,15 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.hasAnnotation
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+
+internal fun compileWhetstone(
+    @Language("kotlin") source1: String,
+    @Language("kotlin") source2: String,
+    validator: KotlinCompilation.Result.() -> Unit
+) {
+    compileAnvil(source1, block = validator)
+    compileAnvil(source2, block = validator)
+}
 
 internal fun KotlinCompilation.Result.validateInstanceBinding(
     classUnderTest: String,
