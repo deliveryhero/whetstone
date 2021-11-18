@@ -1,17 +1,12 @@
 package com.deliveryhero.whetstone.compiler
 
 import com.google.auto.service.AutoService
-import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.compiler.api.AnvilContext
 import com.squareup.anvil.compiler.api.CodeGenerator
 import com.squareup.anvil.compiler.api.GeneratedFile
 import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.*
-import com.squareup.kotlinpoet.*
-import dagger.Binds
-import dagger.Module
-import dagger.multibindings.ClassKey
-import dagger.multibindings.IntoMap
+import com.squareup.kotlinpoet.ClassName
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.name.FqName
@@ -22,6 +17,13 @@ import java.io.File
 
 @AutoService(CodeGenerator::class)
 public class BindingsModuleGenerator : CodeGenerator {
+
+    private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
+        val injectorModule = InjectorModuleInfoProvider()
+        put(injectorModule.supportedAnnotation, injectorModule)
+    }
+    private val meta = FqName("com.deliveryhero.whetstone.AutoScopedBinding")
+    private val typeWriter = BindingModuleTypeWriter()
 
     override fun isApplicable(context: AnvilContext): Boolean = true
 
@@ -35,16 +37,10 @@ public class BindingsModuleGenerator : CodeGenerator {
             .classesAndInnerClass(module)
             .mapNotNull { clas ->
                 val provider = findProvider(clas, module) ?: return@mapNotNull null
-                val info = generateModule(provider, clas, module)
+                val info = typeWriter.createNew(provider, clas, module)
                 createGeneratedFile(codeGenDir, info.packageName, info.fileName, info.content)
             }.toList()
     }
-
-    private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
-        val injectorModule = InjectorModuleInfoProvider()
-        put(injectorModule.supportedAnnotation, injectorModule)
-    }
-    private val meta = FqName("com.deliveryhero.whetstone.AutoScopedBinding")
 
     private fun findProvider(clas: KtClassOrObject, module: ModuleDescriptor): ModuleInfoProvider? {
         var result: ModuleInfoProvider? = null
@@ -64,50 +60,6 @@ public class BindingsModuleGenerator : CodeGenerator {
             }
         }
         return result
-    }
-
-    private fun generateModule(
-        provider: ModuleInfoProvider,
-        clas: KtClassOrObject,
-        module: ModuleDescriptor
-    ): GeneratedFileInfo {
-        val className = clas.asClassName()
-        val packageName = clas.containingKtFile.packageFqName.safePackageString(
-            dotPrefix = false,
-            dotSuffix = false,
-        )
-        val outputFileName = className.simpleName + "BindingsModule"
-
-        val annotation = clas.requireAnnotation(provider.supportedAnnotation, module)
-        val componentScopeCn = provider.getScope(annotation, module)
-        val contributesToAnnotation = AnnotationSpec.builder(ContributesTo::class)
-            .addMember("%T::class", componentScopeCn)
-            .build()
-
-        val classKeyAnnotation = AnnotationSpec.builder(ClassKey::class)
-            .addMember("%T::class", className)
-            .build()
-
-        val bindsFunction = FunSpec.builder("binds")
-            .addParameter("target", provider.getTarget(className))
-            .returns(provider.getOutput(className))
-            .addModifiers(KModifier.ABSTRACT)
-            .addAnnotation(Binds::class)
-            .addAnnotation(IntoMap::class)
-            .addAnnotation(classKeyAnnotation)
-            .build()
-
-        val content = FileSpec.buildFile(packageName, outputFileName) {
-            val moduleInterfaceSpec = TypeSpec.interfaceBuilder(outputFileName)
-                .addAnnotation(Module::class)
-                .addAnnotation(contributesToAnnotation)
-                .addFunction(bindsFunction)
-                .build()
-
-            addType(moduleInterfaceSpec)
-        }
-
-        return GeneratedFileInfo(packageName, outputFileName, content)
     }
 
     private fun <K, V> MutableMap<K, V?>.getOrPutNullable(key: K, func: () -> V?): V? {
