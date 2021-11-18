@@ -1,65 +1,85 @@
 package com.deliveryhero.whetstone.codegen
 
-import com.squareup.anvil.compiler.internal.testing.compileAnvil
-import com.tschuchort.compiletesting.KotlinCompilation
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import com.deliveryhero.whetstone.fragment.FragmentKey
+import com.deliveryhero.whetstone.scope.ActivityScope
+import com.deliveryhero.whetstone.scope.FragmentScope
+import com.deliveryhero.whetstone.scope.ViewModelScope
+import com.deliveryhero.whetstone.viewmodel.ViewModelKey
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 internal class CodegenTest {
 
     @Test
-    fun contributesFragment() {
-        compileAnvil(
-            """
-                import com.deliveryhero.whetstone.fragment.ContributesFragment
-                import androidx.fragment.app.Fragment
+    fun contributesFragment() = compileWhetstone(
+        """
+            import com.deliveryhero.whetstone.fragment.ContributesFragment
+            import androidx.fragment.app.Fragment
 
-                @ContributesFragment
-                class MyFragment : Fragment()
-            """.trimIndent()
-        ) {
-            assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
+            @ContributesFragment
+            class MyFragment : Fragment()
+        """.trimIndent(),
+        """
+            import com.deliveryhero.whetstone.ContributesAndroidBinding
+            import androidx.fragment.app.Fragment
 
-            val module = classLoader.loadClass("MyFragmentBindingsModule")
-            assertNotNull(module.declaredMethods.find { it.name == "binds" })
-        }
+            @ContributesAndroidBinding
+            class MyFragment : Fragment()
+        """.trimIndent()
+    ) {
+        validateInstanceBinding(
+            "MyFragment",
+            Fragment::class,
+            FragmentScope::class,
+            FragmentKey::class
+        )
     }
 
     @Test
-    fun contributesViewModel() {
-        compileAnvil(
-            """
-                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
-                import androidx.lifecycle.ViewModel
+    fun contributesViewModel() = compileWhetstone(
+        """
+            import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+            import androidx.lifecycle.ViewModel
 
-                @ContributesViewModel
-                class MyViewModel : ViewModel()
-            """.trimIndent()
-        ) {
-            assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
+            @ContributesViewModel
+            class MyViewModel : ViewModel()
+        """.trimIndent(),
+        """
+            import com.deliveryhero.whetstone.ContributesAndroidBinding
+            import androidx.lifecycle.ViewModel
 
-            val module = classLoader.loadClass("MyViewModelBindingsModule")
-            assertNotNull(module.declaredMethods.find { it.name == "binds" })
-        }
+            @ContributesAndroidBinding
+            class MyViewModel : ViewModel()
+        """.trimIndent()
+    ) {
+        validateInstanceBinding(
+            "MyViewModel",
+            ViewModel::class,
+            ViewModelScope::class,
+            ViewModelKey::class
+        )
     }
 
     @Test
-    fun contributesInjector() {
-        compileAnvil(
-            """
-                import com.deliveryhero.whetstone.injector.ContributesInjector
-                import com.deliveryhero.whetstone.scope.ActivityScope
-                import android.app.Activity
+    fun contributesInjector() = compileWhetstone(
+        """
+            import com.deliveryhero.whetstone.injector.ContributesInjector
+            import com.deliveryhero.whetstone.scope.ActivityScope
+            import android.app.Activity
 
-                @ContributesInjector(ActivityScope::class)
-                class MyActivity: Activity()
-            """.trimIndent()
-        ) {
-            assertEquals(exitCode, KotlinCompilation.ExitCode.OK)
+            @ContributesInjector(ActivityScope::class)
+            class MyActivity: Activity()
+        """.trimIndent(),
+        """
+            import com.deliveryhero.whetstone.ContributesAndroidBinding
+            import com.deliveryhero.whetstone.scope.ActivityScope
+            import android.app.Activity
 
-            val module = classLoader.loadClass("MyActivityBindingsModule")
-            assertNotNull(module.declaredMethods.find { it.name == "binds" })
-        }
+            @ContributesAndroidBinding
+            class MyActivity: Activity()
+        """.trimIndent()
+    ) {
+        validateInjectorBinding("MyActivity", ActivityScope::class)
     }
 }
