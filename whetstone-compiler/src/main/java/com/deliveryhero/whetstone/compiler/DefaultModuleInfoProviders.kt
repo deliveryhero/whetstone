@@ -29,6 +29,20 @@ internal class InjectorModuleInfoProvider : ModuleInfoProvider {
     override fun getOutput(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(STAR)
 }
 
+internal class AutoInjectorModuleInfoProvider(private val scopeCn: ClassName) : ModuleInfoProvider {
+    private val multibindingKeyCn = ClassKey::class.asClassName()
+    private val membersInjectorCn = MembersInjector::class.asClassName()
+    override val supportedAnnotation = FqName("com.deliveryhero.whetstone.ContributesAndroidBinding")
+
+    override fun getScope(annotation: KtAnnotationEntry, module: ModuleDescriptor) = scopeCn
+
+    override fun getMultibindingKey() = multibindingKeyCn
+
+    override fun getTarget(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(annotatedClass)
+
+    override fun getOutput(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(STAR)
+}
+
 internal class InstanceModuleInfoProvider(
     override val supportedAnnotation: FqName,
     private val scopeCn: ClassName,
