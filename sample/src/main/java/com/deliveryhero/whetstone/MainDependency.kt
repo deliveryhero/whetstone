@@ -1,10 +1,9 @@
 package com.deliveryhero.whetstone
 
 import androidx.lifecycle.ViewModel
-import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
 import javax.inject.Inject
 
-@ContributesViewModel
+@ContributesAndroidBinding
 public class MainViewModel @Inject constructor(
     private val dependency: MainDependency
 ) : ViewModel() {
