@@ -32,7 +32,7 @@ To use `Whetstone` you must initialized it in your Application class.
 ```kotlin
 class MyApplication : Application(), ApplicationComponentOwner {
 
-    val applicationComponent by lazy {
+    override val applicationComponent by lazy {
         DaggerGeneratedApplicationComponent.factory().create(this)
     }
 }
@@ -58,18 +58,18 @@ Component lifetimes are generally bounded by the creation and destruction of a c
 
 ![whetstone-scopes](art/whetstone-scopes.png?raw=true)
 
-### Application (TODO)
+### Application (DONE)
 
 ```kotlin
 @ContributesInjector(ApplicationScope::class)
-class MyApplication: Application(), ApplicationComponentOwner {
+class MyApplication : Application(), ApplicationComponentOwner {
 
-    val applicationComponent by lazy {
+    override val applicationComponent by lazy {
         TODO("Create application component.")
     }
 
     @Inject
-    public lateinit var dependency: MyDependency
+    lateinit var dependency: MyDependency
 
     fun onCreate() {
         Whetstone.inject(application = this)
