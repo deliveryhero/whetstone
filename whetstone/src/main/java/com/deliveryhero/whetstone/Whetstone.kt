@@ -48,6 +48,20 @@ public object Whetstone {
     }
 
     /**
+     * A helper that let you inject dependencies into the fields and methods of an [Application].
+     *
+     * Applications that use this method must have the [ContributesInjector] annotation,
+     * and they must have at least 1 `@Inject` field or method. Otherwise, calling this method
+     * will result in an [IllegalArgumentException]
+     */
+    public fun inject(application: Application) {
+        val injector = fromApplication<ApplicationComponent>(application)
+            .getMembersInjectorMap()[application.javaClass] as? MembersInjector<Application>
+
+        requireNotNull(injector).injectMembers(application)
+    }
+
+    /**
      * A helper that let you inject default dependencies into the fields and methods of an [Activity].
      *
      * For example:
