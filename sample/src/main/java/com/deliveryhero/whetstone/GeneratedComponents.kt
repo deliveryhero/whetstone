@@ -1,10 +1,10 @@
 package com.deliveryhero.whetstone
 
 import com.deliveryhero.whetstone.component.ApplicationComponent
-import com.deliveryhero.whetstone.component.ApplicationComponentFactory
 import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.squareup.anvil.annotations.MergeComponent
 import dagger.Component
+import javax.inject.Singleton
 
 // DO NOT CHANGE THIS FILE.
 //
@@ -13,8 +13,11 @@ import dagger.Component
 
 @MergeComponent(ApplicationScope::class)
 @SingleIn(ApplicationScope::class)
+@Singleton
 public interface GeneratedApplicationComponent : ApplicationComponent {
 
     @Component.Factory
-    public interface Factory : ApplicationComponentFactory
+    public interface Factory : ApplicationComponent.Factory
+
+    public companion object Default: Factory by DaggerGeneratedApplicationComponent.factory()
 }
