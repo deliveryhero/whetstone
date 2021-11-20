@@ -16,11 +16,11 @@ import javax.inject.Singleton
 @Singleton
 public interface ApplicationComponent {
     public fun getMembersInjectorMap(): MembersInjectorMap
-}
 
-/**
- * Interface for creating an [ApplicationComponent].
- */
-public interface ApplicationComponentFactory {
-    public fun create(@BindsInstance application: Application): ApplicationComponent
+    /**
+     * Interface for creating an [ApplicationComponent].
+     */
+    public interface Factory {
+        public fun create(@BindsInstance application: Application): ApplicationComponent
+    }
 }
