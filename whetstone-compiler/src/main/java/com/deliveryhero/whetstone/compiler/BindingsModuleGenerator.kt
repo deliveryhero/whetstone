@@ -51,8 +51,7 @@ public class BindingsModuleGenerator : CodeGenerator {
                     ?: return@getOrPutNullable null
                 val base = metaInfo.getValue("base", module)
                 val scope = metaInfo.getValue("scope", module)
-                val multibindingKey = metaInfo.getValue("multibindingKey", module)
-                InstanceModuleInfoProvider(annotationFqName, scope, multibindingKey, base)
+                InstanceModuleInfoProvider(annotationFqName, scope, base)
             }?.let { provider ->
                 require(result == null) {
                     "Found more than 1 Contributes* annotation in class '${clas.fqName}'"

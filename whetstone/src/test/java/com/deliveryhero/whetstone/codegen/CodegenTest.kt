@@ -2,11 +2,9 @@ package com.deliveryhero.whetstone.codegen
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import com.deliveryhero.whetstone.fragment.FragmentKey
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.deliveryhero.whetstone.scope.FragmentScope
 import com.deliveryhero.whetstone.scope.ViewModelScope
-import com.deliveryhero.whetstone.viewmodel.ViewModelKey
 import org.junit.Test
 
 internal class CodegenTest {
@@ -31,8 +29,7 @@ internal class CodegenTest {
         validateInstanceBinding(
             "MyFragment",
             Fragment::class,
-            FragmentScope::class,
-            FragmentKey::class
+            FragmentScope::class
         )
     }
 
@@ -56,8 +53,7 @@ internal class CodegenTest {
         validateInstanceBinding(
             "MyViewModel",
             ViewModel::class,
-            ViewModelScope::class,
-            ViewModelKey::class
+            ViewModelScope::class
         )
     }
 

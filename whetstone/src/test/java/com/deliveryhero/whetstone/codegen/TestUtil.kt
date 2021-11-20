@@ -35,8 +35,7 @@ internal fun compileWhetstone(
 internal fun KotlinCompilation.Result.validateInstanceBinding(
     classUnderTest: String,
     baseClass: KClass<*>,
-    scope: KClass<*>,
-    multibindingKey: KClass<out Annotation>
+    scope: KClass<*>
 ) {
     val clas = classLoader.loadClass(classUnderTest).kotlin
     val bindingModule = classLoader.loadClass("${classUnderTest}BindingsModule").kotlin
@@ -47,8 +46,7 @@ internal fun KotlinCompilation.Result.validateInstanceBinding(
     val bindsMethod = bindingModule.declaredMemberFunctions.single { it.name == "binds" }
     assertTrue(bindsMethod.hasAnnotation<Binds>())
     assertTrue(bindsMethod.hasAnnotation<IntoMap>())
-    val multibindingAnnotation = bindsMethod.javaMethod?.getAnnotation(multibindingKey.java)
-    assertEquals(clas, multibindingAnnotation?.getValue<Class<*>>()?.kotlin)
+    assertEquals(clas, bindsMethod.findAnnotation<ClassKey>()?.value)
     assertEquals(clas.asTypeName(), bindsMethod.findParameterByName("target")?.type?.asTypeName())
     assertEquals(baseClass.asTypeName(), bindsMethod.returnType.asTypeName())
 }

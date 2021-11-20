@@ -50,9 +50,9 @@ internal class AutoInjectorModuleInfoProvider(private val scopeCn: ClassName) : 
 internal class InstanceModuleInfoProvider(
     override val supportedAnnotation: FqName,
     private val scopeCn: ClassName,
-    private val multibindingKeyCn: ClassName,
     private val baseClass: TypeName
 ) : ModuleInfoProvider {
+    private val multibindingKeyCn = ClassKey::class.asClassName()
 
     override fun getScope(annotation: KtAnnotationEntry, module: ModuleDescriptor) = scopeCn
 

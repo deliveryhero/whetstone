@@ -24,7 +24,6 @@ public class AndroidBindingModuleGenerator : CodeGenerator {
         val fragmentProvider = InstanceModuleInfoProvider(
             bindingAnnotationFn,
             ClassName.bestGuess("com.deliveryhero.whetstone.scope.FragmentScope"),
-            ClassName.bestGuess("com.deliveryhero.whetstone.fragment.FragmentKey"),
             ClassName.bestGuess("androidx.fragment.app.Fragment")
         )
         put(FqName("androidx.fragment.app.Fragment"), fragmentProvider)
@@ -33,7 +32,6 @@ public class AndroidBindingModuleGenerator : CodeGenerator {
         val viewModelProvider = InstanceModuleInfoProvider(
             bindingAnnotationFn,
             ClassName.bestGuess("com.deliveryhero.whetstone.scope.ViewModelScope"),
-            ClassName.bestGuess("com.deliveryhero.whetstone.viewmodel.ViewModelKey"),
             ClassName.bestGuess("androidx.lifecycle.ViewModel")
         )
         put(FqName("androidx.lifecycle.ViewModel"), viewModelProvider)
@@ -41,7 +39,6 @@ public class AndroidBindingModuleGenerator : CodeGenerator {
         val workerProvider = InstanceModuleInfoProvider(
             bindingAnnotationFn,
             ClassName.bestGuess("com.deliveryhero.whetstone.worker.WorkerScope"),
-            ClassName.bestGuess("com.deliveryhero.whetstone.worker.WorkerKey"),
             ClassName.bestGuess("androidx.work.ListenableWorker")
         )
         put(FqName("androidx.work.ListenableWorker"), workerProvider)

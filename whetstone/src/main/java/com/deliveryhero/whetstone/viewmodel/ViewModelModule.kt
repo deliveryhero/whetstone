@@ -11,5 +11,5 @@ import dagger.multibindings.Multibinds
 public interface ViewModelModule {
 
     @Multibinds
-    public fun provideViewModel(): Map<Class<out ViewModel>, ViewModel>
+    public fun provideViewModel(): Map<Class<*>, ViewModel>
 }

@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
  * interface MyFragmentModule {
  *     @Binds
  *     @IntoMap
- *     @FragmentKey(MyFragment::class)
+ *     @ClassKey(MyFragment::class)
  *     fun binds(target: MyFragment): Fragment
  * }
  *
@@ -54,7 +54,7 @@ import kotlin.reflect.KClass
  * interface AnotherFragmentModule {
  *     @Binds
  *     @IntoMap
- *     @FragmentKey(AnotherFragment::class)
+ *     @ClassKey(AnotherFragment::class)
  *     fun binds(target: AnotherFragment): Fragment
  * }
  *
