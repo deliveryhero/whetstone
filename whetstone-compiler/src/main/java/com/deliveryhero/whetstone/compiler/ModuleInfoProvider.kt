@@ -49,13 +49,6 @@ internal interface ModuleInfoProvider {
     fun getScope(annotation: KtAnnotationEntry, module: ModuleDescriptor): ClassName
 
     /**
-     * Supplies a [MapKey] annotation for use as the multibinding key in the generated module.
-     *
-     * Note that the returned annotation **must** take a single [KClass] parameter.
-     */
-    fun getMultibindingKey(): ClassName
-
-    /**
      * Supplies the target [TypeName] whose type will be bound to [getOutput]'s result.
      *
      * Note that the result of this method should be assignable to [getOutput] otherwise,
