@@ -38,13 +38,14 @@ import kotlin.reflect.KClass
  * }
  *
  * In cases where the direct supertype is not any of the ones mentioned above,
- * the annotation exposes a `boundType` that can be explicitly set to any of these
- * known supertypes.
+ * the annotation exposes a `scope` that can be used to directly specify the scope
+ * into which the binding should be generated, and the compiler can figure out the
+ * remaining details.
  *
  * For example:
  * Given this other fragment which extends from a custom BaseFragment
  * ```
- * @ContributesAndroidBinding(boundType = Fragment::class)
+ * @ContributesAndroidBinding(FragmentScope::class)
  * class AnotherFragment @Inject constructor() : BaseFragment()
  * ```
  * a similar complementary module will be generated
@@ -62,4 +63,4 @@ import kotlin.reflect.KClass
  * the compiler throws an error and execution is aborted
  */
 @Target(AnnotationTarget.CLASS)
-public annotation class ContributesAndroidBinding(val boundType: KClass<*> = Unit::class)
+public annotation class ContributesAndroidBinding(val scope: KClass<*> = Unit::class)
