@@ -1,10 +1,12 @@
 package com.deliveryhero.whetstone.codegen
 
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import com.deliveryhero.whetstone.scope.ActivityScope
+import com.deliveryhero.whetstone.scope.FragmentScope
+import com.deliveryhero.whetstone.scope.ViewModelScope
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
-import com.tschuchort.compiletesting.KotlinCompilation
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 internal class CodegenTest {
 
@@ -19,10 +21,7 @@ internal class CodegenTest {
                 class MyFragment : Fragment()
             """.trimIndent()
         ) {
-            assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
-
-            val module = classLoader.loadClass("MyFragmentBindingsModule")
-            assertNotNull(module.declaredMethods.find { it.name == "binds" })
+            validateInstanceBinding("MyFragment", Fragment::class, FragmentScope::class)
         }
     }
 
@@ -37,10 +36,7 @@ internal class CodegenTest {
                 class MyViewModel : ViewModel()
             """.trimIndent()
         ) {
-            assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
-
-            val module = classLoader.loadClass("MyViewModelBindingsModule")
-            assertNotNull(module.declaredMethods.find { it.name == "binds" })
+            validateInstanceBinding("MyViewModel", ViewModel::class, ViewModelScope::class)
         }
     }
 
@@ -56,10 +52,7 @@ internal class CodegenTest {
                 class MyActivity: Activity()
             """.trimIndent()
         ) {
-            assertEquals(exitCode, KotlinCompilation.ExitCode.OK)
-
-            val module = classLoader.loadClass("MyActivityBindingsModule")
-            assertNotNull(module.declaredMethods.find { it.name == "binds" })
+            validateInjectorBinding("MyActivity", ActivityScope::class)
         }
     }
 }
