@@ -5,14 +5,14 @@ import com.squareup.anvil.compiler.api.AnvilContext
 import com.squareup.anvil.compiler.api.CodeGenerator
 import com.squareup.anvil.compiler.api.GeneratedFile
 import com.squareup.anvil.compiler.api.createGeneratedFile
-import com.squareup.anvil.compiler.internal.*
-import com.squareup.kotlinpoet.ClassName
+import com.squareup.anvil.compiler.internal.annotationOrNull
+import com.squareup.anvil.compiler.internal.classesAndInnerClass
+import com.squareup.anvil.compiler.internal.fqNameOrNull
+import com.squareup.anvil.compiler.internal.requireClassDescriptor
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.constants.KClassValue
 import java.io.File
 
 @AutoService(CodeGenerator::class)
@@ -49,8 +49,8 @@ public class BindingsModuleGenerator : CodeGenerator {
             dynamicProviderMap.getOrPutNullable(annotationFqName) {
                 val metaInfo = annotationFqName.requireClassDescriptor(module).annotationOrNull(meta)
                     ?: return@getOrPutNullable null
-                val base = metaInfo.getValue("base", module)
-                val scope = metaInfo.getValue("scope", module)
+                val base = metaInfo.getValueAsClassName("base", module)
+                val scope = metaInfo.getValueAsClassName("scope", module)
                 InstanceModuleInfoProvider(annotationFqName, scope, base)
             }?.let { provider ->
                 require(result == null) {
@@ -64,11 +64,5 @@ public class BindingsModuleGenerator : CodeGenerator {
 
     private fun <K, V> MutableMap<K, V?>.getOrPutNullable(key: K, func: () -> V?): V? {
         return if (key in this) get(key) else func().also { put(key, it) }
-    }
-
-    private fun AnnotationDescriptor.getValue(name: String, module: ModuleDescriptor): ClassName {
-        return (getAnnotationValue(name)?.value as KClassValue.Value.NormalClass)
-            .classId.asSingleFqName()
-            .asClassName(module)
     }
 }

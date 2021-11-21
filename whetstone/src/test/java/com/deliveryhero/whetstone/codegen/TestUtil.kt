@@ -47,8 +47,8 @@ internal fun KotlinCompilation.Result.validateInstanceBinding(
     assertTrue(bindsMethod.hasAnnotation<Binds>())
     assertTrue(bindsMethod.hasAnnotation<IntoMap>())
     assertEquals(clas, bindsMethod.findAnnotation<ClassKey>()?.value)
-    assertEquals(clas.asTypeName(), bindsMethod.findParameterByName("target")?.type?.asTypeName())
-    assertEquals(baseClass.asTypeName(), bindsMethod.returnType.asTypeName())
+    assertEquals(clas, bindsMethod.findParameterByName("target")?.type?.classifier)
+    assertEquals(baseClass, bindsMethod.returnType.classifier)
 }
 
 internal fun KotlinCompilation.Result.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {
