@@ -1,0 +1,17 @@
+name: Run tests
+on: [pull_request]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Set JDK version
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Run unit tests
+        run: ./gradlew -x sample:testDebugUnitTest whetstone-compiler:test testDebugUnitTest
