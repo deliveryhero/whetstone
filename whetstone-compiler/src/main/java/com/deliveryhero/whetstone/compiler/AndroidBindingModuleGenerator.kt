@@ -6,8 +6,6 @@ import com.squareup.anvil.compiler.api.CodeGenerator
 import com.squareup.anvil.compiler.api.GeneratedFile
 import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.*
-import com.squareup.kotlinpoet.ClassName
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -17,63 +15,33 @@ import java.io.File
 @AutoService(CodeGenerator::class)
 public class AndroidBindingModuleGenerator : CodeGenerator {
 
-    private val bindingAnnotationFn = FqName("com.deliveryhero.whetstone.ContributesAndroidBinding")
+    private val typeWriter = BindingModuleTypeWriter()
+    private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider>()
 
     @OptIn(ExperimentalStdlibApi::class)
-    private val autoBindingMap = buildMap<FqName, ModuleInfoProvider> {
-        val fragmentProvider = InstanceModuleInfoProvider(
-            bindingAnnotationFn,
-            ClassName.bestGuess("com.deliveryhero.whetstone.scope.FragmentScope"),
-            ClassName.bestGuess("com.deliveryhero.whetstone.fragment.FragmentKey"),
-            ClassName.bestGuess("androidx.fragment.app.Fragment")
-        )
-        put(FqName("androidx.fragment.app.Fragment"), fragmentProvider)
-        put(FqName("androidx.fragment.app.DialogFragment"), fragmentProvider)
+    private val knownTypesMap = buildMap<FqName, FqName> { // Map<KnownType, Scope>
+        put(FqNames.APPLICATION, FqNames.APPLICATION_SCOPE)
 
-        val viewModelProvider = InstanceModuleInfoProvider(
-            bindingAnnotationFn,
-            ClassName.bestGuess("com.deliveryhero.whetstone.scope.ViewModelScope"),
-            ClassName.bestGuess("com.deliveryhero.whetstone.viewmodel.ViewModelKey"),
-            ClassName.bestGuess("androidx.lifecycle.ViewModel")
-        )
-        put(FqName("androidx.lifecycle.ViewModel"), viewModelProvider)
+        put(FqNames.VIEWMODEL, FqNames.VIEWMODEL_SCOPE)
 
-        val workerProvider = InstanceModuleInfoProvider(
-            bindingAnnotationFn,
-            ClassName.bestGuess("com.deliveryhero.whetstone.worker.WorkerScope"),
-            ClassName.bestGuess("com.deliveryhero.whetstone.worker.WorkerKey"),
-            ClassName.bestGuess("androidx.work.ListenableWorker")
-        )
-        put(FqName("androidx.work.ListenableWorker"), workerProvider)
-        put(FqName("androidx.work.Worker"), workerProvider)
+        put(FqNames.LISTENABLE_WORKER, FqNames.WORKER_SCOPE)
+        put(FqNames.WORKER, FqNames.WORKER_SCOPE)
 
-        val activityProvider = AutoInjectorModuleInfoProvider(
-            ClassName.bestGuess("com.deliveryhero.whetstone.scope.ActivityScope")
-        )
-        put(FqName("android.app.Activity"), activityProvider)
-        put(FqName("androidx.activity.ComponentActivity"), activityProvider)
-        put(FqName("androidx.core.app.ComponentActivity"), activityProvider)
-        put(FqName("androidx.appcompat.app.AppCompatActivity"), activityProvider)
+        put(FqNames.SERVICE, FqNames.SERVICE_SCOPE)
+        put(FqNames.INTENT_SERVICE, FqNames.SERVICE_SCOPE)
 
-        val serviceProvider = AutoInjectorModuleInfoProvider(
-            ClassName.bestGuess("com.deliveryhero.whetstone.scope.ServiceScope")
-        )
-        put(FqName("android.app.Service"), serviceProvider)
-        put(FqName("android.app.IntentService"), serviceProvider)
+        put(FqNames.ACTIVITY, FqNames.ACTIVITY_SCOPE)
+        put(FqNames.COMPONENT_ACTIVITY, FqNames.ACTIVITY_SCOPE)
+        put(FqNames.CORE_COMPONENT_ACTIVITY, FqNames.ACTIVITY_SCOPE)
+        put(FqNames.APPCOMPAT_ACTIVITY, FqNames.ACTIVITY_SCOPE)
+        put(FqNames.FRAGMENT_ACTIVITY, FqNames.ACTIVITY_SCOPE)
 
-        val viewProvider = AutoInjectorModuleInfoProvider(
-            ClassName.bestGuess("com.deliveryhero.whetstone.scope.ViewScope")
-        )
-        put(FqName("android.view.View"), viewProvider)
-        put(FqName("android.view.ViewGroup"), viewProvider)
+        put(FqNames.FRAGMENT, FqNames.FRAGMENT_SCOPE)
+        put(FqNames.DIALOG_FRAGMENT, FqNames.FRAGMENT_SCOPE)
 
-        val applicationProvider = AutoInjectorModuleInfoProvider(
-            ClassName.bestGuess("com.deliveryhero.whetstone.scope.ApplicationScope")
-        )
-        put(FqName("android.app.Application"), applicationProvider)
+        put(FqNames.VIEW, FqNames.VIEW_SCOPE)
+        put(FqNames.VIEW_GROUP, FqNames.VIEW_SCOPE)
     }
-
-    private val typeWriter = BindingModuleTypeWriter()
 
     override fun isApplicable(context: AnvilContext): Boolean = true
 
@@ -93,26 +61,46 @@ public class AndroidBindingModuleGenerator : CodeGenerator {
     }
 
     private fun findProvider(clas: KtClassOrObject, module: ModuleDescriptor): ModuleInfoProvider? {
-        val annotationEntry = clas.findAnnotation(bindingAnnotationFn, module)
-            ?: return null
-        val boundType = annotationEntry.findAnnotationArgument<PsiElement>("boundType", 0)
-            ?.fqNameOrNull(module)
-            ?: clas.superTypeListEntries
-                .asSequence()
-                .mapNotNull { it.typeReference }
-                .filterNot { it.isInterface() }
-                .mapNotNull { it.fqNameOrNull(module) }
-                .firstOrNull()
-            ?: Unit::class.fqName
-
-        return autoBindingMap[boundType] ?: error(
-            "Class '${clas.name}' is annotated with 'ContributesAndroidBinding', but the appropriate scope " +
-                    "could not be resolved.\n" +
+        val annotationEntry = clas.findAnnotation(FqNames.CONTRIBUTES_ANDROID_BINDING, module) ?: return null
+        val scope = annotationEntry.scopeOrNull(module)
+        val baseType = clas.superTypeListEntries
+            .asSequence()
+            .mapNotNull { it.typeReference }
+            .filterNot { it.isInterface() }
+            .mapNotNull { it.fqNameOrNull(module) }
+            .firstOrNull()
+        val implicitScope = knownTypesMap[baseType]
+        if (scope != null && implicitScope != null && scope != implicitScope) {
+            error("Scope mismatch. Implied scope '$implicitScope' does not match supplied scope: '$scope'")
+        }
+        val resolvedScope = scope ?: implicitScope ?: error(
+            "Class '${clas.name}' is annotated with '${FqNames.CONTRIBUTES_ANDROID_BINDING}', but the " +
+                    "appropriate scope could not be resolved.\n" +
                     "You can fix this either by directly extending one of the known supertypes, " +
-                    "or by explicitly providing a boundType parameter in the annotation.\n" +
-                    "Known supertypes are:\n" +
-                    autoBindingMap.keys.joinToString("\n") { "- $it" } + "\n\n" +
-                    "Found: $boundType"
+                    "or by explicitly providing a scope parameter in the annotation.\n" +
+                    "Known supertypes that may be extended are:\n" +
+                    knownTypesMap.keys.joinToString("\n") { "- $it" }
         )
+
+        return dynamicProviderMap.getOrPut(resolvedScope) {
+            val scopeDescriptor = resolvedScope.classDescriptorOrNull(module)
+            val injectorDefinition = scopeDescriptor?.annotationOrNull(FqNames.DEFINE_INJECTOR_BINDING)
+            val instanceDefinition = scopeDescriptor?.annotationOrNull(FqNames.DEFINE_INSTANCE_BINDING)
+
+            when {
+                injectorDefinition != null -> AutoInjectorModuleInfoProvider(resolvedScope.asClassName(module))
+                instanceDefinition != null -> InstanceModuleInfoProvider(
+                    FqNames.CONTRIBUTES_ANDROID_BINDING,
+                    resolvedScope.asClassName(module),
+                    instanceDefinition.getValueAsClassName("baseType", module)
+                )
+                else -> error(
+                    "Invalid scope '$resolvedScope'. All scope definitions used with " +
+                            "${FqNames.CONTRIBUTES_ANDROID_BINDING} must have either " +
+                            "'@${FqNames.DEFINE_INJECTOR_BINDING}' or '@${FqNames.DEFINE_INSTANCE_BINDING}' " +
+                            "meta annotations"
+                )
+            }
+        }
     }
 }
