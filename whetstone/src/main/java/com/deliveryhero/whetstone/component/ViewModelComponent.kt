@@ -1,11 +1,12 @@
 package com.deliveryhero.whetstone.component
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import com.deliveryhero.whetstone.SingleIn
-import com.deliveryhero.whetstone.viewmodel.ViewModelMap
 import com.deliveryhero.whetstone.scope.ViewModelScope
 import com.squareup.anvil.annotations.MergeSubcomponent
 import dagger.BindsInstance
+import javax.inject.Provider
 
 /**
  * A Dagger component that has the lifetime of the [androidx.lifecycle.ViewModel].
@@ -13,7 +14,7 @@ import dagger.BindsInstance
 @MergeSubcomponent(ViewModelScope::class)
 @SingleIn(ViewModelScope::class)
 public interface ViewModelComponent {
-    public fun getViewModelMap(): ViewModelMap
+    public fun getViewModelMap(): Map<Class<*>, Provider<ViewModel>>
 }
 
 /**
