@@ -9,7 +9,6 @@ import dagger.BindsInstance
 /**
  * A Dagger component that has the lifetime of the [android.app.Application].
  */
-@ContributesTo(ApplicationScope::class)
 public interface ApplicationComponent {
     public fun getMembersInjectorMap(): MembersInjectorMap
     public fun getActivityComponentFactory(): ActivityComponentFactory
