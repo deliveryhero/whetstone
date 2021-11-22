@@ -11,5 +11,5 @@ import dagger.multibindings.Multibinds
 public interface FragmentModule {
 
     @Multibinds
-    public fun provideFragments(): Map<Class<out Fragment>, Fragment>
+    public fun provideFragments(): Map<Class<*>, Fragment>
 }

@@ -11,8 +11,6 @@ import javax.inject.Provider
 
 /**
  * A [FragmentFactory] that can hold onto multiple other FragmentFactory [Provider]'s.
- *
- * Note this was designed to be used with [FragmentKey].
  */
 @OptIn(InternalInjectApi::class)
 @ContributesBinding(ActivityScope::class)

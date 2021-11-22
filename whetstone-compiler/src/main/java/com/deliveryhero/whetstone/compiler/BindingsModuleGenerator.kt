@@ -10,6 +10,7 @@ import com.squareup.anvil.compiler.internal.*
 import com.squareup.kotlinpoet.*
 import dagger.Binds
 import dagger.Module
+import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
@@ -54,8 +55,7 @@ public class BindingsModuleGenerator : CodeGenerator {
                     ?: return@getOrPutNullable null
                 val base = metaInfo.getValue("base", module)
                 val scope = metaInfo.getValue("scope", module)
-                val multibindingKey = metaInfo.getValue("multibindingKey", module)
-                InstanceModuleInfoProvider(annotationFqName, scope, multibindingKey, base)
+                InstanceModuleInfoProvider(annotationFqName, scope, base)
             }?.let { provider ->
                 require(result == null) {
                     "Found more than 1 Contributes* annotation in class '${clas.fqName}'"
@@ -84,8 +84,7 @@ public class BindingsModuleGenerator : CodeGenerator {
             .addMember("%T::class", componentScopeCn)
             .build()
 
-        val classKeyCn = provider.getMultibindingKey()
-        val classKeyAnnotation = AnnotationSpec.builder(classKeyCn)
+        val classKeyAnnotation = AnnotationSpec.builder(ClassKey::class)
             .addMember("%T::class", className)
             .build()
 

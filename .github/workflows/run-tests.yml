@@ -15,3 +15,5 @@ jobs:
           java-version: '11'
       - name: Run unit tests
         run: ./gradlew -x sample:testDebugUnitTest whetstone-compiler:test testDebugUnitTest
+      - name: Build sample app
+        run: ./gradlew sample:assembleDebug
