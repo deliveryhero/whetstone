@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.androidxFragment)
 
     testImplementation(kotlin("test-junit"))
+    testImplementation(kotlin("reflect"))
     testImplementation(testFixtures(libs.anvilCompilerUtils))
     testImplementation(projects.whetstoneCompiler)
 }

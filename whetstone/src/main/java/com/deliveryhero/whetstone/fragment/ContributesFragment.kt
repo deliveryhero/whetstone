@@ -22,11 +22,11 @@ import com.deliveryhero.whetstone.scope.FragmentScope
  * interface MyFragmentModule {
  *     @Binds
  *     @IntoMap
- *     @FragmentKey(MyFragment::class)
+ *     @ClassKey(MyFragment::class)
  *     fun binds(target: MyFragment): Fragment
  * }
  * ```
  */
 @OptIn(InternalInjectApi::class)
-@AutoScopedBinding(base = Fragment::class, scope = FragmentScope::class, multibindingKey = FragmentKey::class)
+@AutoScopedBinding(base = Fragment::class, scope = FragmentScope::class)
 public annotation class ContributesFragment

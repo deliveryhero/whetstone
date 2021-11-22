@@ -1,12 +1,13 @@
 package com.deliveryhero.whetstone.component
 
-import com.deliveryhero.whetstone.fragment.FragmentMap
+import androidx.fragment.app.Fragment
+import javax.inject.Provider
 
 /**
  * A Dagger component that has the lifetime of the [androidx.fragment.app.Fragment].
  */
 public interface FragmentComponent {
-    public fun getFragmentMap(): FragmentMap
+    public fun getFragmentMap(): Map<Class<*>, Provider<Fragment>>
 }
 
 /**

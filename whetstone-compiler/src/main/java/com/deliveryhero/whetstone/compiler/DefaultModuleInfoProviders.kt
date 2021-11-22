@@ -9,14 +9,12 @@ import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asClassName
 import dagger.MembersInjector
-import dagger.multibindings.ClassKey
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 
 internal class InjectorModuleInfoProvider : ModuleInfoProvider {
-    private val multibindingKeyCn = ClassKey::class.asClassName()
     private val membersInjectorCn = MembersInjector::class.asClassName()
 
     override val supportedAnnotation = FqName("com.deliveryhero.whetstone.injector.ContributesInjector")
@@ -26,8 +24,6 @@ internal class InjectorModuleInfoProvider : ModuleInfoProvider {
         return componentScope.requireFqName(module).asClassName(module)
     }
 
-    override fun getMultibindingKey() = multibindingKeyCn
-
     override fun getTarget(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(annotatedClass)
 
     override fun getOutput(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(STAR)
@@ -36,13 +32,10 @@ internal class InjectorModuleInfoProvider : ModuleInfoProvider {
 internal class InstanceModuleInfoProvider(
     override val supportedAnnotation: FqName,
     private val scopeCn: ClassName,
-    private val multibindingKeyCn: ClassName,
     private val baseClass: TypeName
 ) : ModuleInfoProvider {
 
     override fun getScope(annotation: KtAnnotationEntry, module: ModuleDescriptor) = scopeCn
-
-    override fun getMultibindingKey() = multibindingKeyCn
 
     override fun getTarget(annotatedClass: ClassName) = annotatedClass
 

@@ -22,11 +22,11 @@ import com.deliveryhero.whetstone.scope.ViewModelScope
  * interface MyViewModelModule {
  *     @Binds
  *     @IntoMap
- *     @ViewModelKey(MyViewModel::class)
+ *     @ClassKey(MyViewModel::class)
  *     fun binds(target: MyViewModel): ViewModel
  * }
  * ```
  */
 @OptIn(InternalInjectApi::class)
-@AutoScopedBinding(base = ViewModel::class, scope = ViewModelScope::class, multibindingKey = ViewModelKey::class)
+@AutoScopedBinding(base = ViewModel::class, scope = ViewModelScope::class)
 public annotation class ContributesViewModel
