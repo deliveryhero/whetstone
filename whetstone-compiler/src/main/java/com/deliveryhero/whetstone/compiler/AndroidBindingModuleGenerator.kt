@@ -6,10 +6,13 @@ import com.squareup.anvil.compiler.api.CodeGenerator
 import com.squareup.anvil.compiler.api.GeneratedFile
 import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.*
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import java.io.File
 
 @AutoService(CodeGenerator::class)
@@ -63,12 +66,7 @@ public class AndroidBindingModuleGenerator : CodeGenerator {
     private fun findProvider(clas: KtClassOrObject, module: ModuleDescriptor): ModuleInfoProvider? {
         val annotationEntry = clas.findAnnotation(FqNames.CONTRIBUTES_ANDROID_BINDING, module) ?: return null
         val scope = annotationEntry.scopeOrNull(module)
-        val baseType = clas.superTypeListEntries
-            .asSequence()
-            .mapNotNull { it.typeReference }
-            .filterNot { it.isInterface() }
-            .mapNotNull { it.fqNameOrNull(module) }
-            .firstOrNull()
+        val baseType = findKnownSuperTypeFqName(clas.requireClassDescriptor(module), module)
         val implicitScope = knownTypesMap[baseType]
         if (scope != null && implicitScope != null && scope != implicitScope) {
             error("Scope mismatch. Implied scope '$implicitScope' does not match supplied scope: '$scope'")
@@ -101,6 +99,15 @@ public class AndroidBindingModuleGenerator : CodeGenerator {
                             "meta annotations"
                 )
             }
+        }
+    }
+
+    private tailrec fun findKnownSuperTypeFqName(clas: ClassDescriptor, module: ModuleDescriptor): FqName? {
+        val superType = clas.getSuperClassNotAny() ?: return null
+
+        return when (val superTypeFqName = superType.fqNameSafe) {
+            in knownTypesMap -> superTypeFqName
+            else -> findKnownSuperTypeFqName(superType, module)
         }
     }
 }

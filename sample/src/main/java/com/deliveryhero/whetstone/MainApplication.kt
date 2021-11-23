@@ -4,11 +4,9 @@ import android.app.Application
 import android.util.Log
 import com.deliveryhero.whetstone.component.ApplicationComponent
 import com.deliveryhero.whetstone.component.ApplicationComponentOwner
-import com.deliveryhero.whetstone.injector.ContributesInjector
-import com.deliveryhero.whetstone.scope.ApplicationScope
 import javax.inject.Inject
 
-@ContributesInjector(ApplicationScope::class)
+@ContributesAndroidBinding
 public class MainApplication : Application(), ApplicationComponentOwner {
 
     @Inject
