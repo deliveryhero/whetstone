@@ -16,10 +16,7 @@ import dagger.multibindings.Multibinds
 /**
  * A Dagger component that has the lifetime of the [android.app.Activity].
  */
-@ContributesSubcomponent(
-    scope = ActivityScope::class,
-    parentScope = ApplicationScope::class
-)
+@ContributesSubcomponent(scope = ActivityScope::class, parentScope = ApplicationScope::class)
 @SingleIn(ActivityScope::class)
 public interface ActivityComponent {
     public fun getViewModelFactoryProducer(): ViewModelFactoryProducer
@@ -36,7 +33,7 @@ public interface ActivityComponent {
 
     @ContributesTo(ApplicationScope::class)
     public interface ParentComponent {
-        public fun createActivityFactory(): Factory
+        public fun getActivityComponentFactory(): Factory
     }
 }
 

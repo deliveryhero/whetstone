@@ -13,10 +13,7 @@ import javax.inject.Provider
 /**
  * A Dagger component that has the lifetime of the [androidx.lifecycle.ViewModel].
  */
-@ContributesSubcomponent(
-    scope = ViewModelScope::class,
-    parentScope = ApplicationScope::class
-)
+@ContributesSubcomponent(scope = ViewModelScope::class, parentScope = ApplicationScope::class)
 @SingleIn(ViewModelScope::class)
 public interface ViewModelComponent {
     public fun getViewModelMap(): Map<Class<*>, Provider<ViewModel>>
@@ -31,6 +28,6 @@ public interface ViewModelComponent {
 
     @ContributesTo(ApplicationScope::class)
     public interface ParentComponent {
-        public fun createViewModelFactory(): Factory
+        public fun getViewModelComponentFactory(): Factory
     }
 }
