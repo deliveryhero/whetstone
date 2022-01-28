@@ -15,7 +15,7 @@ public class MainApplication : Application(), ApplicationComponentOwner {
     internal lateinit var dependency: MainDependency
 
     override val applicationComponent: ApplicationComponent =
-        DaggerGeneratedApplicationComponent.factory().create(this)
+        GeneratedApplicationComponent.create(this)
 
     override fun onCreate() {
         Whetstone.inject(this)
