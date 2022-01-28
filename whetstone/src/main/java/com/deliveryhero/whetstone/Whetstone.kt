@@ -1,5 +1,6 @@
 package com.deliveryhero.whetstone
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.ContextWrapper
@@ -11,10 +12,10 @@ import androidx.lifecycle.Lifecycle
 import com.deliveryhero.whetstone.component.ActivityComponent
 import com.deliveryhero.whetstone.component.ApplicationComponent
 import com.deliveryhero.whetstone.component.ApplicationComponentOwner
+import com.deliveryhero.whetstone.component.ViewComponent
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import dagger.MembersInjector
 import java.util.concurrent.atomic.AtomicReference
-
 
 /**
  * Static utility methods for dealing with injection in standard Android components.
@@ -24,6 +25,8 @@ public object Whetstone {
 
     private val root = AtomicReference<ApplicationComponent>()
 
+    @SuppressLint("NewApi")
+    @InternalInjectApi // This method path is not used yet
     public fun initialize(initializer: () -> ApplicationComponent) {
         root.updateAndGet { component -> component ?: initializer() }
     }
@@ -41,7 +44,7 @@ public object Whetstone {
     public fun <T : Any> fromActivity(activity: Activity): T {
         val contentView = activity.findViewById<View>(android.R.id.content)
         return contentView.getTagOrSet(R.id.activityComponentId) {
-            fromApplication<ApplicationComponent>(activity.application)
+            fromApplication<ActivityComponent.ParentComponent>(activity.application)
                 .getActivityComponentFactory()
                 .create(activity)
         } as T
@@ -96,7 +99,7 @@ public object Whetstone {
 
     public fun inject(view: View) {
         val activity = view.findActivity()
-        val injector = fromActivity<ActivityComponent>(activity)
+        val injector = fromActivity<ViewComponent.ParentComponent>(activity)
             .getViewComponentFactory()
             .create(view)
             .getMembersInjectorMap()[view.javaClass] as? MembersInjector<View>
