@@ -14,10 +14,7 @@ import dagger.multibindings.Multibinds
 /**
  * A Dagger component that has the lifetime of the [android.view.View].
  */
-@ContributesSubcomponent(
-    scope = ViewScope::class,
-    parentScope = ActivityScope::class
-)
+@ContributesSubcomponent(scope = ViewScope::class, parentScope = ActivityScope::class)
 @SingleIn(ViewScope::class)
 public interface ViewComponent {
     public fun getMembersInjectorMap(): MembersInjectorMap
@@ -32,7 +29,7 @@ public interface ViewComponent {
 
     @ContributesTo(ActivityScope::class)
     public interface ParentComponent {
-        public fun createViewFactory(): Factory
+        public fun getViewComponentFactory(): Factory
     }
 }
 

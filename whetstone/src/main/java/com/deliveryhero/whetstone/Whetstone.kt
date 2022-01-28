@@ -45,7 +45,7 @@ public object Whetstone {
         val contentView = activity.findViewById<View>(android.R.id.content)
         return contentView.getTagOrSet(R.id.activityComponentId) {
             fromApplication<ActivityComponent.ParentComponent>(activity.application)
-                .createActivityFactory()
+                .getActivityComponentFactory()
                 .create(activity)
         } as T
     }
@@ -100,7 +100,7 @@ public object Whetstone {
     public fun inject(view: View) {
         val activity = view.findActivity()
         val injector = fromActivity<ViewComponent.ParentComponent>(activity)
-            .createViewFactory()
+            .getViewComponentFactory()
             .create(view)
             .getMembersInjectorMap()[view.javaClass] as? MembersInjector<View>
 
