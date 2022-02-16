@@ -9,7 +9,7 @@ anvil {
 }
 
 dependencies {
-    implementation(libs.dagger)
+    api(libs.dagger)
 
     implementation(libs.androidxLifecycleRuntime)
     implementation(libs.androidxLifecycleProcess)
