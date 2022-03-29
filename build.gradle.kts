@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
+        gradlePluginPortal()
         google()
-        mavenCentral()
     }
 
     dependencies {
@@ -21,34 +21,34 @@ tasks.register("clean", Delete::class) {
 subprojects {
     afterEvaluate {
         tasks.withType<KotlinCompile> {
-            configureKotlinCompile(this)
+            configureTask()
         }
         extensions.findByType<BaseExtension>()?.apply {
-            configureAndroidBaseExtension(this)
+            configureExtension()
         }
     }
 }
 
-fun configureKotlinCompile(target: KotlinCompile) = with(target) {
+fun KotlinCompile.configureTask() {
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xexplicit-api=strict",
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+
+        val compilerArgs = mutableListOf(
             "-Xassertions=jvm",
             "-Xopt-in=kotlin.RequiresOptIn",
             "-Xuse-experimental=com.squareup.anvil.annotations.ExperimentalAnvilApi",
         )
+        if (project.name != "sample") compilerArgs += "-Xexplicit-api=strict"
+        freeCompilerArgs = freeCompilerArgs + compilerArgs
     }
 }
 
-fun configureAndroidBaseExtension(extension: BaseExtension) = with(extension) {
+fun BaseExtension.configureExtension() {
     compileSdkVersion(31)
 
     defaultConfig {
         minSdk = 21
         targetSdk = 31
-        versionCode = 1
-        versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
