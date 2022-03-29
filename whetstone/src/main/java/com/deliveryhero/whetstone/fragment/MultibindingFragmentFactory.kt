@@ -28,9 +28,9 @@ public class MultibindingFragmentFactory @Inject constructor(
         } catch (throwable: Throwable) {
             throw if (fragmentProvider == null)
                 IllegalStateException(
-                    "Fragment '${fragmentClass.name}' cannot be instantiated. Did you miss to contribute it? " +
-                            "Ensure the Fragment class is annotated with '${ContributesFragment::class.java.name}' " +
-                            "and has a constructor annotated with '${Inject::class.java.name}'.",
+                    "${fragmentClass.name} could not be instantiated. Did you forget to contribute it? Ensure the " +
+                            "fragment class is annotated with '${ContributesFragment::class.java.name}' " +
+                            "and has an '@Inject constructor'",
                     throwable
                 )
             else throwable

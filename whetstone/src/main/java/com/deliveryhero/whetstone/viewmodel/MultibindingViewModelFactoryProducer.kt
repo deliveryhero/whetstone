@@ -34,7 +34,11 @@ public class MultibindingViewModelFactoryProducer @Inject constructor(
                 val viewModelMap = viewModelComponent.getViewModelMap()
 
                 val viewModelProvider = viewModelMap.getOrElse(modelClass) {
-                    error("ViewModel '${modelClass.name}' cannot be instantiated. Did you miss to contribute it? Ensure the ViewModel class is annotated with '${ContributesViewModel::class.java.name}' and has a constructor annotated with '${Inject::class.java.name}'.")
+                    error(
+                        "${modelClass.name} could not be instantiated. Did you forget to contribute it? Ensure the " +
+                                "view model class is annotated with '${ContributesViewModel::class.java.name}' " +
+                                "and has an '@Inject constructor'"
+                    )
                 }
                 return viewModelProvider.get() as T
             }
