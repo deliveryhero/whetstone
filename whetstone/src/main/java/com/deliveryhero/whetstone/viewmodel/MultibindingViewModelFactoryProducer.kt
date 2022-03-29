@@ -33,11 +33,10 @@ public class MultibindingViewModelFactoryProducer @Inject constructor(
                 val viewModelComponent = viewModelComponentFactory.create(handle)
                 val viewModelMap = viewModelComponent.getViewModelMap()
 
-                return try {
-                    viewModelMap[modelClass]?.get() as T
-                } catch (e: Throwable) {
+                val viewModelProvider = viewModelMap.getOrElse(modelClass) {
                     error("ViewModel '${modelClass.name}' cannot be instantiated. Did you miss to contribute it? Ensure the ViewModel class is annotated with '${ContributesViewModel::class.java.name}' and has a constructor annotated with '${Inject::class.java.name}'.")
                 }
+                return viewModelProvider.get() as T
             }
         }
     }
