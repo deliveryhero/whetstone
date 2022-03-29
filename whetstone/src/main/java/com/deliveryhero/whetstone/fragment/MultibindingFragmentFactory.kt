@@ -22,15 +22,18 @@ public class MultibindingFragmentFactory @Inject constructor(
         val fragmentComponent = fragmentComponentFactory.create()
         val fragmentClass = loadFragmentClass(classLoader, className)
         val fragmentMap = fragmentComponent.getFragmentMap()
-
+        val fragmentProvider = fragmentMap[fragmentClass]
         return try {
-            fragmentMap[fragmentClass]?.get() ?: super.instantiate(classLoader, className)
-        } catch (e: Throwable) {
-            error(
-                "Fragment '${fragmentClass.name}' cannot be instantiated. Did you miss to contribute it? " +
-                        "Ensure the Fragment class is annotated with '${ContributesFragment::class.java.name}' " +
-                        "and has a constructor annotated with '${Inject::class.java.name}'."
-            )
+            fragmentProvider?.get() ?: super.instantiate(classLoader, className)
+        } catch (throwable: Throwable) {
+            throw if (fragmentProvider == null)
+                IllegalStateException(
+                    "Fragment '${fragmentClass.name}' cannot be instantiated. Did you miss to contribute it? " +
+                            "Ensure the Fragment class is annotated with '${ContributesFragment::class.java.name}' " +
+                            "and has a constructor annotated with '${Inject::class.java.name}'.",
+                    throwable
+                )
+            else throwable
         }
     }
 }
