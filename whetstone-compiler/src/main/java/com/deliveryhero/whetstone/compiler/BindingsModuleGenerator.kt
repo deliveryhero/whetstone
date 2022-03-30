@@ -6,18 +6,17 @@ import com.squareup.anvil.compiler.api.AnvilContext
 import com.squareup.anvil.compiler.api.CodeGenerator
 import com.squareup.anvil.compiler.api.GeneratedFile
 import com.squareup.anvil.compiler.api.createGeneratedFile
-import com.squareup.anvil.compiler.internal.*
+import com.squareup.anvil.compiler.internal.buildFile
+import com.squareup.anvil.compiler.internal.reference.*
+import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.constants.KClassValue
 import java.io.File
 
 @AutoService(CodeGenerator::class)
@@ -32,10 +31,10 @@ public class BindingsModuleGenerator : CodeGenerator {
     ): Collection<GeneratedFile> {
 
         return projectFiles
-            .classesAndInnerClass(module)
+            .classAndInnerClassReferences(module)
             .mapNotNull { clas ->
-                val provider = findProvider(clas, module) ?: return@mapNotNull null
-                val info = generateModule(provider, clas, module)
+                val provider = findProvider(clas) ?: return@mapNotNull null
+                val info = generateModule(provider, clas)
                 createGeneratedFile(codeGenDir, info.packageName, info.fileName, info.content)
             }.toList()
     }
@@ -46,15 +45,15 @@ public class BindingsModuleGenerator : CodeGenerator {
     }
     private val meta = FqName("com.deliveryhero.whetstone.AutoScopedBinding")
 
-    private fun findProvider(clas: KtClassOrObject, module: ModuleDescriptor): ModuleInfoProvider? {
+    private fun findProvider(clas: ClassReference): ModuleInfoProvider? {
         var result: ModuleInfoProvider? = null
-        for (annotation in clas.annotationEntries) {
-            val annotationFqName = annotation.fqNameOrNull(module) ?: continue
+        for (annotation in clas.annotations) {
+            val annotationFqName = annotation.fqName
             dynamicProviderMap.getOrPutNullable(annotationFqName) {
-                val metaInfo = annotationFqName.requireClassDescriptor(module).annotationOrNull(meta)
+                val metaInfo = annotation.classReference.annotations.find { it.fqName == meta }
                     ?: return@getOrPutNullable null
-                val base = metaInfo.getValue("base", module)
-                val scope = metaInfo.getValue("scope", module)
+                val base = metaInfo.getValue("base", 0)
+                val scope = metaInfo.getValue("scope", 1)
                 InstanceModuleInfoProvider(annotationFqName, scope, base)
             }?.let { provider ->
                 require(result == null) {
@@ -66,20 +65,16 @@ public class BindingsModuleGenerator : CodeGenerator {
         return result
     }
 
-    private fun generateModule(
-        provider: ModuleInfoProvider,
-        clas: KtClassOrObject,
-        module: ModuleDescriptor
-    ): GeneratedFileInfo {
+    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference): GeneratedFileInfo {
         val className = clas.asClassName()
-        val packageName = clas.containingKtFile.packageFqName.safePackageString(
+        val packageName = clas.packageFqName.safePackageString(
             dotPrefix = false,
             dotSuffix = false,
         )
         val outputFileName = className.simpleName + "BindingsModule"
 
-        val annotation = clas.requireAnnotation(provider.supportedAnnotation, module)
-        val componentScopeCn = provider.getScope(annotation, module)
+        val annotation = clas.annotations.single { it.fqName == provider.supportedAnnotation }
+        val componentScopeCn = provider.getScope(annotation)
         val contributesToAnnotation = AnnotationSpec.builder(ContributesTo::class)
             .addMember("%T::class", componentScopeCn)
             .build()
@@ -114,9 +109,7 @@ public class BindingsModuleGenerator : CodeGenerator {
         return if (key in this) get(key) else func().also { put(key, it) }
     }
 
-    private fun AnnotationDescriptor.getValue(name: String, module: ModuleDescriptor): ClassName {
-        return (getAnnotationValue(name)?.value as KClassValue.Value.NormalClass)
-            .classId.asSingleFqName()
-            .asClassName(module)
+    private fun AnnotationReference.getValue(name: String, index: Int): ClassName {
+        return argumentAt(name, index)!!.value<ClassReference>().asClassName()
     }
 }
