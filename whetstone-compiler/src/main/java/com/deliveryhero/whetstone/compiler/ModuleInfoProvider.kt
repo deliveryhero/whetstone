@@ -1,10 +1,9 @@
 package com.deliveryhero.whetstone.compiler
 
+import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtAnnotationEntry
 
 /**
  * Provides all the information necessary to generate a bindings module for any class
@@ -43,10 +42,10 @@ internal interface ModuleInfoProvider {
     /**
      * Supplies the scope [ClassName] to which the generated module will be contributed.
      *
-     * The [KtAnnotationEntry] of the [supportedAnnotation] is provided here in case such key
+     * The [AnnotationReference] of the [supportedAnnotation] is provided here in case such key
      * can be extracted directly from it.
      */
-    fun getScope(annotation: KtAnnotationEntry, module: ModuleDescriptor): ClassName
+    fun getScope(annotation: AnnotationReference): ClassName
 
     /**
      * Supplies the target [TypeName] whose type will be bound to [getOutput]'s result.

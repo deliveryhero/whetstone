@@ -36,7 +36,7 @@ fun KotlinCompile.configureTask() {
         val compilerArgs = mutableListOf(
             "-Xassertions=jvm",
             "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xuse-experimental=com.squareup.anvil.annotations.ExperimentalAnvilApi",
+            "-Xopt-in=com.squareup.anvil.annotations.ExperimentalAnvilApi",
         )
         if (project.name != "sample") compilerArgs += "-Xexplicit-api=strict"
         freeCompilerArgs = freeCompilerArgs + compilerArgs
