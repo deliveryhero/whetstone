@@ -1,5 +1,6 @@
 package com.deliveryhero.whetstone
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -19,10 +20,18 @@ public class MainActivity : AppCompatActivity() {
         viewModelFactoryProducer.createViewModelFactory(this)
     }
 
+    private val serviceIntent by lazy { Intent(this, MainService::class.java) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Whetstone.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Toast.makeText(this, viewModel.getHelloWorld(), Toast.LENGTH_SHORT).show()
+        startService(serviceIntent)
+    }
+
+    override fun onDestroy() {
+        stopService(serviceIntent)
+        super.onDestroy()
     }
 }
