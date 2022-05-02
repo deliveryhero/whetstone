@@ -58,8 +58,7 @@ public object Whetstone {
      * Returns the component interface from a [service].
      */
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    public fun <T : Any> fromService(service: Service): T {
+    private fun <T : Any> fromService(service: Service): T {
         return fromApplication<ServiceComponent.ParentComponent>(service.application)
             .getServiceComponentFactory()
             .create(service) as T
@@ -137,7 +136,7 @@ public object Whetstone {
         val injector = fromService<ServiceComponent>(service)
             .getMembersInjectorMap()[service.javaClass] as? MembersInjector<Service>
 
-        injector?.injectMembers(service)
+        requireNotNull(injector).injectMembers(service)
     }
 
     public fun inject(view: View) {
