@@ -78,7 +78,7 @@ class MyApplication : Application(), ApplicationComponentOwner {
 }
 ```
 
-### Service (TODO)
+### Service (DONE)
 
 ```kotlin
 @ContributesInjector(ServiceScope::class)
