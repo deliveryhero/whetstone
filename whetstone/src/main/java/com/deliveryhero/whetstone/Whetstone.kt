@@ -3,6 +3,7 @@ package com.deliveryhero.whetstone
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.app.Service
 import android.content.ContextWrapper
 import android.view.View
 import androidx.annotation.IdRes
@@ -10,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
 import com.deliveryhero.whetstone.component.ActivityComponent
+import com.deliveryhero.whetstone.component.ServiceComponent
 import com.deliveryhero.whetstone.component.ApplicationComponent
 import com.deliveryhero.whetstone.component.ApplicationComponentOwner
 import com.deliveryhero.whetstone.component.ViewComponent
@@ -31,6 +33,7 @@ public object Whetstone {
         root.updateAndGet { component -> component ?: initializer() }
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromApplication(application: Application): T {
         require(application is ApplicationComponentOwner) {
             "Application must implement ${ApplicationComponentOwner::class.java.name} to use this Injector"
@@ -41,6 +44,7 @@ public object Whetstone {
     /**
      * Returns the component interface from an [activity].
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromActivity(activity: Activity): T {
         val contentView = activity.findViewById<View>(android.R.id.content)
         return contentView.getTagOrSet(R.id.activityComponentId) {
@@ -48,6 +52,16 @@ public object Whetstone {
                 .getActivityComponentFactory()
                 .create(activity)
         } as T
+    }
+
+    /**
+     * Returns the component interface from a [service].
+     */
+
+    private fun <T : Any> fromService(service: Service): T {
+        return fromApplication<ServiceComponent.ParentComponent>(service.application)
+            .getServiceComponentFactory()
+            .create(service) as T
     }
 
     /**
@@ -95,6 +109,34 @@ public object Whetstone {
             .getMembersInjectorMap()[activity.javaClass] as? MembersInjector<Activity>
 
         injector?.injectMembers(activity)
+    }
+
+    /**
+     * A helper that let you inject default dependencies into the fields and methods of a [Service].
+     *
+     * For example:
+     * ```
+     * @ContributesInjector(ServiceScope::class)
+     * class CustomService: Service() {
+     *
+     *     @Inject lateinit var someDep: SomeDep
+     *
+     *     override fun onCreate() {
+     *         Whetstone.inject(this)
+     *         super.onCreate()
+     *     }
+     * }
+     * ```
+     *
+     * Services that use this method must have the [ContributesInjector] annotation,
+     * and they must have at least 1 `@Inject` field or method. Otherwise, calling this method
+     * will result in an [IllegalStateException]
+     */
+    public fun inject(service: Service) {
+        val injector = fromService<ServiceComponent>(service)
+            .getMembersInjectorMap()[service.javaClass] as? MembersInjector<Service>
+
+        requireNotNull(injector).injectMembers(service)
     }
 
     public fun inject(view: View) {
