@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone
+package com.deliveryhero.whetstone.sample
 
 import androidx.lifecycle.ViewModel
 import com.deliveryhero.whetstone.viewmodel.ContributesViewModel

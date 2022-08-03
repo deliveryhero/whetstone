@@ -1,8 +1,9 @@
-package com.deliveryhero.whetstone
+package com.deliveryhero.whetstone.sample
 
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
+import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import com.deliveryhero.whetstone.scope.ViewScope
 import javax.inject.Inject

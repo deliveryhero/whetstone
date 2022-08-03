@@ -1,5 +1,6 @@
-package com.deliveryhero.whetstone
+package com.deliveryhero.whetstone.sample
 
+import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.component.ApplicationComponent
 import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.squareup.anvil.annotations.MergeComponent

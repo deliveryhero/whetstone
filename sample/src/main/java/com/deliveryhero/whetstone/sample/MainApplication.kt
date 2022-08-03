@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone
+package com.deliveryhero.whetstone.sample
 
 import android.app.Application
 import android.app.NotificationChannel
@@ -7,10 +7,11 @@ import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import com.deliveryhero.whetstone.MainService.Companion.NOTIFICATION_CHANNEL_ID
+import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.component.ApplicationComponent
 import com.deliveryhero.whetstone.component.ApplicationComponentOwner
 import com.deliveryhero.whetstone.injector.ContributesInjector
+import com.deliveryhero.whetstone.sample.MainService.Companion.NOTIFICATION_CHANNEL_ID
 import com.deliveryhero.whetstone.scope.ApplicationScope
 import javax.inject.Inject
 
