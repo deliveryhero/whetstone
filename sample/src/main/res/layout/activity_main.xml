@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.deliveryhero.whetstone.MainView
+    <com.deliveryhero.whetstone.sample.MainView
         android:id="@+id/hello_world_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
