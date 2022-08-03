@@ -24,6 +24,9 @@ dependencies {
     testImplementation(kotlin("test-junit"))
     testImplementation(kotlin("reflect"))
     testImplementation(testFixtures(libs.anvilCompilerUtils))
+    // Force stable version of transitive dependency from anvil/compiler-utils
+    // TODO(Kingsley): Remove this once Anvil switches to the stable version
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.9")
     testImplementation(projects.whetstoneCompiler)
 }
 

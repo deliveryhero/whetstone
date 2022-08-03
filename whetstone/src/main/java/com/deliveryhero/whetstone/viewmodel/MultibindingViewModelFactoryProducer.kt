@@ -6,13 +6,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.savedstate.SavedStateRegistryOwner
-import com.deliveryhero.whetstone.InternalInjectApi
 import com.deliveryhero.whetstone.component.ViewModelComponent
 import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
 
-@OptIn(InternalInjectApi::class)
 @ContributesBinding(ApplicationScope::class)
 public class MultibindingViewModelFactoryProducer @Inject constructor(
     private val viewModelComponentFactory: ViewModelComponent.Factory,

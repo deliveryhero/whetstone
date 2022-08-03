@@ -2,7 +2,6 @@ package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.deliveryhero.whetstone.InternalInjectApi
 import com.deliveryhero.whetstone.component.FragmentComponent
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.squareup.anvil.annotations.ContributesBinding
@@ -12,7 +11,6 @@ import javax.inject.Provider
 /**
  * A [FragmentFactory] that can hold onto multiple other FragmentFactory [Provider]'s.
  */
-@OptIn(InternalInjectApi::class)
 @ContributesBinding(ActivityScope::class)
 public class MultibindingFragmentFactory @Inject constructor(
     private val fragmentComponentFactory: FragmentComponent.Factory
