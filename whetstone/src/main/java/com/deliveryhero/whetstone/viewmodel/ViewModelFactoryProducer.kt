@@ -1,6 +1,5 @@
 package com.deliveryhero.whetstone.viewmodel
 
-import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -22,10 +21,7 @@ public interface ViewModelFactoryProducer {
     /**
      * Provides a fully-constructed instance of [ViewModelProvider.Factory].
      */
-    public fun createViewModelFactory(
-        owner: SavedStateRegistryOwner,
-        defaultArgs: Bundle?
-    ): ViewModelProvider.Factory
+    public fun createViewModelFactory(): ViewModelProvider.Factory
 }
 
 /**
@@ -39,9 +35,7 @@ public interface ViewModelFactoryProducer {
  */
 public fun ViewModelFactoryProducer.createViewModelFactory(
     activity: ComponentActivity
-): ViewModelProvider.Factory {
-    return createViewModelFactory(activity, activity.intent?.extras)
-}
+): ViewModelProvider.Factory = createViewModelFactory()
 
 /**
  * Produces a fully-constructed instance of [ViewModelProvider.Factory].
@@ -54,6 +48,4 @@ public fun ViewModelFactoryProducer.createViewModelFactory(
  */
 public fun ViewModelFactoryProducer.createViewModelFactory(
     fragment: Fragment
-): ViewModelProvider.Factory {
-    return createViewModelFactory(fragment, fragment.arguments)
-}
+): ViewModelProvider.Factory = createViewModelFactory()

@@ -1,33 +1,26 @@
 package com.deliveryhero.whetstone.viewmodel
 
-import android.os.Bundle
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.savedstate.SavedStateRegistryOwner
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.deliveryhero.whetstone.component.ViewModelComponent
 import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.squareup.anvil.annotations.ContributesBinding
+import dagger.Reusable
 import javax.inject.Inject
 
+@Reusable
 @ContributesBinding(ApplicationScope::class)
 public class MultibindingViewModelFactoryProducer @Inject constructor(
     private val viewModelComponentFactory: ViewModelComponent.Factory,
 ) : ViewModelFactoryProducer {
 
-    override fun createViewModelFactory(
-        owner: SavedStateRegistryOwner,
-        defaultArgs: Bundle?,
-    ): ViewModelProvider.Factory {
-        return object : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
-
+    override fun createViewModelFactory(): ViewModelProvider.Factory {
+        return object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                key: String,
-                modelClass: Class<T>,
-                handle: SavedStateHandle
-            ): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+                val handle = extras.createSavedStateHandle()
                 val viewModelComponent = viewModelComponentFactory.create(handle)
                 val viewModelMap = viewModelComponent.getViewModelMap()
 
