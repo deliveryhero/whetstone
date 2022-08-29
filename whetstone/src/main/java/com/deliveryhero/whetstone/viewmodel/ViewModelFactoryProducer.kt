@@ -33,6 +33,7 @@ public interface ViewModelFactoryProducer {
  *
  * @see ViewModelFactoryProducer.createViewModelFactory
  */
+@Deprecated("Legacy API", ReplaceWith("this.createViewModelFactory()"))
 public fun ViewModelFactoryProducer.createViewModelFactory(
     activity: ComponentActivity
 ): ViewModelProvider.Factory = createViewModelFactory()
@@ -46,6 +47,7 @@ public fun ViewModelFactoryProducer.createViewModelFactory(
  *
  * @see ViewModelFactoryProducer.createViewModelFactory
  */
+@Deprecated("Legacy API", ReplaceWith("this.createViewModelFactory()"))
 public fun ViewModelFactoryProducer.createViewModelFactory(
     fragment: Fragment
 ): ViewModelProvider.Factory = createViewModelFactory()
