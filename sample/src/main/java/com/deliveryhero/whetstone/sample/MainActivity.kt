@@ -9,7 +9,6 @@ import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.deliveryhero.whetstone.viewmodel.ViewModelFactoryProducer
-import com.deliveryhero.whetstone.viewmodel.createViewModelFactory
 import javax.inject.Inject
 
 @ContributesInjector(ActivityScope::class)
@@ -18,7 +17,7 @@ public class MainActivity : AppCompatActivity() {
     @Inject
     public lateinit var viewModelFactoryProducer: ViewModelFactoryProducer
     private val viewModel by viewModels<MainViewModel> {
-        viewModelFactoryProducer.createViewModelFactory(this)
+        viewModelFactoryProducer.createViewModelFactory()
     }
 
     private val serviceIntent by lazy { Intent(this, MainService::class.java) }
