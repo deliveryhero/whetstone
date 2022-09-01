@@ -82,10 +82,10 @@ class MyApplication : Application(), ApplicationComponentOwner {
 
 ```kotlin
 @ContributesInjector(ServiceScope::class)
-public class MyService : Service() {
+class MyService : Service() {
 
     @Inject
-    public lateinit var dependency: MyDependency
+    lateinit var dependency: MyDependency
 
     override fun onCreate() {
         Whetstone.inject(service = this)
@@ -98,10 +98,10 @@ public class MyService : Service() {
 
 ```kotlin
 @ContributesInjector(ActivityScope::class)
-public class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     @Inject
-    public lateinit var dependency: MyDependency
+    lateinit var dependency: MyDependency
 
     // Get the contributed ViewModel
     // We automatically handle process death and saved state handle wiring
@@ -118,13 +118,13 @@ public class MainActivity : AppCompatActivity() {
 
 ```kotlin
 @ContributesInjector(ViewScope::class)
-public class MyView @JvmOverloads constructor(
+class MyView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
 
     @Inject
-    public lateinit var dependency: MainDependency
+    lateinit var dependency: MainDependency
 
     init {
         if (!isInEditMode) {
