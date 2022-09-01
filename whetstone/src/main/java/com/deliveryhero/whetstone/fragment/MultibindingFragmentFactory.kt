@@ -5,12 +5,14 @@ import androidx.fragment.app.FragmentFactory
 import com.deliveryhero.whetstone.component.FragmentComponent
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.squareup.anvil.annotations.ContributesBinding
+import dagger.Reusable
 import javax.inject.Inject
 import javax.inject.Provider
 
 /**
  * A [FragmentFactory] that can hold onto multiple other FragmentFactory [Provider]'s.
  */
+@Reusable
 @ContributesBinding(ActivityScope::class)
 public class MultibindingFragmentFactory @Inject constructor(
     private val fragmentComponentFactory: FragmentComponent.Factory
