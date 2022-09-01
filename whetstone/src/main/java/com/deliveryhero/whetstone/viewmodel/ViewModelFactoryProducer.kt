@@ -16,6 +16,7 @@ import com.deliveryhero.whetstone.scope.ViewModelScope
  * The returned [ViewModelProvider.Factory] can retrieve any type of [ViewModel]
  * contributed to [ViewModelScope].
  */
+@Deprecated("Legacy API. Please use the new injectedViewModel API instead")
 public interface ViewModelFactoryProducer {
 
     /**
