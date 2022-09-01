@@ -103,6 +103,10 @@ public class MainActivity : AppCompatActivity() {
     @Inject
     public lateinit var dependency: MyDependency
 
+    // Get the contributed ViewModel
+    // We automatically handle process death and saved state handle wiring
+    private val viewModel by injectedViewModel<MyViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Whetstone.inject(activity = this)
         super.onCreate(savedInstanceState)
@@ -145,14 +149,12 @@ class UploadWorker @Inject constructor(
 ```kotlin
 @ContributesFragment
 class MyFragment @Inject constructor(
-    private val viewModelFactoryProvider: ViewModelFactoryProvider,
+    private val dependency: MyDependency,
 ): Fragment() {
 
     // Get the contributed ViewModel
-    val viewModel by viewModels<MyViewModel> {
-        // We automatically handle process death and saved state handle wiring
-        viewModelFactoryProvider.getViewModelFactory(this)
-    }
+    // We automatically handle process death and saved state handle wiring
+    private val viewModel by injectedViewModel<MyViewModel>()
 }
 ```
 **Important:** A Fragment should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** Fragments.
