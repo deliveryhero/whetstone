@@ -6,7 +6,6 @@ import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
 import com.deliveryhero.whetstone.scope.ActivityScope
 import com.deliveryhero.whetstone.scope.ApplicationScope
-import com.deliveryhero.whetstone.viewmodel.ViewModelFactoryProducer
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.BindsInstance
@@ -19,7 +18,6 @@ import dagger.multibindings.Multibinds
 @ContributesSubcomponent(scope = ActivityScope::class, parentScope = ApplicationScope::class)
 @SingleIn(ActivityScope::class)
 public interface ActivityComponent {
-    public fun getViewModelFactoryProducer(): ViewModelFactoryProducer
     public fun getFragmentFactory(): FragmentFactory
     public fun getMembersInjectorMap(): MembersInjectorMap
 
