@@ -28,7 +28,7 @@ public object Whetstone {
     private val root = AtomicReference<ApplicationComponent>()
 
     @SuppressLint("NewApi")
-    @InternalInjectApi // This method path is not used yet
+    @InternalWhetstoneApi // This method path is not used yet
     public fun initialize(initializer: () -> ApplicationComponent) {
         root.updateAndGet { component -> component ?: initializer() }
     }
