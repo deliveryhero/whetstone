@@ -10,12 +10,12 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
-import com.deliveryhero.whetstone.component.ActivityComponent
-import com.deliveryhero.whetstone.component.ServiceComponent
-import com.deliveryhero.whetstone.component.ApplicationComponent
-import com.deliveryhero.whetstone.component.ApplicationComponentOwner
-import com.deliveryhero.whetstone.component.ViewComponent
+import com.deliveryhero.whetstone.activity.ActivityComponent
+import com.deliveryhero.whetstone.app.ApplicationComponent
+import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.injector.ContributesInjector
+import com.deliveryhero.whetstone.service.ServiceComponent
+import com.deliveryhero.whetstone.view.ViewComponent
 import dagger.MembersInjector
 import java.util.concurrent.atomic.AtomicReference
 

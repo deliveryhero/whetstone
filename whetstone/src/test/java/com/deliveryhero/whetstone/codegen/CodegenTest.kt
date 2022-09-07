@@ -2,9 +2,9 @@ package com.deliveryhero.whetstone.codegen
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import com.deliveryhero.whetstone.scope.ActivityScope
-import com.deliveryhero.whetstone.scope.FragmentScope
-import com.deliveryhero.whetstone.scope.ViewModelScope
+import com.deliveryhero.whetstone.activity.ActivityScope
+import com.deliveryhero.whetstone.fragment.FragmentScope
+import com.deliveryhero.whetstone.viewmodel.ViewModelScope
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import org.junit.Test
 
@@ -45,7 +45,7 @@ internal class CodegenTest {
         compileAnvil(
             """
                 import com.deliveryhero.whetstone.injector.ContributesInjector
-                import com.deliveryhero.whetstone.scope.ActivityScope
+                import com.deliveryhero.whetstone.activity.ActivityScope
                 import android.app.Activity
 
                 @ContributesInjector(ActivityScope::class)

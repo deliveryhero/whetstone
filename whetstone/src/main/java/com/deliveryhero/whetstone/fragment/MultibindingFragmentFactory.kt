@@ -2,8 +2,7 @@ package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.deliveryhero.whetstone.component.FragmentComponent
-import com.deliveryhero.whetstone.scope.ActivityScope
+import com.deliveryhero.whetstone.activity.ActivityScope
 import com.squareup.anvil.annotations.ContributesBinding
 import dagger.Reusable
 import javax.inject.Inject

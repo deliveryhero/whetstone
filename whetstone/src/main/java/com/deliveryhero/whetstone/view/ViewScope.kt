@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone.scope
+package com.deliveryhero.whetstone.view
 
 /**
  * Scope marker class for bindings that should exist for the life of an [android.view.View].

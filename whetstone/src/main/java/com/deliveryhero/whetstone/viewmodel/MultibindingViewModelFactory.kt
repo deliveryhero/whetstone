@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.deliveryhero.whetstone.component.ViewModelComponent
-import com.deliveryhero.whetstone.scope.ApplicationScope
+import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.ContributesBinding
 import dagger.Reusable
 import javax.inject.Inject

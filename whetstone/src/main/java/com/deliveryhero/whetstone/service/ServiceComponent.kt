@@ -1,10 +1,9 @@
-package com.deliveryhero.whetstone.component
+package com.deliveryhero.whetstone.service
 
 import android.app.Service
 import com.deliveryhero.whetstone.SingleIn
+import com.deliveryhero.whetstone.app.ApplicationScope
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.deliveryhero.whetstone.scope.ApplicationScope
-import com.deliveryhero.whetstone.scope.ServiceScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.BindsInstance

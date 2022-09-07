@@ -3,7 +3,6 @@ package com.deliveryhero.whetstone.fragment
 import androidx.fragment.app.Fragment
 import com.deliveryhero.whetstone.AutoScopedBinding
 import com.deliveryhero.whetstone.InternalInjectApi
-import com.deliveryhero.whetstone.scope.FragmentScope
 
 /**
  * Marker annotation signalling that the compiler should generate necessary instance

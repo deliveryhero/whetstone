@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.deliveryhero.whetstone.Whetstone
-import com.deliveryhero.whetstone.component.ApplicationComponent
+import com.deliveryhero.whetstone.app.ApplicationComponent
 
 /**
  * Returns a [Lazy] delegate to access the ComponentActivity's ViewModel.

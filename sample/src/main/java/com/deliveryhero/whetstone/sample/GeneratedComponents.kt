@@ -1,8 +1,8 @@
 package com.deliveryhero.whetstone.sample
 
 import com.deliveryhero.whetstone.SingleIn
-import com.deliveryhero.whetstone.component.ApplicationComponent
-import com.deliveryhero.whetstone.scope.ApplicationScope
+import com.deliveryhero.whetstone.app.ApplicationComponent
+import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.MergeComponent
 import dagger.Component
 import javax.inject.Singleton
