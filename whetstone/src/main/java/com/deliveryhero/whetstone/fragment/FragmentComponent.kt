@@ -13,7 +13,7 @@ import javax.inject.Provider
 @ContributesSubcomponent(scope = FragmentScope::class, parentScope = ActivityScope::class)
 @SingleIn(FragmentScope::class)
 public interface FragmentComponent {
-    public fun getFragmentMap(): Map<Class<*>, Provider<Fragment>>
+    public val fragmentMap: Map<Class<*>, Provider<Fragment>>
 
     /**
      * Interface for creating an [FragmentComponent].

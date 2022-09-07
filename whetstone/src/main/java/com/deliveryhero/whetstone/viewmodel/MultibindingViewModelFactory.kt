@@ -19,7 +19,7 @@ public class MultibindingViewModelFactory @Inject constructor(
     public override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         val handle = extras.createSavedStateHandle()
         val viewModelComponent = viewModelComponentFactory.create(handle)
-        val viewModelMap = viewModelComponent.getViewModelMap()
+        val viewModelMap = viewModelComponent.viewModelMap
 
         val viewModelProvider = viewModelMap.getOrElse(modelClass) {
             error(

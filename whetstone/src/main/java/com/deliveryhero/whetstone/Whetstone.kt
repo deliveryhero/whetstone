@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import com.deliveryhero.whetstone.activity.ActivityComponent
 import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
+import com.deliveryhero.whetstone.fragment.ContributesFragment
 import com.deliveryhero.whetstone.injector.ContributesInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent
@@ -55,16 +56,6 @@ public object Whetstone {
     }
 
     /**
-     * Returns the component interface from a [service].
-     */
-
-    private fun <T : Any> fromService(service: Service): T {
-        return fromApplication<ServiceComponent.ParentComponent>(service.application)
-            .getServiceComponentFactory()
-            .create(service) as T
-    }
-
-    /**
      * A helper that let you inject dependencies into the fields and methods of an [Application].
      *
      * Applications that use this method must have the [ContributesInjector] annotation,
@@ -73,7 +64,7 @@ public object Whetstone {
      */
     public fun inject(application: Application) {
         val injector = fromApplication<ApplicationComponent>(application)
-            .getMembersInjectorMap()[application.javaClass] as? MembersInjector<Application>
+            .membersInjectorMap[application.javaClass] as? MembersInjector<Application>
 
         requireNotNull(injector).injectMembers(application)
     }
@@ -106,7 +97,7 @@ public object Whetstone {
         installFragmentFactory(activity)
 
         val injector = fromActivity<ActivityComponent>(activity)
-            .getMembersInjectorMap()[activity.javaClass] as? MembersInjector<Activity>
+            .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
 
         injector?.injectMembers(activity)
     }
@@ -133,8 +124,11 @@ public object Whetstone {
      * will result in an [IllegalStateException]
      */
     public fun inject(service: Service) {
-        val injector = fromService<ServiceComponent>(service)
-            .getMembersInjectorMap()[service.javaClass] as? MembersInjector<Service>
+        val app = service.application
+        val injector = fromApplication<ServiceComponent.ParentComponent>(app)
+            .getServiceComponentFactory()
+            .create(service)
+            .membersInjectorMap[service.javaClass] as? MembersInjector<Service>
 
         requireNotNull(injector).injectMembers(service)
     }
@@ -144,7 +138,7 @@ public object Whetstone {
         val injector = fromActivity<ViewComponent.ParentComponent>(activity)
             .getViewComponentFactory()
             .create(view)
-            .getMembersInjectorMap()[view.javaClass] as? MembersInjector<View>
+            .membersInjectorMap[view.javaClass] as? MembersInjector<View>
 
         requireNotNull(injector).injectMembers(view)
     }
@@ -162,7 +156,7 @@ public object Whetstone {
             "installFragmentFactory must be called before activity's super.onCreate."
         }
         val activityComponent = fromActivity<ActivityComponent>(activity)
-        activity.supportFragmentManager.fragmentFactory = activityComponent.getFragmentFactory()
+        activity.supportFragmentManager.fragmentFactory = activityComponent.fragmentFactory
     }
 }
 

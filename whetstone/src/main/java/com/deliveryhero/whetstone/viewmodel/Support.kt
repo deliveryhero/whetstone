@@ -34,7 +34,7 @@ public inline fun <reified VM : ViewModel> ComponentActivity.injectedViewModel(
     noinline extrasProducer: (() -> CreationExtras)? = null,
 ): Lazy<VM> = viewModels(extrasProducer) {
     val appComponent = Whetstone.fromApplication<ApplicationComponent>(application)
-    appComponent.getViewModelFactory()
+    appComponent.viewModelFactory
 }
 
 /**
@@ -65,7 +65,7 @@ public inline fun <reified VM : ViewModel> Fragment.injectedViewModel(
 ): Lazy<VM> = viewModels(ownerProducer, extrasProducer) {
     val app = requireActivity().application
     val appComponent = Whetstone.fromApplication<ApplicationComponent>(app)
-    appComponent.getViewModelFactory()
+    appComponent.viewModelFactory
 }
 
 /**
@@ -88,5 +88,5 @@ public inline fun <reified VM : ViewModel> Fragment.injectedActivityViewModel(
 ): Lazy<VM> = activityViewModels(extrasProducer) {
     val app = requireActivity().application
     val appComponent = Whetstone.fromApplication<ApplicationComponent>(app)
-    appComponent.getViewModelFactory()
+    appComponent.viewModelFactory
 }

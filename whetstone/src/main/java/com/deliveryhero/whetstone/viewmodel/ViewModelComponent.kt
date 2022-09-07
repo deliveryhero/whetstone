@@ -15,7 +15,7 @@ import javax.inject.Provider
 @ContributesSubcomponent(scope = ViewModelScope::class, parentScope = ApplicationScope::class)
 @SingleIn(ViewModelScope::class)
 public interface ViewModelComponent {
-    public fun getViewModelMap(): Map<Class<*>, Provider<ViewModel>>
+    public val viewModelMap: Map<Class<*>, Provider<ViewModel>>
 
     /**
      * Interface for creating an [ViewModelComponent].

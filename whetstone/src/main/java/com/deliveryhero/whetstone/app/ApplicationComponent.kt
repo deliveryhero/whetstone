@@ -15,8 +15,8 @@ import javax.inject.Singleton
 @SingleIn(ApplicationScope::class)
 @Singleton
 public interface ApplicationComponent {
-    public fun getViewModelFactory(): ViewModelProvider.Factory
-    public fun getMembersInjectorMap(): MembersInjectorMap
+    public val viewModelFactory: ViewModelProvider.Factory
+    public val membersInjectorMap: MembersInjectorMap
 
     /**
      * Interface for creating an [ApplicationComponent].

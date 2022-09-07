@@ -20,7 +20,7 @@ public class MultibindingFragmentFactory @Inject constructor(
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         val fragmentComponent = fragmentComponentFactory.create()
         val fragmentClass = loadFragmentClass(classLoader, className)
-        val fragmentMap = fragmentComponent.getFragmentMap()
+        val fragmentMap = fragmentComponent.fragmentMap
         val fragmentProvider = fragmentMap[fragmentClass]
         return try {
             fragmentProvider?.get() ?: super.instantiate(classLoader, className)
