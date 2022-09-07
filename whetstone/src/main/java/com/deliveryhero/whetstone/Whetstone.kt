@@ -34,6 +34,9 @@ public object Whetstone {
         root.updateAndGet { component -> component ?: initializer() }
     }
 
+    /**
+     * Retrieves the component interface from an [application].
+     */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromApplication(application: Application): T {
         require(application is ApplicationComponentOwner) {
@@ -43,7 +46,9 @@ public object Whetstone {
     }
 
     /**
-     * Returns the component interface from an [activity].
+     * Retrieves the component interface from an [activity].
+     *
+     * If one is not already existing for this activity, a new one will be created and returned
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromActivity(activity: Activity): T {
@@ -56,11 +61,12 @@ public object Whetstone {
     }
 
     /**
-     * A helper that let you inject dependencies into the fields and methods of an [Application].
+     * Injects dependencies into the fields and methods of an [Application].
      *
-     * Applications that use this method must have the [ContributesInjector] annotation,
-     * and they must have at least 1 `@Inject` field or method. Otherwise, calling this method
-     * will result in an [IllegalArgumentException]
+     * When injecting an application, the injected fields and methods must be annotated with `@Inject`
+     * and the application itself must be annotated with `@ContributesInjector(ApplicationScope::class)`
+     * Otherwise, calling this method will result in an [IllegalArgumentException]
+     * @see [ContributesInjector]
      */
     public fun inject(application: Application) {
         val injector = fromApplication<ApplicationComponent>(application)
@@ -70,7 +76,7 @@ public object Whetstone {
     }
 
     /**
-     * A helper that let you inject default dependencies into the fields and methods of an [Activity].
+     * Injects dependencies into the fields and methods of the given [activity].
      *
      * For example:
      * ```
@@ -86,12 +92,15 @@ public object Whetstone {
      * }
      * ```
      *
-     * It also installs a default [FragmentFactory] if the [activity] is a [FragmentActivity].
-     * @see [installFragmentFactory]
+     * When injecting an activity, the injected fields and methods must be annotated with `@Inject`
+     * and the activity itself must be annotated with `@ContributesInjector(ActivityScope::class)`
+     * Otherwise, those fields will be ignored, which may lead to runtime exception.
+     * @see [ContributesInjector]
      *
-     * Activities that use this method must have the [ContributesInjector] annotation,
-     * and they must have at least 1 `@Inject` field or method. Otherwise, calling this method
-     * will result in an [IllegalStateException]
+     * This method also installs Whetstone's [FragmentFactory] into the activity's fragment manager.
+     * As a result, such fragments can take advantage of Whetstone's Fragment injection feature.
+     * @see [ContributesFragment]
+     * @see [installFragmentFactory]
      */
     public fun inject(activity: FragmentActivity) {
         installFragmentFactory(activity)
@@ -103,7 +112,7 @@ public object Whetstone {
     }
 
     /**
-     * A helper that let you inject default dependencies into the fields and methods of a [Service].
+     * Injects dependencies into the fields and methods of the given [service].
      *
      * For example:
      * ```
@@ -119,9 +128,10 @@ public object Whetstone {
      * }
      * ```
      *
-     * Services that use this method must have the [ContributesInjector] annotation,
-     * and they must have at least 1 `@Inject` field or method. Otherwise, calling this method
-     * will result in an [IllegalStateException]
+     * When injecting a service, the injected fields and methods must be annotated with `@Inject`
+     * and the service itself must be annotated with `@ContributesInjector(ServiceScope::class)`
+     * Otherwise, calling this method will result in an [IllegalArgumentException]
+     * @see [ContributesInjector]
      */
     public fun inject(service: Service) {
         val app = service.application
@@ -144,7 +154,7 @@ public object Whetstone {
     }
 
     /**
-     * Installs a default multi-binding [FragmentFactory] into the [activity]'s [FragmentFactory].
+     * Installs Whetstone's multi-binding [FragmentFactory] into the [activity]'s fragment manager.
      *
      * Once called, the [FragmentFactory] will be used to create new instances from this point onward.
      *
