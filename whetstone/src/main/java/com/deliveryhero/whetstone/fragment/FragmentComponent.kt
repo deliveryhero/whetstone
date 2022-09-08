@@ -1,9 +1,8 @@
-package com.deliveryhero.whetstone.component
+package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
 import com.deliveryhero.whetstone.SingleIn
-import com.deliveryhero.whetstone.scope.ActivityScope
-import com.deliveryhero.whetstone.scope.FragmentScope
+import com.deliveryhero.whetstone.activity.ActivityScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
 import javax.inject.Provider
@@ -14,7 +13,7 @@ import javax.inject.Provider
 @ContributesSubcomponent(scope = FragmentScope::class, parentScope = ActivityScope::class)
 @SingleIn(FragmentScope::class)
 public interface FragmentComponent {
-    public fun getFragmentMap(): Map<Class<*>, Provider<Fragment>>
+    public val fragmentMap: Map<Class<*>, Provider<Fragment>>
 
     /**
      * Interface for creating an [FragmentComponent].

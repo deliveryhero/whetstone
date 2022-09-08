@@ -1,15 +1,12 @@
-package com.deliveryhero.whetstone.component
+package com.deliveryhero.whetstone.view
 
 import android.view.View
 import com.deliveryhero.whetstone.SingleIn
+import com.deliveryhero.whetstone.activity.ActivityScope
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.deliveryhero.whetstone.scope.ActivityScope
-import com.deliveryhero.whetstone.scope.ViewScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.BindsInstance
-import dagger.Module
-import dagger.multibindings.Multibinds
 
 /**
  * A Dagger component that has the lifetime of the [android.view.View].
@@ -17,7 +14,7 @@ import dagger.multibindings.Multibinds
 @ContributesSubcomponent(scope = ViewScope::class, parentScope = ActivityScope::class)
 @SingleIn(ViewScope::class)
 public interface ViewComponent {
-    public fun getMembersInjectorMap(): MembersInjectorMap
+    public val membersInjectorMap: MembersInjectorMap
 
     /**
      * Interface for creating an [ViewComponent].
@@ -31,12 +28,4 @@ public interface ViewComponent {
     public interface ParentComponent {
         public fun getViewComponentFactory(): Factory
     }
-}
-
-@Module
-@ContributesTo(ViewScope::class)
-public interface ViewModule {
-
-    @Multibinds
-    public fun membersInjectors(): MembersInjectorMap
 }

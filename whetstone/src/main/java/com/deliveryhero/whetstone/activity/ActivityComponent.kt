@@ -1,16 +1,13 @@
-package com.deliveryhero.whetstone.component
+package com.deliveryhero.whetstone.activity
 
 import android.app.Activity
 import androidx.fragment.app.FragmentFactory
 import com.deliveryhero.whetstone.SingleIn
+import com.deliveryhero.whetstone.app.ApplicationScope
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.deliveryhero.whetstone.scope.ActivityScope
-import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.BindsInstance
-import dagger.Module
-import dagger.multibindings.Multibinds
 
 /**
  * A Dagger component that has the lifetime of the [android.app.Activity].
@@ -18,8 +15,8 @@ import dagger.multibindings.Multibinds
 @ContributesSubcomponent(scope = ActivityScope::class, parentScope = ApplicationScope::class)
 @SingleIn(ActivityScope::class)
 public interface ActivityComponent {
-    public fun getFragmentFactory(): FragmentFactory
-    public fun getMembersInjectorMap(): MembersInjectorMap
+    public val fragmentFactory: FragmentFactory
+    public val membersInjectorMap: MembersInjectorMap
 
     /**
      * Interface for creating an [ActivityComponent].
@@ -33,12 +30,4 @@ public interface ActivityComponent {
     public interface ParentComponent {
         public fun getActivityComponentFactory(): Factory
     }
-}
-
-@Module
-@ContributesTo(ActivityScope::class)
-public interface ActivityModule {
-
-    @Multibinds
-    public fun membersInjectors(): MembersInjectorMap
 }
