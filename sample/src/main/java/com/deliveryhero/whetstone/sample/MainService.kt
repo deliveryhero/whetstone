@@ -6,7 +6,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.injector.ContributesInjector
-import com.deliveryhero.whetstone.scope.ServiceScope
+import com.deliveryhero.whetstone.service.ServiceScope
 import javax.inject.Inject
 
 @ContributesInjector(ServiceScope::class)

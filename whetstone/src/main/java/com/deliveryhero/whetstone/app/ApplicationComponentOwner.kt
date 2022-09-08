@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone.component
+package com.deliveryhero.whetstone.app
 
 /**
  * Interface that should be implemented by the [android.app.Application] to supply

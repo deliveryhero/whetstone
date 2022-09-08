@@ -2,8 +2,7 @@ package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.deliveryhero.whetstone.component.FragmentComponent
-import com.deliveryhero.whetstone.scope.ActivityScope
+import com.deliveryhero.whetstone.activity.ActivityScope
 import com.squareup.anvil.annotations.ContributesBinding
 import dagger.Reusable
 import javax.inject.Inject
@@ -21,7 +20,7 @@ public class MultibindingFragmentFactory @Inject constructor(
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         val fragmentComponent = fragmentComponentFactory.create()
         val fragmentClass = loadFragmentClass(classLoader, className)
-        val fragmentMap = fragmentComponent.getFragmentMap()
+        val fragmentMap = fragmentComponent.fragmentMap
         val fragmentProvider = fragmentMap[fragmentClass]
         return try {
             fragmentProvider?.get() ?: super.instantiate(classLoader, className)

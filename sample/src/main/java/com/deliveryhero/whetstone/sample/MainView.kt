@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.injector.ContributesInjector
-import com.deliveryhero.whetstone.scope.ViewScope
+import com.deliveryhero.whetstone.view.ViewScope
 import javax.inject.Inject
 
 @ContributesInjector(ViewScope::class)

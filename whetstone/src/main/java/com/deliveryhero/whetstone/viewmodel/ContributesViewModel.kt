@@ -2,8 +2,7 @@ package com.deliveryhero.whetstone.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.deliveryhero.whetstone.AutoScopedBinding
-import com.deliveryhero.whetstone.InternalInjectApi
-import com.deliveryhero.whetstone.scope.ViewModelScope
+import com.deliveryhero.whetstone.InternalWhetstoneApi
 
 /**
  * Marker annotation signalling that the compiler should generate necessary instance
@@ -27,6 +26,6 @@ import com.deliveryhero.whetstone.scope.ViewModelScope
  * }
  * ```
  */
-@OptIn(InternalInjectApi::class)
+@OptIn(InternalWhetstoneApi::class)
 @AutoScopedBinding(base = ViewModel::class, scope = ViewModelScope::class)
 public annotation class ContributesViewModel

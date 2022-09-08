@@ -1,10 +1,9 @@
-package com.deliveryhero.whetstone.component
+package com.deliveryhero.whetstone.app
 
 import android.app.Application
 import androidx.lifecycle.ViewModelProvider
 import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.deliveryhero.whetstone.scope.ApplicationScope
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.BindsInstance
 import javax.inject.Singleton
@@ -16,8 +15,8 @@ import javax.inject.Singleton
 @SingleIn(ApplicationScope::class)
 @Singleton
 public interface ApplicationComponent {
-    public fun getViewModelFactory(): ViewModelProvider.Factory
-    public fun getMembersInjectorMap(): MembersInjectorMap
+    public val viewModelFactory: ViewModelProvider.Factory
+    public val membersInjectorMap: MembersInjectorMap
 
     /**
      * Interface for creating an [ApplicationComponent].
