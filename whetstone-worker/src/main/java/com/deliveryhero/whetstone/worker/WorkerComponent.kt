@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.deliveryhero.whetstone.ForScope
 import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
@@ -25,7 +26,7 @@ public interface WorkerComponent {
     @ContributesSubcomponent.Factory
     public interface Factory {
         public fun create(
-            @BindsInstance appContext: Context,
+            @BindsInstance @ForScope(WorkerScope::class) appContext: Context,
             @BindsInstance parameters: WorkerParameters
         ): WorkerComponent
     }
