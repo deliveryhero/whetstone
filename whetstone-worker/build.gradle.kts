@@ -4,6 +4,10 @@ plugins {
     id("com.squareup.anvil")
 }
 
+anvil {
+    generateDaggerFactories.set(true)
+}
+
 dependencies {
     implementation(projects.whetstone)
     implementation(libs.dagger)
