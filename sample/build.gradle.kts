@@ -16,6 +16,7 @@ android {
 dependencies {
     kapt(libs.daggerCompiler)
     implementation(projects.whetstone)
+    implementation(projects.whetstoneWorker)
     anvil(projects.whetstoneCompiler)
 
     implementation(libs.androidxActivity)
