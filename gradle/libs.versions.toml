@@ -5,6 +5,7 @@ androidxAppCompat = "1.3.1"
 androidxCore = "1.7.0"
 androidxFragment = "1.5.0"
 androidxLifecycle = "2.5.0"
+androidxWork = "2.7.0"
 anvil = "2.4.2"
 dagger = "2.42"
 kotlin = "1.7.0"
@@ -22,6 +23,7 @@ androidxLifecycleProcess = { module = "androidx.lifecycle:lifecycle-process", ve
 androidxLifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
 androidxLifecycleSavedState = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidxLifecycle" }
 androidxLifecycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidxWorkRuntime = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
 anvilAnnotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
 anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
 anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
