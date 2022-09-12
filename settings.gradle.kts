@@ -14,4 +14,5 @@ dependencyResolutionManagement {
 include(":sample")
 include(":whetstone")
 include(":whetstone-compiler")
+include(":whetstone-compose")
 include(":whetstone-worker")
