@@ -78,22 +78,6 @@ class MyApplication : Application(), ApplicationComponentOwner {
 }
 ```
 
-### Service (DONE)
-
-```kotlin
-@ContributesInjector(ServiceScope::class)
-class MyService : Service() {
-
-    @Inject
-    lateinit var dependency: MyDependency
-
-    override fun onCreate() {
-        Whetstone.inject(service = this)
-        super.onCreate()
-    }
-}
-```
-
 ### Activity (DONE)
 
 ```kotlin
@@ -112,36 +96,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
     }
 }
-```
-
-### View (DONE)
-
-```kotlin
-@ContributesInjector(ViewScope::class)
-class MyView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-) : View(context, attrs) {
-
-    @Inject
-    lateinit var dependency: MainDependency
-
-    init {
-        if (!isInEditMode) {
-            Whetstone.inject(view = this)
-        }
-    }
-}
-```
-
-### Worker / WorkManager (TODO)
-
-```kotlin
-@ContributesWorker
-class UploadWorker @Inject constructor(
-    @ForScope(WorkerScope::class) context: Context,
-    workerParameters: WorkerParameters,
-): Worker(appContext, workerParameters)
 ```
 
 ### Fragments (DONE)
@@ -169,6 +123,86 @@ class MyViewModel @Inject constructor(
 ```
 
 **Important:** A ViewModel should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** ViewModels.
+
+### Service (DONE)
+Services should be generally avoided when possible. For most cases, workmanager can be a great alternative and 
+is highly recommended. See the workmanager section for more details about how to use it with Whetstone
+
+```kotlin
+@ContributesInjector(ServiceScope::class)
+class MyService : Service() {
+
+    @Inject
+    lateinit var dependency: MyDependency
+
+    override fun onCreate() {
+        Whetstone.inject(service = this)
+        super.onCreate()
+    }
+}
+```
+
+### View (DONE)
+**Disclaimer**: View injection should be avoided by all means. This provision is considered legacy and may be 
+completely removed in a later version of Whetstone.
+
+```kotlin
+@ContributesInjector(ViewScope::class)
+class MyView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : View(context, attrs) {
+
+    @Inject
+    lateinit var dependency: MainDependency
+
+    init {
+        if (!isInEditMode) {
+            Whetstone.inject(view = this)
+        }
+    }
+}
+```
+
+### Worker / WorkManager (DONE)
+To use Whetstone's work manager integration, a separate dependency is required:
+
+```kotlin
+implementation("com.deliveryhero.whetstone:whetstone-worker")
+```
+
+This will automatically install Whetstone's worker factory (replacing the default factory), so that you can immediately
+start taking advantage of injected workers
+
+```kotlin
+@ContributesWorker
+class UploadWorker @Inject constructor(
+    @ForScope(WorkerScope::class) context: Context,
+    workerParameters: WorkerParameters,
+    private val dependency: MyDependency,
+): Worker(appContext, workerParameters)
+```
+
+To disable automatic initialization, you can remove the initializer from your AndroidManifest.xml
+
+```xml
+<provider
+   android:name="androidx.startup.InitializationProvider"
+   android:authorities="${applicationId}.androidx-startup"
+   android:exported="false"
+   tools:node="merge">
+   <meta-data
+       android:name="com.deliveryhero.whetstone.worker.WhetstoneWorkerInitializer"
+       android:value="androidx.startup"
+       tools:node="remove" />
+</provider>
+```
+
+However, you must make sure to install Whetstone's worker factory before the first call to WorkManager.getInstance
+to avoid breaking the integration. Whetstone provides an injectable `WorkerFactory` that can be used to configure
+the work manager. For example, you can update your application class to implement work manager's `Configuration.Provider` and supply
+Whetstone's `WorkerFactory` to the configuration builder
+See the official [documentation](https://developer.android.com/topic/libraries/architecture/workmanager/advanced/custom-configuration) for more details
 
 ## Creators
 - [Marcello Galhardo](http://github.com/marcellogalhardo)
