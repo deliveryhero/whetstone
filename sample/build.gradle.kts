@@ -11,17 +11,23 @@ android {
         versionName = "1.0"
         applicationId = "com.deliveryhero.whetstone.sample"
     }
+    buildFeatures.compose = true
+    buildFeatures.viewBinding = true
+    composeOptions.kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
 }
 
 dependencies {
     kapt(libs.daggerCompiler)
     implementation(projects.whetstone)
+    implementation(projects.whetstoneCompose)
     implementation(projects.whetstoneWorker)
     anvil(projects.whetstoneCompiler)
 
     implementation(libs.androidxActivity)
     implementation(libs.androidxCore)
     implementation(libs.androidxAppCompat)
+    implementation(libs.androidxComposeMaterial)
+    implementation(libs.androidxComposeUi)
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")

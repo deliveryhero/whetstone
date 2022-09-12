@@ -204,6 +204,22 @@ the work manager. For example, you can update your application class to implemen
 Whetstone's `WorkerFactory` to the configuration builder
 See the official [documentation](https://developer.android.com/topic/libraries/architecture/workmanager/advanced/custom-configuration) for more details
 
+### Compose (DONE)
+To use Whetstone's compose integration, a separate dependency is required
+
+```kotlin
+implementation("com.deliveryhero.whetstone:whetstone-compose")
+```
+
+Currently, this artefact only exposes APIs for injecting ViewModels that have been contributed to Whetstone
+
+```kotlin
+@Composable
+fun MyScreen(viewModel: MyViewModel = injectedViewModel()) {
+    // injectedViewModel takes care of providing the VM instance directly to this function
+}
+```
+
 ## Creators
 - [Marcello Galhardo](http://github.com/marcellogalhardo)
 - [Kingsley Adio](https://github.com/kingsleyadio)
