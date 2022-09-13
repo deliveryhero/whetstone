@@ -11,6 +11,7 @@ buildscript {
         classpath(libs.androidGradle)
         classpath(libs.kotlinGradle)
         classpath(libs.anvilGradle)
+        classpath(libs.mavenPublishGradle)
     }
 }
 
