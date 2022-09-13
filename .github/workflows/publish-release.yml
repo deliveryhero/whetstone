@@ -1,8 +1,9 @@
-name: Publish release
+name: Publish SNAPSHOT
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   publish-release:
@@ -10,14 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout latest code
+      - name: Checkout code
         uses: actions/checkout@v2
       - name: Set JDK version
         uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
-          java-version: '11'
-          cache: 'gradle'
+          distribution: zulu
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Publish artifact
         env:
           GITHUB_TOKEN: ${{ secrets.DH_TECH_BOT_TOKEN }}
@@ -26,7 +28,6 @@ jobs:
           # If we split on '/' and take the 3rd value,
           # we can get the release name.
         run: |
-          NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
-          echo "New version: ${NEW_VERSION}"
+          echo "New version: $(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)"
           echo "Github username: ${GITHUB_ACTOR}"
-          ./gradlew clean -PVERSION_NAME=${NEW_VERSION} -x test -x lint publishReleasePublicationToGitHubPackagesRepository
+          ./gradlew clean -x test -x lint publishMavenPublicationToGitHubPackagesRepository

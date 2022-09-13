@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("kapt")
+    id("com.vanniktech.maven.publish")
 }
 
 dependencies {
@@ -11,5 +12,3 @@ dependencies {
     implementation(libs.autoServiceAnnotations)
     kapt(libs.autoServiceCompiler)
 }
-
-apply(from = rootProject.file("gradle/release-java.gradle"))
