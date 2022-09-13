@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.squareup.anvil")
+    id("com.vanniktech.maven.publish")
 }
 
 anvil {
@@ -29,5 +30,3 @@ dependencies {
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.9")
     testImplementation(projects.whetstoneCompiler)
 }
-
-apply(from = rootProject.file("gradle/release-android.gradle"))

@@ -37,6 +37,7 @@ anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvi
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+mavenPublishGradle = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }

@@ -11,6 +11,7 @@ buildscript {
         classpath(libs.androidGradle)
         classpath(libs.kotlinGradle)
         classpath(libs.anvilGradle)
+        classpath(libs.mavenPublishGradle)
     }
 }
 
@@ -25,6 +26,19 @@ subprojects {
         }
         extensions.findByType<BaseExtension>()?.apply {
             configureExtension()
+        }
+    }
+    plugins.withType<MavenPublishPlugin> {
+        configure<PublishingExtension> {
+            repositories {
+                maven("https://maven.pkg.github.com/deliveryhero/whetstone") {
+                    name = "GitHubPackages"
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            }
         }
     }
 }

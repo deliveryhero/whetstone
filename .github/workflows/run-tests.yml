@@ -11,8 +11,8 @@ jobs:
       - name: Set JDK version
         uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: zulu
+          java-version: 17
       - name: Run unit tests
         run: ./gradlew -x sample:testDebugUnitTest whetstone-compiler:test testDebugUnitTest
       - name: Build sample app
