@@ -13,7 +13,7 @@ import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.sample.MainService.Companion.NOTIFICATION_CHANNEL_ID
 import javax.inject.Inject
 
-@ContributesAppInjector
+@ContributesAppInjector(generateAppComponent = true)
 public class MainApplication : Application(), ApplicationComponentOwner {
 
     @Inject
