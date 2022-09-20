@@ -5,11 +5,10 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.deliveryhero.whetstone.Whetstone
-import com.deliveryhero.whetstone.injector.ContributesInjector
-import com.deliveryhero.whetstone.service.ServiceScope
+import com.deliveryhero.whetstone.service.ContributesService
 import javax.inject.Inject
 
-@ContributesInjector(ServiceScope::class)
+@ContributesService
 class MainService : Service() {
 
     @Inject
