@@ -1,8 +1,8 @@
 package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
-import com.deliveryhero.whetstone.AutoScopedBinding
 import com.deliveryhero.whetstone.InternalWhetstoneApi
+import com.deliveryhero.whetstone.meta.ContributesInstanceMeta
 
 /**
  * Marker annotation signalling that the compiler should generate necessary instance
@@ -27,5 +27,5 @@ import com.deliveryhero.whetstone.InternalWhetstoneApi
  * ```
  */
 @OptIn(InternalWhetstoneApi::class)
-@AutoScopedBinding(base = Fragment::class, scope = FragmentScope::class)
+@ContributesInstanceMeta(base = Fragment::class, scope = FragmentScope::class)
 public annotation class ContributesFragment
