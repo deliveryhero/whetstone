@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
  * }
  * ```
  */
-@Deprecated("Legacy API. Custom integrations are encouraged to use the ContributesInjectorMeta annotation instead")
+@Deprecated("Legacy API. Custom integrations are encouraged to use the AutoInjectorBinding annotation instead")
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 public annotation class ContributesInjector(val scope: KClass<*>)

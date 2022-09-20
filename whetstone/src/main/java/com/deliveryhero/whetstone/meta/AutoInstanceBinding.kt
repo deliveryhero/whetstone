@@ -6,4 +6,4 @@ import kotlin.reflect.KClass
 @InternalWhetstoneApi
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-public annotation class ContributesInjectorMeta(val scope: KClass<*>)
+public annotation class AutoInstanceBinding(val base: KClass<*>, val scope: KClass<*>)

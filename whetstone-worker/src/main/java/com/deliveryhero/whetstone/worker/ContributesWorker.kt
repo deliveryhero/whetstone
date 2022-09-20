@@ -2,7 +2,7 @@ package com.deliveryhero.whetstone.worker
 
 import androidx.work.ListenableWorker
 import com.deliveryhero.whetstone.InternalWhetstoneApi
-import com.deliveryhero.whetstone.meta.ContributesInstanceMeta
+import com.deliveryhero.whetstone.meta.AutoInstanceBinding
 
 /**
  * Marker annotation signalling that the compiler should generate necessary instance
@@ -27,5 +27,5 @@ import com.deliveryhero.whetstone.meta.ContributesInstanceMeta
  * ```
  */
 @OptIn(InternalWhetstoneApi::class)
-@ContributesInstanceMeta(base = ListenableWorker::class, scope = WorkerScope::class)
+@AutoInstanceBinding(base = ListenableWorker::class, scope = WorkerScope::class)
 public annotation class ContributesWorker

@@ -43,7 +43,7 @@ public class BindingsModuleGenerator : CodeGenerator {
     }
 
     private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
-        val injectorModule = InjectorModuleInfoProvider()
+        val injectorModule = ExplicitInjectorModuleInfoProvider()
         put(injectorModule.supportedAnnotation, injectorModule)
     }
 
@@ -54,14 +54,14 @@ public class BindingsModuleGenerator : CodeGenerator {
             dynamicProviderMap.getOrPutNullable(annotationFqName) {
                 for (meta in annotation.classReference.annotations) {
                     when (meta.fqName) {
-                        FqNames.CONTRIBUTES_INSTANCE_META -> {
+                        FqNames.AUTO_INSTANCE -> {
                             val base = meta.getAsClassName("base", 0)
                             val scope = meta.getAsClassName("scope", 1)
                             return@getOrPutNullable InstanceModuleInfoProvider(annotationFqName, scope, base)
                         }
-                        FqNames.CONTRIBUTES_INJECTOR_META -> {
+                        FqNames.AUTO_INJECTOR -> {
                             val scope = meta.getAsClassName("scope", 0)
-                            return@getOrPutNullable InjectorAliasModuleInfoProvider(annotationFqName, scope)
+                            return@getOrPutNullable InjectorModuleInfoProvider(annotationFqName, scope)
                         }
                     }
                 }

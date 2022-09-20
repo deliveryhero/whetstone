@@ -1,7 +1,7 @@
 package com.deliveryhero.whetstone.activity
 
 import com.deliveryhero.whetstone.InternalWhetstoneApi
-import com.deliveryhero.whetstone.meta.ContributesInjectorMeta
+import com.deliveryhero.whetstone.meta.AutoInjectorBinding
 
 /**
  * Marker annotation signalling that the compiler should generate necessary members injector
@@ -26,5 +26,5 @@ import com.deliveryhero.whetstone.meta.ContributesInjectorMeta
  * ```
  */
 @OptIn(InternalWhetstoneApi::class)
-@ContributesInjectorMeta(scope = ActivityScope::class)
+@AutoInjectorBinding(scope = ActivityScope::class)
 public annotation class ContributesActivity
