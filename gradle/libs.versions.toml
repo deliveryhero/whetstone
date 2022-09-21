@@ -12,8 +12,14 @@ anvil = "2.4.2"
 dagger = "2.42"
 kotlin = "1.7.10"
 kotlinxCoroutines = "1.6.0"
+mavenPublish = "0.22.0"
 truth = "1.1.3"
 autoService = "1.0"
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish"}
 
 [libraries]
 androidGradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
@@ -37,7 +43,7 @@ anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvi
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-mavenPublishGradle = "com.vanniktech:gradle-maven-publish-plugin:0.22.0"
+mavenPublishGradle = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "mavenPublish" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
