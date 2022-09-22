@@ -8,7 +8,6 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import com.deliveryhero.whetstone.Whetstone
-import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.deliveryhero.whetstone.injector.ContributesInjector
@@ -21,8 +20,7 @@ public class MainApplication : Application(), ApplicationComponentOwner {
     @Inject
     internal lateinit var dependency: MainDependency
 
-    override val applicationComponent: ApplicationComponent =
-        GeneratedApplicationComponent.create(this)
+    override val applicationComponent = GeneratedApplicationComponent.create(this)
 
     override fun onCreate() {
         Whetstone.inject(this)

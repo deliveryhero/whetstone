@@ -6,8 +6,8 @@ plugins {
 }
 
 whetstone.addOns {
-    compose = true
-    workManager = true
+    compose.set(true)
+    workManager.set(true)
 }
 
 android {
