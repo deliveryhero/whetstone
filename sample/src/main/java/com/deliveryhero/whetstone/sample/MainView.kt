@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.deliveryhero.whetstone.Whetstone
-import com.deliveryhero.whetstone.view.ContributesView
+import com.deliveryhero.whetstone.view.ContributesViewInjector
 import javax.inject.Inject
 
-@ContributesView
+@ContributesViewInjector
 public class MainView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

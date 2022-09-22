@@ -10,7 +10,7 @@ import com.deliveryhero.whetstone.meta.AutoInjectorBinding
  * For example:
  * Given this annotated view
  * ```
- * @ContributesView
+ * @ContributesViewInjector
  * class MyView : View()
  * ```
  * a complementary module will be generated
@@ -27,4 +27,4 @@ import com.deliveryhero.whetstone.meta.AutoInjectorBinding
  */
 @OptIn(InternalWhetstoneApi::class)
 @AutoInjectorBinding(scope = ViewScope::class)
-public annotation class ContributesView
+public annotation class ContributesViewInjector

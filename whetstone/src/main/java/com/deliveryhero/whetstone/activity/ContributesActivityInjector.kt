@@ -10,7 +10,7 @@ import com.deliveryhero.whetstone.meta.AutoInjectorBinding
  * For example:
  * Given this annotated activity
  * ```
- * @ContributesActivity
+ * @ContributesActivityInjector
  * class MyActivity : Activity()
  * ```
  * a complementary module will be generated
@@ -27,4 +27,4 @@ import com.deliveryhero.whetstone.meta.AutoInjectorBinding
  */
 @OptIn(InternalWhetstoneApi::class)
 @AutoInjectorBinding(scope = ActivityScope::class)
-public annotation class ContributesActivity
+public annotation class ContributesActivityInjector
