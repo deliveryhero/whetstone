@@ -1,40 +1,24 @@
-package com.deliveryhero.whetstone.compiler
+package com.deliveryhero.whetstone.compiler.handlers
 
-import com.google.auto.service.AutoService
+import com.deliveryhero.whetstone.compiler.CodegenHandler
+import com.deliveryhero.whetstone.compiler.FqNames
+import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
+import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.MergeComponent
-import com.squareup.anvil.compiler.api.AnvilContext
-import com.squareup.anvil.compiler.api.CodeGenerator
-import com.squareup.anvil.compiler.api.GeneratedFile
-import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.asClassName
 import com.squareup.anvil.compiler.internal.buildFile
 import com.squareup.anvil.compiler.internal.reference.ClassReference
-import com.squareup.anvil.compiler.internal.reference.classAndInnerClassReferences
 import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
 import dagger.Component
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.psi.KtFile
-import java.io.File
 import javax.inject.Singleton
 
-@AutoService(CodeGenerator::class)
-public class RootComponentGenerator : CodeGenerator {
+internal class AppComponentHandler : CodegenHandler {
 
-    override fun isApplicable(context: AnvilContext): Boolean = true
-
-    override fun generateCode(
-        codeGenDir: File,
-        module: ModuleDescriptor,
-        projectFiles: Collection<KtFile>
-    ): Collection<GeneratedFile> {
-        return projectFiles
-            .classAndInnerClassReferences(module)
-            .mapNotNull { clas ->
-                if (!shouldGenerateRoot(clas)) return@mapNotNull null
-                val info = generateRoot(module, clas)
-                createGeneratedFile(codeGenDir, info.packageName, info.fileName, info.content)
-            }.toList()
+    override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
+        if (!shouldGenerateRoot(clas)) return null
+        return generateAppComponent(module, clas)
     }
 
     private fun shouldGenerateRoot(clas: ClassReference): Boolean {
@@ -42,7 +26,7 @@ public class RootComponentGenerator : CodeGenerator {
         return contributesApp?.getValue<Boolean>("generateAppComponent", 0) == true
     }
 
-    private fun generateRoot(module: ModuleDescriptor, clas: ClassReference): GeneratedFileInfo {
+    private fun generateAppComponent(module: ModuleDescriptor, clas: ClassReference): GeneratedFileInfo {
         val packageName = clas.packageFqName.safePackageString(
             dotPrefix = false,
             dotSuffix = false,
@@ -71,30 +55,29 @@ public class RootComponentGenerator : CodeGenerator {
         val singleIn = AnnotationSpec.builder(FqNames.SINGLE_IN.asClassName(module))
             .addMember("%T::class", applicationScopeCn)
             .build()
-        val typeSpec = TypeSpec.interfaceBuilder(generatedComponentCn)
+        val factorySpec = TypeSpec.interfaceBuilder(generatedComponentCn.nestedClass("Factory"))
+            .addSuperinterface(applicationComponentCn.nestedClass("Factory"))
+            .addAnnotation(Component.Factory::class)
+            .build()
+        val companionObjectSpec = TypeSpec.companionObjectBuilder("Default")
+            .addSuperinterface(
+                generatedComponentCn.nestedClass("Factory"),
+                CodeBlock.of(
+                    "%T.factory()",
+                    generatedComponentCn.peerClass("Dagger${generatedComponentCn.simpleName}")
+                )
+            )
+            .build()
+
+        val appComponentSpec = TypeSpec.interfaceBuilder(generatedComponentCn)
             .addSuperinterface(applicationComponentCn)
             .addAnnotation(mergeComponent)
             .addAnnotation(singleIn)
             .addAnnotation(Singleton::class)
-            .addType(
-                TypeSpec.interfaceBuilder(generatedComponentCn.nestedClass("Factory"))
-                    .addSuperinterface(applicationComponentCn.nestedClass("Factory"))
-                    .addAnnotation(Component.Factory::class)
-                    .build()
-            )
-            .addType(
-                TypeSpec.companionObjectBuilder("Default")
-                    .addSuperinterface(
-                        generatedComponentCn.nestedClass("Factory"),
-                        CodeBlock.of(
-                            "%T.factory()",
-                            generatedComponentCn.peerClass("Dagger${generatedComponentCn.simpleName}")
-                        )
-                    )
-                    .build()
-            )
+            .addType(factorySpec)
+            .addType(companionObjectSpec)
             .build()
 
-        addType(typeSpec)
+        addType(appComponentSpec)
     }
 }

@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone.compiler
+package com.deliveryhero.whetstone.compiler.handlers
 
 import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.kotlinpoet.ClassName
@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.name.FqName
  * ```
  *
  * Note that this interface itself is not responsible for the actual code generation.
- * See [BindingsModuleGenerator] for more details on that logic
+ * See [BindingsModuleHandler] for more details on that logic
  */
 internal interface ModuleInfoProvider {
     /**
