@@ -1,10 +1,10 @@
-enableFeaturePreview("VERSION_CATALOGS")
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+@file:Suppress("UnstableApiUsage")
 
-rootProject.name = "pd-whetstone"
+enableFeaturePreview("VERSION_CATALOGS")
+
+rootProject.name = "whetstone-gradle-plugin"
 
 pluginManagement {
-    includeBuild("whetstone-gradle-plugin")
     repositories {
         gradlePluginPortal()
         google()
@@ -19,9 +19,3 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-include(":sample")
-include(":whetstone")
-include(":whetstone-compiler")
-include(":whetstone-compose")
-include(":whetstone-worker")

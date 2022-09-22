@@ -1,8 +1,13 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.squareup.anvil")
+    id("com.deliveryhero.whetstone")
     id("kotlin-kapt")
+}
+
+whetstone.addOns {
+    compose.set(true)
+    workManager.set(true)
 }
 
 android {
@@ -18,10 +23,6 @@ android {
 
 dependencies {
     kapt(libs.daggerCompiler)
-    implementation(projects.whetstone)
-    implementation(projects.whetstoneCompose)
-    implementation(projects.whetstoneWorker)
-    anvil(projects.whetstoneCompiler)
 
     implementation(libs.androidxActivity)
     implementation(libs.androidxCore)
