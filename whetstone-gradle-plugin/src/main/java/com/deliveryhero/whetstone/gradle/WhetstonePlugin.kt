@@ -34,16 +34,13 @@ public class WhetstonePlugin : Plugin<Project> {
     }
 
     private fun Project.configureAnvil(whetstone: WhetstoneExtension) {
-        val anvil = extensions.getByType<AnvilExtension>()
-        when (extensions.getByType<BaseExtension>()) {
-            is AppExtension -> {
-                anvil.syncGeneratedSources.set(whetstone.syncGeneratedSources.getOrElse(true))
-                anvil.generateDaggerFactories.set(whetstone.generateDaggerFactories.getOrElse(false))
-            }
-            else -> {
-                anvil.syncGeneratedSources.set(whetstone.syncGeneratedSources.getOrElse(false))
-                anvil.generateDaggerFactories.set(whetstone.generateDaggerFactories.getOrElse(true))
-            }
+        extensions.configure<AnvilExtension> {
+            val android = extensions.getByType<BaseExtension>()
+            // We apply default setting for anvil here based on whether/not the project
+            // is an Android application module
+            val isApp = android is AppExtension
+            generateDaggerFactories.set(whetstone.generateDaggerFactories.orElse(!isApp))
+            syncGeneratedSources.set(whetstone.syncGeneratedSources.orElse(isApp))
         }
     }
 
@@ -62,8 +59,8 @@ public class WhetstonePlugin : Plugin<Project> {
             anvil("whetstone-compiler")
             implementation("whetstone")
 
-            if (extension.addOns.compose) implementation("whetstone-compose")
-            if (extension.addOns.workManager) implementation("whetstone-worker")
+            if (extension.addOns.compose.get()) implementation("whetstone-compose")
+            if (extension.addOns.workManager.get()) implementation("whetstone-worker")
         }
     }
 

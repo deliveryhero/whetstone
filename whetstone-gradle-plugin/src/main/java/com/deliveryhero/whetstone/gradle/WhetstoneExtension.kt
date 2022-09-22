@@ -1,8 +1,13 @@
 package com.deliveryhero.whetstone.gradle
 
+import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
+import javax.inject.Inject
 
-public abstract class WhetstoneExtension {
+public abstract class WhetstoneExtension @Inject constructor(objects: ObjectFactory) {
     /**
      * Turns on Factory classes generation via Anvil, that would usually be done with Dagger's
      * annotation processor for @Provides methods, @Inject constructors and @Inject fields.
@@ -32,17 +37,31 @@ public abstract class WhetstoneExtension {
      */
     public abstract val syncGeneratedSources: Property<Boolean>
 
-    internal val addOns = AddOns()
-
     /**
      * Allows configuring extra Whetstone add-ons.
      *
      * Currently, this only includes turning on/off Jetpack Compose and/or Workmanager support.
      */
-    public fun addOns(action: AddOns.() -> Unit): Unit = addOns.run(action)
+    public val addOns: AddOnsHandler = objects.newInstance()
+
+    /**
+     * DSL function to help configure extra Whetstone add-ons
+     */
+    public fun addOns(action: Action<AddOnsHandler>): Unit = action.execute(addOns)
 }
 
-public class AddOns(
-    public var compose: Boolean = false,
-    public var workManager: Boolean = false
-)
+public abstract class AddOnsHandler @Inject constructor(objects: ObjectFactory) {
+    /**
+     * Turns on/off Whetstone's Jetpack Compose integration.
+     *
+     * When enabled, `whetstone-compose` will be automatically added to the project's dependencies.
+     */
+    public val compose: Property<Boolean> = objects.property<Boolean>().convention(false)
+
+    /**
+     * Turns on/off Whetstone's work manager integration.
+     *
+     * When enabled, `whetstone-worker` will be automatically added to the project's dependencies.
+     */
+    public val workManager: Property<Boolean> = objects.property<Boolean>().convention(false)
+}
