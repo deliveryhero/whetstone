@@ -55,4 +55,19 @@ internal class CodegenTest {
             validateInjectorBinding("MyActivity", ActivityScope::class)
         }
     }
+
+    @Test
+    fun contributesActivityInjector() {
+        compileAnvil(
+            """
+                import com.deliveryhero.whetstone.activity.ContributesActivityInjector
+                import android.app.Activity
+
+                @ContributesActivityInjector
+                class MyActivity: Activity()
+            """.trimIndent()
+        ) {
+            validateInjectorBinding("MyActivity", ActivityScope::class)
+        }
+    }
 }
