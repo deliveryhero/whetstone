@@ -28,19 +28,6 @@ subprojects {
             configureExtension()
         }
     }
-    plugins.withType<MavenPublishPlugin> {
-        configure<PublishingExtension> {
-            repositories {
-                maven("https://maven.pkg.github.com/deliveryhero/whetstone") {
-                    name = "GitHubPackages"
-                    credentials {
-                        username = System.getenv("GITHUB_ACTOR")
-                        password = System.getenv("GITHUB_TOKEN")
-                    }
-                }
-            }
-        }
-    }
 }
 
 fun KotlinCompile.configureTask() {
