@@ -32,20 +32,6 @@ gradlePlugin {
     }
 }
 
-plugins.withType<MavenPublishPlugin> {
-    configure<PublishingExtension> {
-        repositories {
-            maven("https://maven.pkg.github.com/deliveryhero/whetstone") {
-                name = "GitHubPackages"
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
-    }
-}
-
 dependencies {
     implementation(gradleKotlinDsl())
     implementation(libs.anvilGradle)
