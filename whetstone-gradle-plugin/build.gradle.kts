@@ -1,11 +1,16 @@
+import java.util.*
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("java-library")
     id("java-gradle-plugin")
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinKapt)
-    alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.mavenPublish).apply(false)
 }
+
+loadParentProperties()
+pluginManager.apply(com.vanniktech.maven.publish.MavenPublishPlugin::class)
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -81,5 +86,16 @@ abstract class GenerateBuildConfigTask : DefaultTask() {
             }
             writeText(content)
         }
+    }
+}
+
+fun loadParentProperties() {
+    val properties = Properties()
+    file("../gradle.properties").inputStream().use { properties.load(it) }
+
+    properties.forEach { (k, v) ->
+        val key = k.toString()
+        val value = providers.gradleProperty(name).getOrElse(v.toString())
+        extra.set(key, value)
     }
 }
