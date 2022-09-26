@@ -10,15 +10,28 @@ import com.squareup.kotlinpoet.asClassName
 import dagger.MembersInjector
 import org.jetbrains.kotlin.name.FqName
 
-internal class InjectorModuleInfoProvider : ModuleInfoProvider {
+internal class ExplicitInjectorModuleInfoProvider : ModuleInfoProvider {
     private val membersInjectorCn = MembersInjector::class.asClassName()
 
-    override val supportedAnnotation = FqName("com.deliveryhero.whetstone.injector.ContributesInjector")
+    override val supportedAnnotation = FqNames.CONTRIBUTES_INJECTOR
 
     override fun getScope(annotation: AnnotationReference): ClassName {
         val componentScope = annotation.scopeOrNull() ?: error("Scope not found")
         return componentScope.asClassName()
     }
+
+    override fun getTarget(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(annotatedClass)
+
+    override fun getOutput(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(STAR)
+}
+
+internal class InjectorModuleInfoProvider(
+    override val supportedAnnotation: FqName,
+    private val scopeCn: ClassName,
+) : ModuleInfoProvider {
+    private val membersInjectorCn = MembersInjector::class.asClassName()
+
+    override fun getScope(annotation: AnnotationReference) = scopeCn
 
     override fun getTarget(annotatedClass: ClassName) = membersInjectorCn.parameterizedBy(annotatedClass)
 

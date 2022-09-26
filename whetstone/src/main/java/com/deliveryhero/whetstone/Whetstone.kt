@@ -11,10 +11,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
 import com.deliveryhero.whetstone.activity.ActivityComponent
+import com.deliveryhero.whetstone.activity.ContributesActivityInjector
 import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
+import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.fragment.ContributesFragment
-import com.deliveryhero.whetstone.injector.ContributesInjector
+import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent
 import dagger.MembersInjector
@@ -64,9 +66,9 @@ public object Whetstone {
      * Injects dependencies into the fields and methods of an [Application].
      *
      * When injecting an application, the injected fields and methods must be annotated with `@Inject`
-     * and the application itself must be annotated with `@ContributesInjector(ApplicationScope::class)`
+     * and the application itself must be annotated with `@ContributesAppInjector`
      * Otherwise, calling this method will result in an [IllegalArgumentException]
-     * @see [ContributesInjector]
+     * @see [ContributesAppInjector]
      */
     public fun inject(application: Application) {
         val injector = fromApplication<ApplicationComponent>(application)
@@ -80,7 +82,7 @@ public object Whetstone {
      *
      * For example:
      * ```
-     * @ContributesInjector(ActivityScope::class)
+     * @ContributesActivityInjector
      * class CustomActivity: AppCompatActivity() {
      *
      *     @Inject lateinit var someDep: SomeDep
@@ -93,9 +95,9 @@ public object Whetstone {
      * ```
      *
      * When injecting an activity, the injected fields and methods must be annotated with `@Inject`
-     * and the activity itself must be annotated with `@ContributesInjector(ActivityScope::class)`
+     * and the activity itself must be annotated with `@ContributesActivityInjector`
      * Otherwise, those fields will be ignored, which may lead to runtime exception.
-     * @see [ContributesInjector]
+     * @see [ContributesActivityInjector]
      *
      * This method also installs Whetstone's [FragmentFactory] into the activity's fragment manager.
      * As a result, such fragments can take advantage of Whetstone's Fragment injection feature.
@@ -116,7 +118,7 @@ public object Whetstone {
      *
      * For example:
      * ```
-     * @ContributesInjector(ServiceScope::class)
+     * @ContributesServiceInjector
      * class CustomService: Service() {
      *
      *     @Inject lateinit var someDep: SomeDep
@@ -129,9 +131,9 @@ public object Whetstone {
      * ```
      *
      * When injecting a service, the injected fields and methods must be annotated with `@Inject`
-     * and the service itself must be annotated with `@ContributesInjector(ServiceScope::class)`
+     * and the service itself must be annotated with `@ContributesServiceInjector`
      * Otherwise, calling this method will result in an [IllegalArgumentException]
-     * @see [ContributesInjector]
+     * @see [ContributesServiceInjector]
      */
     public fun inject(service: Service) {
         val app = service.application

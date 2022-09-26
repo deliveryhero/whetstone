@@ -7,7 +7,10 @@ import com.squareup.anvil.compiler.api.CodeGenerator
 import com.squareup.anvil.compiler.api.GeneratedFile
 import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.buildFile
-import com.squareup.anvil.compiler.internal.reference.*
+import com.squareup.anvil.compiler.internal.reference.AnnotationReference
+import com.squareup.anvil.compiler.internal.reference.ClassReference
+import com.squareup.anvil.compiler.internal.reference.asClassName
+import com.squareup.anvil.compiler.internal.reference.classAndInnerClassReferences
 import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
 import dagger.Binds
@@ -40,21 +43,30 @@ public class BindingsModuleGenerator : CodeGenerator {
     }
 
     private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
-        val injectorModule = InjectorModuleInfoProvider()
+        val injectorModule = ExplicitInjectorModuleInfoProvider()
         put(injectorModule.supportedAnnotation, injectorModule)
     }
-    private val meta = FqName("com.deliveryhero.whetstone.AutoScopedBinding")
 
     private fun findProvider(clas: ClassReference): ModuleInfoProvider? {
         var result: ModuleInfoProvider? = null
         for (annotation in clas.annotations) {
             val annotationFqName = annotation.fqName
             dynamicProviderMap.getOrPutNullable(annotationFqName) {
-                val metaInfo = annotation.classReference.annotations.find { it.fqName == meta }
-                    ?: return@getOrPutNullable null
-                val base = metaInfo.getValue("base", 0)
-                val scope = metaInfo.getValue("scope", 1)
-                InstanceModuleInfoProvider(annotationFqName, scope, base)
+                for (meta in annotation.classReference.annotations) {
+                    when (meta.fqName) {
+                        FqNames.AUTO_INSTANCE -> {
+                            val base = meta.getAsClassName("base", 0)
+                            val scope = meta.getAsClassName("scope", 1)
+                            return@getOrPutNullable InstanceModuleInfoProvider(annotationFqName, scope, base)
+                        }
+                        FqNames.AUTO_INJECTOR -> {
+                            val scope = meta.getAsClassName("scope", 0)
+                            return@getOrPutNullable InjectorModuleInfoProvider(annotationFqName, scope)
+                        }
+                    }
+                }
+                // Unsupported annotation
+                null
             }?.let { provider ->
                 require(result == null) {
                     "Found more than 1 Contributes* annotation in class '${clas.fqName}'"
@@ -109,7 +121,7 @@ public class BindingsModuleGenerator : CodeGenerator {
         return if (key in this) get(key) else func().also { put(key, it) }
     }
 
-    private fun AnnotationReference.getValue(name: String, index: Int): ClassName {
-        return argumentAt(name, index)!!.value<ClassReference>().asClassName()
+    private fun AnnotationReference.getAsClassName(name: String, index: Int): ClassName {
+        return getValue<ClassReference>(name, index).asClassName()
     }
 }
