@@ -1,16 +1,14 @@
-package com.deliveryhero.whetstone.compiler
+package com.deliveryhero.whetstone.compiler.handlers
 
-import com.google.auto.service.AutoService
+import com.deliveryhero.whetstone.compiler.CodegenHandler
+import com.deliveryhero.whetstone.compiler.FqNames
+import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
+import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.compiler.api.AnvilContext
-import com.squareup.anvil.compiler.api.CodeGenerator
-import com.squareup.anvil.compiler.api.GeneratedFile
-import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.buildFile
 import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.anvil.compiler.internal.reference.ClassReference
 import com.squareup.anvil.compiler.internal.reference.asClassName
-import com.squareup.anvil.compiler.internal.reference.classAndInnerClassReferences
 import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
 import dagger.Binds
@@ -19,32 +17,17 @@ import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtFile
-import java.io.File
 
-@AutoService(CodeGenerator::class)
-public class BindingsModuleGenerator : CodeGenerator {
-
-    override fun isApplicable(context: AnvilContext): Boolean = true
-
-    override fun generateCode(
-        codeGenDir: File,
-        module: ModuleDescriptor,
-        projectFiles: Collection<KtFile>
-    ): Collection<GeneratedFile> {
-
-        return projectFiles
-            .classAndInnerClassReferences(module)
-            .mapNotNull { clas ->
-                val provider = findProvider(clas) ?: return@mapNotNull null
-                val info = generateModule(provider, clas)
-                createGeneratedFile(codeGenDir, info.packageName, info.fileName, info.content)
-            }.toList()
-    }
+internal class BindingsModuleHandler : CodegenHandler {
 
     private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
         val injectorModule = ExplicitInjectorModuleInfoProvider()
         put(injectorModule.supportedAnnotation, injectorModule)
+    }
+
+    override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
+        val provider = findProvider(clas) ?: return null
+        return generateModule(provider, clas)
     }
 
     private fun findProvider(clas: ClassReference): ModuleInfoProvider? {
@@ -104,7 +87,11 @@ public class BindingsModuleGenerator : CodeGenerator {
             .addAnnotation(classKeyAnnotation)
             .build()
 
-        val content = FileSpec.buildFile(packageName, outputFileName) {
+        val content = FileSpec.buildFile(
+            packageName = packageName,
+            fileName = outputFileName,
+            generatorComment = "Automatically generated file. DO NOT MODIFY!"
+        ) {
             val moduleInterfaceSpec = TypeSpec.interfaceBuilder(outputFileName)
                 .addAnnotation(Module::class)
                 .addAnnotation(contributesToAnnotation)

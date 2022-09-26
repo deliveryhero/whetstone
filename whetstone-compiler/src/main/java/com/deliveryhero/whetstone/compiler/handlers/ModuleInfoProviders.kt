@@ -1,5 +1,6 @@
-package com.deliveryhero.whetstone.compiler
+package com.deliveryhero.whetstone.compiler.handlers
 
+import com.deliveryhero.whetstone.compiler.FqNames
 import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.anvil.compiler.internal.reference.asClassName
 import com.squareup.kotlinpoet.ClassName

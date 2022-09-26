@@ -3,6 +3,7 @@ package com.deliveryhero.whetstone.codegen
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.deliveryhero.whetstone.activity.ActivityScope
+import com.deliveryhero.whetstone.app.ApplicationScope
 import com.deliveryhero.whetstone.fragment.FragmentScope
 import com.deliveryhero.whetstone.viewmodel.ViewModelScope
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
@@ -68,6 +69,23 @@ internal class CodegenTest {
             """.trimIndent()
         ) {
             validateInjectorBinding("MyActivity", ActivityScope::class)
+        }
+    }
+
+    @Test
+    fun contributesAppInjector() {
+        compileAnvil(
+            """
+                import com.deliveryhero.whetstone.app.ContributesAppInjector
+                import android.app.Application
+
+                @ContributesAppInjector(generateAppComponent = false)
+                class MyApplication: Application()
+            """.trimIndent(),
+        ) {
+            validateInjectorBinding("MyApplication", ApplicationScope::class)
+            // generating app component requires kapt which seems broken in the tests
+            // validateAppComponent()
         }
     }
 }
