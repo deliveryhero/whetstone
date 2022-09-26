@@ -2,38 +2,77 @@
 
 > "An Anvil forges a Dagger. A Whetstone sharpens it. And when you're not planning on using your Dagger, you may keep it in something that rhymes with kilt." — [Tiago Cunha](https://github.com/laggedHero).
 
-Whetstone provides a simplified way to incorporate Dagger and Anvil into an Android application.
+Whetstone provides a simplified way to incorporate [Dagger](https://github.com/google/dagger) and [Anvil](https://github.com/square/anvil) into an Android application.
 
 The goals of Whetstone are:
+
 - To simplify Dagger-related infrastructure for Android apps.
 - To create a standard set of components and scopes to ease setup, but allowing customizations.
 
 Why would you use Whetstone instead of Hilt?
-- No black-magic. No bytecode manipulation.
+
+- No dark-magic. No bytecode manipulation.
 - No KAPT.
-- Extensible by using Dagger's and Anvil's powers.
+- Extensible by using the powers of Dagger and Anvil.
 
 ## Getting Started
 
-First you must set up Dagger and Anvil. Once that is done, you need to add the following build dependencies to your module `build.gradle` file:
+First you must apply whetstone plugin in the `build.gradle` file of any module that requires dependency injection:
 
 ```kotlin
-dependencies {
-    // ...
-    implementation("com.deliveryhero.whetstone:whetstone")
-    anvil("com.deliveryhero.whetstone:whetstone-compiler")
+plugins {
+    id("com.deliveryhero.whetstone").version("<latest version>")
 }
 ```
 
-## Basic Usage
-
-To use `Whetstone` you must initialized it in your Application class.
+Or you can use the old way to apply a plugin:
 
 ```kotlin
+// In root build.gradle.kts
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("com.deliveryhero.whetstone:whetstone-gradle-plugin:${latest_version}")
+  }
+}
+
+// In individual modules
+apply(plugin = "com.deliveryhero.whetstone")
+```
+
+This automatically configures Dagger and Anvil, and also adds the necessary whetstone dependencies for you.
+
+## Basic Usage
+
+To use whetstone, you must initialize it in your Application class.
+
+```kotlin
+@ContributesAppInjector(generateAppComponent = true)
 class MyApplication : Application(), ApplicationComponentOwner {
 
     override val applicationComponent by lazy {
-        DaggerGeneratedApplicationComponent.factory().create(this)
+        GeneratedApplicationComponent.create(this)
+    }
+}
+```
+
+Note: For more sophisticated use cases, the generated app component might not be sufficient for you. In such scenario, you can disable automatic generation of app component, and create your own instead.
+An example may look like this:
+
+```kotlin
+@Singleton // Optional. Can be omitted if you never use this annotation
+@SingleIn(ApplicationScope::class)
+@MergeComponent(ApplicationScope::class)
+interface MyApplicationComponent : ApplicationComponent {
+
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance application: Application, // this is necessary for whetstone to set things up properly
+            // ...
+        ): MyApplicationComponent
     }
 }
 ```
@@ -42,7 +81,7 @@ After that, you can easily inject into any Android class (see below).
 
 ### Guide
 
-Unlike traditional Dagger, you do not need to define or instantiate Dagger components directly. Instead, we offer predefined components that are generated for you. Whetstone comes with a built-in set of components (and corresponding scope annotations) that are automatically integrated to the Android Framework. As normal, a binding in a child component can have dependencies on any binding in an ancestor component.
+Unlike traditional Dagger, you do not need to define or instantiate Dagger components directly. Instead, we offer predefined components that are generated for you. Whetstone comes with a built-in set of components (and corresponding scope annotations) that are automatically integrated to the Android Framework. As expected, a binding in a child component can have dependencies on any binding in an ancestor component.
 
 ### Component Lifecycle
 
@@ -58,10 +97,11 @@ Component lifetimes are generally bounded by the creation and destruction of a c
 
 ![whetstone-scopes](art/whetstone-scopes.png?raw=true)
 
-### Application (DONE)
+### Application
+Applications support field/method injection with Whetstone. Constructor injection is not supported here because the instantiation of applications is completely managed by the system
 
 ```kotlin
-@ContributesInjector(ApplicationScope::class)
+@ContributesAppInjector
 class MyApplication : Application(), ApplicationComponentOwner {
 
     override val applicationComponent by lazy {
@@ -72,16 +112,17 @@ class MyApplication : Application(), ApplicationComponentOwner {
     lateinit var dependency: MyDependency
 
     fun onCreate() {
-        Whetstone.inject(application = this)
+        Whetstone.inject(this)
         super.onCreate()
     }
 }
 ```
 
-### Activity (DONE)
+### Activity
+Similar to applications, activities only support field/method injection
 
 ```kotlin
-@ContributesInjector(ActivityScope::class)
+@ContributesActivityInjector
 class MainActivity : AppCompatActivity() {
 
     @Inject
@@ -92,62 +133,34 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by injectedViewModel<MyViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Whetstone.inject(activity = this)
+        Whetstone.inject(this)
         super.onCreate(savedInstanceState)
     }
 }
 ```
 
-### Fragments (DONE)
+### Service
+Services should be generally avoided when possible. For most cases, work manager can be a great alternative and is highly recommended. See the [workmanager](#workmanager) section for more details about how to use it with Whetstone
 
 ```kotlin
-@ContributesFragment
-class MyFragment @Inject constructor(
-    private val dependency: MyDependency,
-): Fragment() {
-
-    // Get the contributed ViewModel
-    // We automatically handle process death and saved state handle wiring
-    private val viewModel by injectedViewModel<MyViewModel>()
-}
-```
-**Important:** A Fragment should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** Fragments.
-
-### ViewModels (DONE)
-
-```kotlin
-@ContributesViewModel
-class MyViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-): ViewModel()
-```
-
-**Important:** A ViewModel should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** ViewModels.
-
-### Service (DONE)
-Services should be generally avoided when possible. For most cases, workmanager can be a great alternative and 
-is highly recommended. See the workmanager section for more details about how to use it with Whetstone
-
-```kotlin
-@ContributesInjector(ServiceScope::class)
+@ContributesServiceInjector
 class MyService : Service() {
 
     @Inject
     lateinit var dependency: MyDependency
 
     override fun onCreate() {
-        Whetstone.inject(service = this)
+        Whetstone.inject(this)
         super.onCreate()
     }
 }
 ```
 
-### View (DONE)
-**Disclaimer**: View injection should be avoided by all means. This provision is considered legacy and may be 
-completely removed in a later version of Whetstone.
+### View
+**Disclaimer**: View injection should be avoided by all means. This provision is considered legacy and may be completely removed in a later version of Whetstone.
 
 ```kotlin
-@ContributesInjector(ViewScope::class)
+@ContributesViewInjector
 class MyView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -158,21 +171,73 @@ class MyView @JvmOverloads constructor(
 
     init {
         if (!isInEditMode) {
-            Whetstone.inject(view = this)
+            Whetstone.inject(this)
         }
     }
 }
 ```
 
-### Worker / WorkManager (DONE)
-To use Whetstone's work manager integration, a separate dependency is required:
+### Fragments
+Fragments support only construction injection, exclusively. This is possible because we are able to hook into the system to influence exactly how fragments should be created. To achieve this, the activity hosting the fragment must install Whetstone's fragment factory.
 
 ```kotlin
-implementation("com.deliveryhero.whetstone:whetstone-worker")
+class MyActivity : Activity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Whetstone.inject(this)
+        super.onCreate(savedInstanceState)
+    }
+}
 ```
 
-This will automatically install Whetstone's worker factory (replacing the default factory), so that you can immediately
-start taking advantage of injected workers
+Then you're able to use the injected fragments with as many constructor arguments as necessary, as long as all these dependencies can be satisfied by dependency injection.
+
+```kotlin
+@ContributesFragment
+class MyFragment @Inject constructor(
+    private val dependency: MyDependency,
+    private val anotherDependency: AnotherDependency,
+): Fragment() {
+
+    // Get the contributed ViewModel
+    // We automatically handle process death and saved state handle wiring
+    private val viewModel by injectedViewModel<MyViewModel>()
+    private val activityViewModel by injectedActivityViewModel<ActivityViewModel>()
+}
+```
+
+Note that all injected fragments must be created via the fragment manager. For example:
+
+```kotlin
+val myFragment = fragmentManager.instantiate<MyFragment>()
+```
+
+For fragments that don't require any external dependencies, the simple no-arg constructor can still be used, and we gracefully fallback to the default behavior
+
+**Important:** A Fragment should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** Fragments.
+
+### ViewModels
+Like fragments, view models also support full constructor injection
+
+```kotlin
+@ContributesViewModel
+class MyViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+): ViewModel()
+```
+
+**Important:** A ViewModel should **NEVER** be scoped. The Android Framework controls the Lifecycle of **ALL** ViewModels.
+
+### WorkManager
+Workmanager integration is an extra add-on, and must be enabled explicitly in your `build.gradle` file before use:
+
+```kotlin
+whetstone {
+    addOns.workManager.set(true)
+}
+```
+
+This will automatically install Whetstone's worker factory (replacing the default factory), so that you can immediately start taking advantage of injected workers
 
 ```kotlin
 @ContributesWorker
@@ -198,17 +263,16 @@ To disable automatic initialization, you can remove the initializer from your An
 </provider>
 ```
 
-However, you must make sure to install Whetstone's worker factory before the first call to WorkManager.getInstance
-to avoid breaking the integration. Whetstone provides an injectable `WorkerFactory` that can be used to configure
-the work manager. For example, you can update your application class to implement work manager's `Configuration.Provider` and supply
-Whetstone's `WorkerFactory` to the configuration builder
+However, you must make sure to install Whetstone's worker factory before the first call to `WorkManager#getInstance` to avoid breaking the integration. Whetstone provides an injectable `WorkerFactory` that can be used to configure the work manager. For example, you can update your application class to implement work manager's `Configuration.Provider` and supply Whetstone's `WorkerFactory` to the configuration builder
 See the official [documentation](https://developer.android.com/topic/libraries/architecture/workmanager/advanced/custom-configuration) for more details
 
-### Compose (DONE)
-To use Whetstone's compose integration, a separate dependency is required
+### Compose
+Compose integration is an extra add-on, and must be enabled explicitly in your `build.gradle` file before use:
 
 ```kotlin
-implementation("com.deliveryhero.whetstone:whetstone-compose")
+whetstone {
+    addOns.compose.set(true)
+}
 ```
 
 Currently, this artefact only exposes APIs for injecting ViewModels that have been contributed to Whetstone
@@ -219,10 +283,6 @@ fun MyScreen(viewModel: MyViewModel = injectedViewModel()) {
     // injectedViewModel takes care of providing the VM instance directly to this function
 }
 ```
-
-## Creators
-- [Marcello Galhardo](http://github.com/marcellogalhardo)
-- [Kingsley Adio](https://github.com/kingsleyadio)
 
 ## License
 ```
