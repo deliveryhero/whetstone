@@ -6,10 +6,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.deliveryhero.whetstone.ForScope
+import com.deliveryhero.whetstone.injector.MembersInjectorMap
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.multibindings.Multibinds
 import kotlinx.coroutines.CoroutineScope
 
 @Module
@@ -19,6 +21,9 @@ public interface ApplicationModule {
     @Binds
     @ForScope(ApplicationScope::class)
     public fun Application.bindContext(): Context
+
+    @Multibinds
+    public fun membersInjectors(): MembersInjectorMap
 
     public companion object {
 

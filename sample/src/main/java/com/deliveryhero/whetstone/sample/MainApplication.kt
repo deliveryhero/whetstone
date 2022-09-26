@@ -9,12 +9,11 @@ import android.os.Build
 import android.util.Log
 import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
-import com.deliveryhero.whetstone.app.ApplicationScope
-import com.deliveryhero.whetstone.injector.ContributesInjector
+import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.sample.MainService.Companion.NOTIFICATION_CHANNEL_ID
 import javax.inject.Inject
 
-@ContributesInjector(ApplicationScope::class)
+@ContributesAppInjector
 public class MainApplication : Application(), ApplicationComponentOwner {
 
     @Inject
