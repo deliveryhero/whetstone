@@ -9,11 +9,14 @@ The goals of Whetstone are:
 - To simplify Dagger-related infrastructure for Android apps.
 - To create a standard set of components and scopes to ease setup, but allowing customizations.
 
-Why would you use Whetstone instead of Hilt?
+## Why would you use Whetstone instead of Hilt?
 
-- No dark-magic. No bytecode manipulation.
-- No KAPT.
-- Extensible by using the powers of Dagger and Anvil.
+- All generated code is in Kotlin, which can have significant benefits in a Kotlin only codebase
+- Whetstone avoids KAPT completely for performance reasons by taking advantage of Anvil compiler.
+- Whetstone is extensible by using the powers of Dagger and Anvil.
+- Whetstone significantly reduces boiler plate.
+- Whetstone doesn't do bytecode manipulation for complementing classes. Hilt does.
+- Summarily, while philosophies are similar, whetstone is relatively easier to work with ;). 
 
 ## Getting Started
 
