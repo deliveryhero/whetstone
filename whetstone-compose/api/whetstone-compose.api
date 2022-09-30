@@ -1,0 +1,4 @@
+public final class com/deliveryhero/whetstone/compose/ViewModelKt {
+	public static final fun injectedViewModelFactory (Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModelProvider$Factory;
+}
+

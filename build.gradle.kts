@@ -57,3 +57,12 @@ fun BaseExtension.configureExtension() {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
+
+
+plugins {
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.11.1"
+}
+
+apiValidation {
+    ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
+}
