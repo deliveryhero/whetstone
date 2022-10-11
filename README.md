@@ -47,6 +47,23 @@ apply(plugin = "com.deliveryhero.whetstone")
 
 This automatically configures Dagger and Anvil, and also adds the necessary whetstone dependencies for you.
 
+Finally, in your :app module. You need to enable the kapt plugin, anvil requires this in the app module so it can generate the necessary components.
+
+```kotlin
+// In :app module build.gradle.kts
+plugins {
+    // ...
+    id 'kotlin-kapt'
+}
+
+dependencies {
+    kapt 'com.google.dagger:dagger-compiler:2.43.2'
+    // ...
+}
+```
+
+This completes the setup process.
+
 ## Basic Usage
 
 To use whetstone, you must initialize it in your Application class.
