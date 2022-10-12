@@ -16,6 +16,8 @@ import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.fragment.ContributesFragment
+import com.deliveryhero.whetstone.logging.GlobalAndroidComponentListener
+import com.deliveryhero.whetstone.logging.InjectedComponent
 import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent
@@ -105,12 +107,16 @@ public object Whetstone {
      * @see [installFragmentFactory]
      */
     public fun inject(activity: FragmentActivity) {
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectStart(InjectedComponent.InjectedActivity(activity))
         installFragmentFactory(activity)
 
         val injector = fromActivity<ActivityComponent>(activity)
             .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
 
         injector?.injectMembers(activity)
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectFinish(InjectedComponent.InjectedActivity(activity))
     }
 
     /**
@@ -136,6 +142,8 @@ public object Whetstone {
      * @see [ContributesServiceInjector]
      */
     public fun inject(service: Service) {
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectStart(InjectedComponent.InjectedService(service))
         val app = service.application
         val injector = fromApplication<ServiceComponent.ParentComponent>(app)
             .getServiceComponentFactory()
@@ -143,6 +151,8 @@ public object Whetstone {
             .membersInjectorMap[service.javaClass] as? MembersInjector<Service>
 
         requireNotNull(injector).injectMembers(service)
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectFinish(InjectedComponent.InjectedService(service))
     }
 
     public fun inject(view: View) {
