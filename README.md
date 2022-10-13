@@ -57,7 +57,7 @@ plugins {
 }
 
 dependencies {
-    kapt 'com.google.dagger:dagger-compiler:2.43.2'
+    kapt 'com.google.dagger:dagger-compiler:{version}'
     // ...
 }
 ```
