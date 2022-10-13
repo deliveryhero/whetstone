@@ -21,7 +21,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidxActivity)
     implementation(libs.androidxCore)
     implementation(libs.androidxAppCompat)

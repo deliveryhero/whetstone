@@ -20,7 +20,7 @@ dependencies {
     implementation(libs.androidxCore)
     implementation(libs.androidxAppCompat)
     implementation(libs.androidxActivity)
-    implementation(libs.androidxFragment)
+    api(libs.androidxFragment)
 
     testImplementation(kotlin("test-junit"))
     testImplementation(kotlin("reflect"))

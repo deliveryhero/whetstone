@@ -8,7 +8,6 @@ import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel
 import org.gradle.kotlin.dsl.*
 
 @AutoService(Plugin::class)
@@ -22,7 +21,10 @@ public class WhetstonePlugin : Plugin<Project> {
         }
         if (target.isAppModule) {
             target.pluginManager.apply(KAPT_PLUGIN_ID)
-            target.logger.log(LogLevel.WARN,"==== Applying Kapt plugin to ${target.name}")
+            target.dependencies.add(
+                "kapt",
+                "com.google.dagger:dagger-compiler:${BuildConfig.DAGGER_VERSION}"
+            )
         }
         target.afterEvaluate {
             if (!target.plugins.hasPlugin(AndroidBasePlugin::class)) {
@@ -67,11 +69,6 @@ public class WhetstonePlugin : Plugin<Project> {
 
             if (extension.addOns.compose.get()) implementation("whetstone-compose")
             if (extension.addOns.workManager.get()) implementation("whetstone-worker")
-
-            if (isAppModule) {
-                add("kapt", "com.google.dagger:dagger-compiler:${BuildConfig.DAGGER_VERSION}")
-                logger.log(LogLevel.WARN,"==== Applying Kapt DEP for compiler")
-            }
         }
     }
 
