@@ -73,10 +73,14 @@ public object Whetstone {
      * @see [ContributesAppInjector]
      */
     public fun inject(application: Application) {
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectStart(InjectedComponent.InjectedApplication(application))
         val injector = fromApplication<ApplicationComponent>(application)
             .membersInjectorMap[application.javaClass] as? MembersInjector<Application>
 
         requireNotNull(injector).injectMembers(application)
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectFinish(InjectedComponent.InjectedApplication(application))
     }
 
     /**
@@ -156,6 +160,8 @@ public object Whetstone {
     }
 
     public fun inject(view: View) {
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectStart(InjectedComponent.InjectedView(view))
         val activity = view.findActivity()
         val injector = fromActivity<ViewComponent.ParentComponent>(activity)
             .getViewComponentFactory()
@@ -163,6 +169,8 @@ public object Whetstone {
             .membersInjectorMap[view.javaClass] as? MembersInjector<View>
 
         requireNotNull(injector).injectMembers(view)
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectFinish(InjectedComponent.InjectedView(view))
     }
 
     /**
