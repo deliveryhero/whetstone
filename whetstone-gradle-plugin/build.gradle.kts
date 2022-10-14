@@ -44,6 +44,7 @@ val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
     val props = mapOf(
         "GROUP" to project.property("GROUP").toString(),
         "VERSION" to project.property("VERSION_NAME").toString(),
+        "DAGGER_VERSION" to libs.versions.dagger.get()
     )
     properties.set(props)
     generatedSourceDir.set(layout.buildDirectory.dir("generated/wgp/kotlin/main"))

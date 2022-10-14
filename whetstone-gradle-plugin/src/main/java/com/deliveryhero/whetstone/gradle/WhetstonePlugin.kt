@@ -19,6 +19,13 @@ public class WhetstonePlugin : Plugin<Project> {
         target.plugins.withType<AndroidBasePlugin> {
             target.configureAnvil(extension)
         }
+        if (target.isAppModule) {
+            target.pluginManager.apply(KAPT_PLUGIN_ID)
+            target.dependencies.add(
+                "kapt",
+                "com.google.dagger:dagger-compiler:${BuildConfig.DAGGER_VERSION}"
+            )
+        }
         target.afterEvaluate {
             if (!target.plugins.hasPlugin(AndroidBasePlugin::class)) {
                 throw GradleException(
@@ -35,14 +42,15 @@ public class WhetstonePlugin : Plugin<Project> {
 
     private fun Project.configureAnvil(whetstone: WhetstoneExtension) {
         extensions.configure<AnvilExtension> {
-            val android = extensions.getByType<BaseExtension>()
             // We apply default setting for anvil here based on whether/not the project
             // is an Android application module
-            val isApp = android is AppExtension
-            generateDaggerFactories.set(whetstone.generateDaggerFactories.orElse(!isApp))
-            syncGeneratedSources.set(whetstone.syncGeneratedSources.orElse(isApp))
+            generateDaggerFactories.set(whetstone.generateDaggerFactories.orElse(!isAppModule))
+            syncGeneratedSources.set(whetstone.syncGeneratedSources.orElse(isAppModule))
         }
     }
+
+    private val Project.isAppModule: Boolean
+        get() = extensions.getByType<BaseExtension>() is AppExtension
 
     private fun Project.addDependencies(extension: WhetstoneExtension) {
         val useLocal = findProperty("whetstone.internal.project-dependency").toString().toBoolean()
@@ -67,5 +75,6 @@ public class WhetstonePlugin : Plugin<Project> {
     private companion object {
         const val ANVIL_PLUGIN_ID = "com.squareup.anvil"
         const val WHETSTONE_EXTENSION = "whetstone"
+        const val KAPT_PLUGIN_ID = "kotlin-kapt"
     }
 }
