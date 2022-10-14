@@ -236,6 +236,40 @@ public abstract interface annotation class com/deliveryhero/whetstone/injector/C
 	public abstract fun scope ()Ljava/lang/Class;
 }
 
+public abstract interface class com/deliveryhero/whetstone/logging/ComponentInjectionListener {
+	public abstract fun onInjectFinish (Lcom/deliveryhero/whetstone/logging/InjectedComponent;)V
+	public abstract fun onInjectStart (Lcom/deliveryhero/whetstone/logging/InjectedComponent;)V
+}
+
+public final class com/deliveryhero/whetstone/logging/GlobalAndroidComponentListener {
+	public static final field INSTANCE Lcom/deliveryhero/whetstone/logging/GlobalAndroidComponentListener;
+	public final fun getComponentInjectionListener ()Lcom/deliveryhero/whetstone/logging/ComponentInjectionListener;
+	public final fun setComponentInjectionListener (Lcom/deliveryhero/whetstone/logging/ComponentInjectionListener;)V
+}
+
+public abstract class com/deliveryhero/whetstone/logging/InjectedComponent {
+}
+
+public final class com/deliveryhero/whetstone/logging/InjectedComponent$InjectedActivity : com/deliveryhero/whetstone/logging/InjectedComponent {
+	public fun <init> (Landroid/app/Activity;)V
+	public final fun getActivity ()Landroid/app/Activity;
+}
+
+public final class com/deliveryhero/whetstone/logging/InjectedComponent$InjectedApplication : com/deliveryhero/whetstone/logging/InjectedComponent {
+	public fun <init> (Landroid/app/Application;)V
+	public final fun getApp ()Landroid/app/Application;
+}
+
+public final class com/deliveryhero/whetstone/logging/InjectedComponent$InjectedService : com/deliveryhero/whetstone/logging/InjectedComponent {
+	public fun <init> (Landroid/app/Service;)V
+	public final fun getService ()Landroid/app/Service;
+}
+
+public final class com/deliveryhero/whetstone/logging/InjectedComponent$InjectedView : com/deliveryhero/whetstone/logging/InjectedComponent {
+	public fun <init> (Landroid/view/View;)V
+	public final fun getView ()Landroid/view/View;
+}
+
 public abstract interface annotation class com/deliveryhero/whetstone/meta/AutoInjectorBinding : java/lang/annotation/Annotation {
 	public abstract fun scope ()Ljava/lang/Class;
 }
