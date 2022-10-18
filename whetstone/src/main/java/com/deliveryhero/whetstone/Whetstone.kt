@@ -16,8 +16,6 @@ import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.fragment.ContributesFragment
-import com.deliveryhero.whetstone.event.GlobalAndroidComponentListener
-import com.deliveryhero.whetstone.event.InjectedComponent
 import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent
@@ -73,14 +71,10 @@ public object Whetstone {
      * @see [ContributesAppInjector]
      */
     public fun inject(application: Application) {
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectStart(InjectedComponent.Application(application))
         val injector = fromApplication<ApplicationComponent>(application)
             .membersInjectorMap[application.javaClass] as? MembersInjector<Application>
 
         requireNotNull(injector).injectMembers(application)
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectFinish(InjectedComponent.Application(application))
     }
 
     /**
@@ -111,16 +105,12 @@ public object Whetstone {
      * @see [installFragmentFactory]
      */
     public fun inject(activity: FragmentActivity) {
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectStart(InjectedComponent.Activity(activity))
         installFragmentFactory(activity)
 
         val injector = fromActivity<ActivityComponent>(activity)
             .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
 
         injector?.injectMembers(activity)
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectFinish(InjectedComponent.Activity(activity))
     }
 
     /**
@@ -146,8 +136,6 @@ public object Whetstone {
      * @see [ContributesServiceInjector]
      */
     public fun inject(service: Service) {
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectStart(InjectedComponent.Service(service))
         val app = service.application
         val injector = fromApplication<ServiceComponent.ParentComponent>(app)
             .getServiceComponentFactory()
@@ -155,13 +143,9 @@ public object Whetstone {
             .membersInjectorMap[service.javaClass] as? MembersInjector<Service>
 
         requireNotNull(injector).injectMembers(service)
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectFinish(InjectedComponent.Service(service))
     }
 
     public fun inject(view: View) {
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectStart(InjectedComponent.View(view))
         val activity = view.findActivity()
         val injector = fromActivity<ViewComponent.ParentComponent>(activity)
             .getViewComponentFactory()
@@ -169,8 +153,6 @@ public object Whetstone {
             .membersInjectorMap[view.javaClass] as? MembersInjector<View>
 
         requireNotNull(injector).injectMembers(view)
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectFinish(InjectedComponent.View(view))
     }
 
     /**
