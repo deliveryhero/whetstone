@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone.logging
+package com.deliveryhero.whetstone.event
 
 import java.lang.IllegalStateException
 import kotlin.properties.Delegates

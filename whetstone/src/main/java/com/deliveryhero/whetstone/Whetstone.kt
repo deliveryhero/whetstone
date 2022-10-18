@@ -16,8 +16,8 @@ import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.fragment.ContributesFragment
-import com.deliveryhero.whetstone.logging.GlobalAndroidComponentListener
-import com.deliveryhero.whetstone.logging.InjectedComponent
+import com.deliveryhero.whetstone.event.GlobalAndroidComponentListener
+import com.deliveryhero.whetstone.event.InjectedComponent
 import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent

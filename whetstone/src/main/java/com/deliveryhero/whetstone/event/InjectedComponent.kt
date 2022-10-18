@@ -1,4 +1,4 @@
-package com.deliveryhero.whetstone.logging
+package com.deliveryhero.whetstone.event
 
 public sealed class InjectedComponent {
     public class Activity(public val activity: android.app.Activity) : InjectedComponent()
