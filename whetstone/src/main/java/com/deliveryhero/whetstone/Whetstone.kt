@@ -6,6 +6,7 @@ import android.app.Application
 import android.app.Service
 import android.content.ContextWrapper
 import android.view.View
+import androidx.activity.ComponentActivity
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
@@ -105,15 +106,17 @@ public object Whetstone {
      * Otherwise, those fields will be ignored, which may lead to runtime exception.
      * @see [ContributesActivityInjector]
      *
-     * This method also installs Whetstone's [FragmentFactory] into the activity's fragment manager.
-     * As a result, such fragments can take advantage of Whetstone's Fragment injection feature.
+     * If used with a [FragmentActivity], this method also installs Whetstone's [FragmentFactory] 
+     * into the activity's fragment manager. As a result, such fragments can take advantage of
+     * Whetstone's Fragment injection feature.
      * @see [ContributesFragment]
      * @see [installFragmentFactory]
      */
-    public fun inject(activity: FragmentActivity) {
+    public fun inject(activity: ComponentActivity) {
         GlobalAndroidComponentListener.componentInjectionListener
             ?.onInjectStart(InjectedComponent.Activity(activity))
-        installFragmentFactory(activity)
+
+        if (activity is FragmentActivity) installFragmentFactory(activity)
 
         val injector = fromActivity<ActivityComponent>(activity)
             .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
