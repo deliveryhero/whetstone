@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone)
+
 # Whetstone
 
 > "An Anvil forges a Dagger. A Whetstone sharpens it. And when you're not planning on using your Dagger, you may keep it in something that rhymes with kilt." — [Tiago Cunha](https://github.com/laggedHero).
