@@ -32,7 +32,7 @@ subprojects {
 
 fun KotlinCompile.configureTask() {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
 
         val compilerArgs = mutableListOf(
             "-Xassertions=jvm",
@@ -45,22 +45,22 @@ fun KotlinCompile.configureTask() {
 }
 
 fun BaseExtension.configureExtension() {
-    compileSdkVersion(32)
+    compileSdkVersion(33)
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 
 plugins {
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.11.1"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.12.1"
 }
 
 apiValidation {

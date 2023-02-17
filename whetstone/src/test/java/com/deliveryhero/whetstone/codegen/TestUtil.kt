@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCompilerApi::class)
+
 package com.deliveryhero.whetstone.codegen
 
 import com.deliveryhero.whetstone.SingleIn
@@ -16,6 +18,7 @@ import dagger.MembersInjector
 import dagger.Module
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 import kotlin.reflect.full.*

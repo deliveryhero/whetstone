@@ -7,6 +7,7 @@ plugins {
 android {
     buildFeatures.compose = true
     composeOptions.kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
+    namespace = "com.deliveryhero.whetstone.compose"
 }
 
 dependencies {

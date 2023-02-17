@@ -27,3 +27,6 @@ dependencies {
     testImplementation(testFixtures(libs.anvilCompilerUtils))
     testImplementation(projects.whetstoneCompiler)
 }
+android {
+    namespace = "com.deliveryhero.whetstone"
+}

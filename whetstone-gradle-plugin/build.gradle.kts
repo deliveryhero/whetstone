@@ -13,13 +13,14 @@ loadParentProperties()
 pluginManager.apply(com.vanniktech.maven.publish.MavenPublishPlugin::class)
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of("17"))
+    }
 }
 
 tasks.compileKotlin {
     dependsOn(generateBuildConfig)
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
     kotlinOptions.freeCompilerArgs += "-Xexplicit-api=strict"
 }
 
