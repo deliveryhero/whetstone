@@ -1,5 +1,4 @@
 @file:OptIn(ExperimentalCompilerApi::class)
-
 package com.deliveryhero.whetstone.codegen
 
 import com.deliveryhero.whetstone.SingleIn

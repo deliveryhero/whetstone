@@ -10,7 +10,7 @@ import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 
-@ExperimentalCompilerApi
+@OptIn(ExperimentalCompilerApi::class)
 internal class CodegenTest {
 
     @Test
