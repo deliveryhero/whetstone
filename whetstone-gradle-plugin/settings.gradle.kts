@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 rootProject.name = "whetstone-gradle-plugin"
 
 pluginManagement {
