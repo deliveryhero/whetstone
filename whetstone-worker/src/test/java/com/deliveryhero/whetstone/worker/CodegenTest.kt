@@ -2,10 +2,12 @@ package com.deliveryhero.whetstone.worker
 
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import com.tschuchort.compiletesting.KotlinCompilation
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@OptIn(ExperimentalCompilerApi::class)
 internal class CodegenTest {
 
     @Test
