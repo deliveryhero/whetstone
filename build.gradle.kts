@@ -15,10 +15,6 @@ buildscript {
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
-}
-
 subprojects {
     afterEvaluate {
         tasks.withType<KotlinCompile> {
@@ -32,7 +28,7 @@ subprojects {
 
 fun KotlinCompile.configureTask() {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
 
         val compilerArgs = mutableListOf(
             "-Xassertions=jvm",
@@ -53,8 +49,8 @@ fun BaseExtension.configureExtension() {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
@@ -65,4 +61,8 @@ plugins {
 
 apiValidation {
     ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
+}
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
 }
