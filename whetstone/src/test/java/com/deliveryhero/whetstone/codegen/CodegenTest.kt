@@ -7,8 +7,10 @@ import com.deliveryhero.whetstone.app.ApplicationScope
 import com.deliveryhero.whetstone.fragment.FragmentScope
 import com.deliveryhero.whetstone.viewmodel.ViewModelScope
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 
+@OptIn(ExperimentalCompilerApi::class)
 internal class CodegenTest {
 
     @Test
