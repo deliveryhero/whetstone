@@ -23,7 +23,6 @@ import com.deliveryhero.whetstone.sample.databinding.ActivityMainBinding
 import com.deliveryhero.whetstone.viewmodel.injectedViewModel
 import javax.inject.Inject
 
-@ContributesActivityInjector
 class MainActivity : AppCompatActivity() {
 
     private val viewModel by injectedViewModel<MainViewModel>()
@@ -73,7 +72,6 @@ fun MainScreen(
 }
 
 
-@ContributesActivityInjector
 class BasicActivity: ComponentActivity() {
 
     private val viewModel by injectedViewModel<MainViewModel>()
