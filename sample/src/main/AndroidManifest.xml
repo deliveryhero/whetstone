@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <service android:name=".MainService" />
+        <activity android:name=".BasicActivity"/>
     </application>
 
 </manifest>

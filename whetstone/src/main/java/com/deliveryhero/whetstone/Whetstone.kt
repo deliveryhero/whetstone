@@ -84,7 +84,44 @@ public object Whetstone {
     }
 
     /**
-     * Injects dependencies into the fields and methods of the given [activity].
+     * Injects dependencies into the fields and methods of the given [Activity].
+     *
+     * For example:
+     * ```
+     * @ContributesActivityInjector
+     * class CustomActivity: Activity() {
+     *
+     *     @Inject lateinit var someDep: SomeDep
+     *
+     *     override fun onCreate(savedInstanceState: Bundle?) {
+     *         Whetstone.inject(this)
+     *         super.onCreate(savedInstanceState)
+     *     }
+     * }
+     * ```
+     *
+     * When injecting an activity, the injected fields and methods must be annotated with `@Inject`
+     * and the activity itself must be annotated with `@ContributesActivityInjector`
+     * Otherwise, those fields will be ignored, which may lead to runtime exception.
+     * @see [ContributesActivityInjector]
+     */
+    public fun inject(activity: Activity) {
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectStart(InjectedComponent.Activity(activity))
+        if (activity is FragmentActivity) {
+            inject(fragmentActivity = activity)
+        } else {
+            val injector = fromActivity<ActivityComponent>(activity)
+                .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
+
+            injector?.injectMembers(activity)
+        }
+        GlobalAndroidComponentListener.componentInjectionListener
+            ?.onInjectFinish(InjectedComponent.Activity(activity))
+    }
+
+    /**
+     * Injects dependencies into the fields and methods of the given [FragmentActivity].
      *
      * For example:
      * ```
@@ -110,17 +147,13 @@ public object Whetstone {
      * @see [ContributesFragment]
      * @see [installFragmentFactory]
      */
-    public fun inject(activity: FragmentActivity) {
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectStart(InjectedComponent.Activity(activity))
-        installFragmentFactory(activity)
+    private fun inject(fragmentActivity: FragmentActivity) {
+        installFragmentFactory(fragmentActivity)
 
-        val injector = fromActivity<ActivityComponent>(activity)
-            .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
+        val injector = fromActivity<ActivityComponent>(fragmentActivity)
+            .membersInjectorMap[fragmentActivity.javaClass] as? MembersInjector<Activity>
 
-        injector?.injectMembers(activity)
-        GlobalAndroidComponentListener.componentInjectionListener
-            ?.onInjectFinish(InjectedComponent.Activity(activity))
+        injector?.injectMembers(fragmentActivity)
     }
 
     /**
