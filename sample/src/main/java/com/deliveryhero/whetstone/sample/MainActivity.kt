@@ -1,6 +1,5 @@
 package com.deliveryhero.whetstone.sample
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -17,11 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.deliveryhero.whetstone.Whetstone
-import com.deliveryhero.whetstone.activity.ContributesActivityInjector
 import com.deliveryhero.whetstone.compose.injectedViewModel
 import com.deliveryhero.whetstone.sample.databinding.ActivityMainBinding
 import com.deliveryhero.whetstone.viewmodel.injectedViewModel
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
