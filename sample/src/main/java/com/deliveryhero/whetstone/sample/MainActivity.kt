@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,9 +74,9 @@ fun MainScreen(
 
 
 @ContributesActivityInjector
-class BasicActivity: Activity() {
+class BasicActivity: ComponentActivity() {
 
-    @Inject lateinit var viewModel: MainViewModel
+    private val viewModel by injectedViewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Whetstone.inject(this)
