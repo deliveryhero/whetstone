@@ -109,10 +109,10 @@ public final class com/deliveryhero/whetstone/Whetstone {
 	public final fun fromActivity (Landroid/app/Activity;)Ljava/lang/Object;
 	public final fun fromApplication (Landroid/app/Application;)Ljava/lang/Object;
 	public final fun initialize (Lkotlin/jvm/functions/Function0;)V
+	public final fun inject (Landroid/app/Activity;)V
 	public final fun inject (Landroid/app/Application;)V
 	public final fun inject (Landroid/app/Service;)V
 	public final fun inject (Landroid/view/View;)V
-	public final fun inject (Landroidx/fragment/app/FragmentActivity;)V
 }
 
 public abstract interface class com/deliveryhero/whetstone/activity/ActivityComponent {

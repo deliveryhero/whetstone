@@ -84,12 +84,12 @@ public object Whetstone {
     }
 
     /**
-     * Injects dependencies into the fields and methods of the given [activity].
+     * Injects dependencies into the fields and methods of the given [Activity].
      *
      * For example:
      * ```
      * @ContributesActivityInjector
-     * class CustomActivity: AppCompatActivity() {
+     * class CustomActivity: Activity() {
      *
      *     @Inject lateinit var someDep: SomeDep
      *
@@ -104,21 +104,19 @@ public object Whetstone {
      * and the activity itself must be annotated with `@ContributesActivityInjector`
      * Otherwise, those fields will be ignored, which may lead to runtime exception.
      * @see [ContributesActivityInjector]
-     *
-     * This method also installs Whetstone's [FragmentFactory] into the activity's fragment manager.
-     * As a result, such fragments can take advantage of Whetstone's Fragment injection feature.
-     * @see [ContributesFragment]
-     * @see [installFragmentFactory]
      */
-    public fun inject(activity: FragmentActivity) {
+    public fun inject(activity: Activity) {
         GlobalAndroidComponentListener.componentInjectionListener
             ?.onInjectStart(InjectedComponent.Activity(activity))
-        installFragmentFactory(activity)
+        if (activity is FragmentActivity) {
+            installFragmentFactory(activity)
+        }
 
         val injector = fromActivity<ActivityComponent>(activity)
             .membersInjectorMap[activity.javaClass] as? MembersInjector<Activity>
 
         injector?.injectMembers(activity)
+
         GlobalAndroidComponentListener.componentInjectionListener
             ?.onInjectFinish(InjectedComponent.Activity(activity))
     }
