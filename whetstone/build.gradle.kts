@@ -18,7 +18,6 @@ dependencies {
     implementation(libs.androidxLifecycleSavedState)
 
     implementation(libs.androidxCore)
-    implementation(libs.androidxAppCompat)
     implementation(libs.androidxActivity)
     api(libs.androidxFragment)
 
