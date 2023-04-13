@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.compose.injectedViewModel
 import com.deliveryhero.whetstone.sample.databinding.ActivityMainBinding
 import com.deliveryhero.whetstone.viewmodel.injectedViewModel
@@ -26,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private val serviceIntent by lazy { Intent(this, MainService::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Whetstone.inject(this)
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel? = injectedViewModel(),
+    viewModel: MainViewModel = injectedViewModel(),
     onClick: (() -> Unit)? = null
 ) {
     Column(
@@ -64,7 +62,7 @@ fun MainScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Compose")
-        Text(text = viewModel?.getHelloWorld().orEmpty())
+        Text(text = viewModel.getHelloWorld())
     }
 }
 
@@ -74,7 +72,6 @@ class BasicActivity: ComponentActivity() {
     private val viewModel by injectedViewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Whetstone.inject(this)
         super.onCreate(savedInstanceState)
         val message = "${viewModel.getHelloWorld()} from Basic activity"
         Toast.makeText(
