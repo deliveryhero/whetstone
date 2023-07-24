@@ -10,4 +10,5 @@ internal object FqNames {
     @JvmField val AUTO_INJECTOR = FqName("com.deliveryhero.whetstone.meta.AutoInjectorBinding")
     @JvmField val AUTO_INSTANCE = FqName("com.deliveryhero.whetstone.meta.AutoInstanceBinding")
     @JvmField val SINGLE_IN = FqName("com.deliveryhero.whetstone.SingleIn")
+    @JvmField val APPLICATION = FqName("android.app.Application")
 }
