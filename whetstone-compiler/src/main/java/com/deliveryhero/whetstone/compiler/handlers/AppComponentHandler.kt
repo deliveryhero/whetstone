@@ -2,6 +2,7 @@ package com.deliveryhero.whetstone.compiler.handlers
 
 import com.deliveryhero.whetstone.compiler.CodegenHandler
 import com.deliveryhero.whetstone.compiler.FqNames
+import com.deliveryhero.whetstone.compiler.FqNames.APPLICATION
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.MergeComponent
@@ -59,14 +60,21 @@ internal class AppComponentHandler : CodegenHandler {
             .addSuperinterface(applicationComponentCn.nestedClass("Factory"))
             .addAnnotation(Component.Factory::class)
             .build()
+        val appParam = ParameterSpec.builder("application", APPLICATION.asClassName(module))
+            .build()
         val companionObjectSpec = TypeSpec.companionObjectBuilder("Default")
-            .addSuperinterface(
-                generatedComponentCn.nestedClass("Factory"),
-                CodeBlock.of(
-                    "%T.factory()",
-                    generatedComponentCn.peerClass("Dagger${generatedComponentCn.simpleName}")
-                )
-            )
+            .addSuperinterface(generatedComponentCn.nestedClass("Factory"))
+            .addFunction(
+                FunSpec.builder("create")
+                    .addParameter(appParam)
+                    .returns(generatedComponentCn)
+                    .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
+                    .addCode(CodeBlock.of(
+                        "return DaggerGeneratedApplicationComponent.factory().create(%L) as %T",
+                        appParam.name,
+                        generatedComponentCn,
+                    ))
+                    .build())
             .build()
 
         val appComponentSpec = TypeSpec.interfaceBuilder(generatedComponentCn)

@@ -36,8 +36,11 @@ import com.deliveryhero.whetstone.meta.AutoInjectorBinding
  *    @Component.Factory
  *    public interface Factory : ApplicationComponent.Factory
  *
- *    public companion object Default : Factory by DaggerGeneratedApplicationComponent.factory()
- * }
+ *    public companion object Default : Factory {
+ *      public override fun create(application: Application): GeneratedApplicationComponent =
+ *         DaggerGeneratedApplicationComponent.factory().create(application) as
+ *         GeneratedApplicationComponent
+ *    }
  * ```
  *
  * This can be very handy for quickly bootstrapping the DI setup. It is ideal for cases where the
