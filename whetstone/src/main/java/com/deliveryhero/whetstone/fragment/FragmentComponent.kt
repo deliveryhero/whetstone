@@ -1,10 +1,10 @@
 package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
-import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.activity.ActivityScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.SingleIn
 import javax.inject.Provider
 
 /**

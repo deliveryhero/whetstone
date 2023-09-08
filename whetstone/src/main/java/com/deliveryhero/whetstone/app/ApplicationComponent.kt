@@ -2,9 +2,9 @@ package com.deliveryhero.whetstone.app
 
 import android.app.Application
 import androidx.lifecycle.ViewModelProvider
-import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.BindsInstance
 import javax.inject.Singleton
 

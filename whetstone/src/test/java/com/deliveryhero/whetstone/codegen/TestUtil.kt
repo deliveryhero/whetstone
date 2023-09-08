@@ -1,16 +1,17 @@
 @file:OptIn(ExperimentalCompilerApi::class)
+
 package com.deliveryhero.whetstone.codegen
 
-import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.MergeComponent
+import com.squareup.anvil.annotations.optional.SingleIn
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
-import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.JvmCompilationResult
 import dagger.Binds
 import dagger.Component
 import dagger.MembersInjector
@@ -24,7 +25,8 @@ import kotlin.reflect.full.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal fun KotlinCompilation.Result.validateInstanceBinding(
+@OptIn(ExperimentalCompilerApi::class)
+internal fun JvmCompilationResult.validateInstanceBinding(
     classUnderTest: String,
     baseClass: KClass<*>,
     scope: KClass<*>
@@ -43,7 +45,8 @@ internal fun KotlinCompilation.Result.validateInstanceBinding(
     assertEquals(baseClass, bindsMethod.returnType.classifier)
 }
 
-internal fun KotlinCompilation.Result.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {
+@OptIn(ExperimentalCompilerApi::class)
+internal fun JvmCompilationResult.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {
     val clas = classLoader.loadClass(classUnderTest).kotlin
     val bindingModule = classLoader.loadClass("${classUnderTest}BindingsModule").kotlin
     val membersInjector = MembersInjector::class.asClassName()
@@ -62,12 +65,13 @@ internal fun KotlinCompilation.Result.validateInjectorBinding(classUnderTest: St
     assertEquals(membersInjector.parameterizedBy(STAR), bindsMethod.returnType.asTypeName())
 }
 
-internal fun KotlinCompilation.Result.validateAppComponent() {
+@OptIn(ExperimentalCompilerApi::class)
+internal fun JvmCompilationResult.validateAppComponent() {
     val appComponent = classLoader.loadClass("GeneratedApplicationComponent").kotlin
 
     assertTrue(appComponent.isAbstract)
     assertTrue(appComponent.hasAnnotation<Singleton>())
-    assertEquals(ApplicationScope::class, appComponent.findAnnotation<SingleIn>()?.value)
+    assertEquals(ApplicationScope::class, appComponent.findAnnotation<SingleIn>()?.scope)
     assertEquals(ApplicationScope::class, appComponent.findAnnotation<MergeComponent>()?.scope)
 
     val appComponentFactoryCn = appComponent.asClassName().nestedClass("Factory")

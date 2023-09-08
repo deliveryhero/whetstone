@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.deliveryhero.whetstone.ForScope
-import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.ForScope
+import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.BindsInstance
 import javax.inject.Provider
 

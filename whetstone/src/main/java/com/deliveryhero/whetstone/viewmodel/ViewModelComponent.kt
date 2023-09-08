@@ -2,10 +2,10 @@ package com.deliveryhero.whetstone.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.SingleIn
 import dagger.BindsInstance
 import javax.inject.Provider
 

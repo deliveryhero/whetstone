@@ -11,6 +11,7 @@ anvil {
 
 dependencies {
     api(libs.dagger)
+    api(libs.anvilAnnotationsOptional)
 
     implementation(libs.androidxLifecycleRuntime)
     implementation(libs.androidxLifecycleProcess)

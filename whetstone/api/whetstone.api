@@ -93,15 +93,7 @@ public final class anvil/hint/subcomponent/com/deliveryhero/whetstone/viewmodel/
 	public static final fun getCom_deliveryhero_whetstone_viewmodel_ViewModelComponent_scope ()Lkotlin/reflect/KClass;
 }
 
-public abstract interface annotation class com/deliveryhero/whetstone/ForScope : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/Class;
-}
-
 public abstract interface annotation class com/deliveryhero/whetstone/InternalWhetstoneApi : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class com/deliveryhero/whetstone/SingleIn : java/lang/annotation/Annotation {
-	public abstract fun value ()Ljava/lang/Class;
 }
 
 public final class com/deliveryhero/whetstone/Whetstone {

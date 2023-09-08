@@ -5,9 +5,9 @@ import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.deliveryhero.whetstone.ForScope
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.annotations.optional.ForScope
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
