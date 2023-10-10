@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalCompilerApi::class)
+
 package com.deliveryhero.whetstone.codegen
 
 import com.deliveryhero.whetstone.SingleIn
@@ -10,6 +11,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
+import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import dagger.Binds
 import dagger.Component
@@ -24,7 +26,7 @@ import kotlin.reflect.full.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal fun KotlinCompilation.Result.validateInstanceBinding(
+internal fun JvmCompilationResult.validateInstanceBinding(
     classUnderTest: String,
     baseClass: KClass<*>,
     scope: KClass<*>
@@ -43,7 +45,7 @@ internal fun KotlinCompilation.Result.validateInstanceBinding(
     assertEquals(baseClass, bindsMethod.returnType.classifier)
 }
 
-internal fun KotlinCompilation.Result.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {
+internal fun JvmCompilationResult.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {
     val clas = classLoader.loadClass(classUnderTest).kotlin
     val bindingModule = classLoader.loadClass("${classUnderTest}BindingsModule").kotlin
     val membersInjector = MembersInjector::class.asClassName()
@@ -62,7 +64,7 @@ internal fun KotlinCompilation.Result.validateInjectorBinding(classUnderTest: St
     assertEquals(membersInjector.parameterizedBy(STAR), bindsMethod.returnType.asTypeName())
 }
 
-internal fun KotlinCompilation.Result.validateAppComponent() {
+internal fun JvmCompilationResult.validateAppComponent() {
     val appComponent = classLoader.loadClass("GeneratedApplicationComponent").kotlin
 
     assertTrue(appComponent.isAbstract)
