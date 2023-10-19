@@ -41,7 +41,7 @@ fun KotlinCompile.configureTask() {
 }
 
 fun BaseExtension.configureExtension() {
-    compileSdkVersion(33)
+    compileSdkVersion(34)
 
     defaultConfig {
         minSdk = 21
@@ -56,7 +56,7 @@ fun BaseExtension.configureExtension() {
 
 
 plugins {
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.12.1"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
 }
 
 apiValidation {
@@ -64,5 +64,5 @@ apiValidation {
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }

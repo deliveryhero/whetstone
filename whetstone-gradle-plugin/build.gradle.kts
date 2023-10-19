@@ -87,3 +87,9 @@ fun loadParentProperties() {
         extra.set(key, value)
     }
 }
+
+afterEvaluate {
+    with(tasks) {
+        findByName("kaptGenerateStubsKotlin")?.dependsOn(findByName("generateBuildConfig"))
+    }
+}
