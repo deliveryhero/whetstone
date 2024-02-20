@@ -42,7 +42,7 @@ internal class AppComponentHandler : CodegenHandler {
             writeAppComponent(module, packageName, outputFileName)
         }
 
-        return GeneratedFileInfo(packageName, outputFileName, content)
+        return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
     }
 
     private fun FileSpec.Builder.writeAppComponent(module: ModuleDescriptor, packageName: String, className: String) {

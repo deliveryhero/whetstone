@@ -101,7 +101,7 @@ internal class BindingsModuleHandler : CodegenHandler {
             addType(moduleInterfaceSpec)
         }
 
-        return GeneratedFileInfo(packageName, outputFileName, content)
+        return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
     }
 
     private fun <K, V> MutableMap<K, V?>.getOrPutNullable(key: K, func: () -> V?): V? {
