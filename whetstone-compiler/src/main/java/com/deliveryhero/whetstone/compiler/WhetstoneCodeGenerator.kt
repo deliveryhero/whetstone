@@ -3,7 +3,7 @@ package com.deliveryhero.whetstone.compiler
 import com.google.auto.service.AutoService
 import com.squareup.anvil.compiler.api.AnvilContext
 import com.squareup.anvil.compiler.api.CodeGenerator
-import com.squareup.anvil.compiler.api.GeneratedFile
+import com.squareup.anvil.compiler.api.GeneratedFileWithSources
 import com.squareup.anvil.compiler.api.createGeneratedFile
 import com.squareup.anvil.compiler.internal.reference.classAndInnerClassReferences
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
@@ -21,11 +21,18 @@ public class WhetstoneCodeGenerator : CodeGenerator {
         codeGenDir: File,
         module: ModuleDescriptor,
         projectFiles: Collection<KtFile>
-    ): Collection<GeneratedFile> {
+    ): Collection<GeneratedFileWithSources> {
         return projectFiles
             .classAndInnerClassReferences(module)
             .flatMap { clas -> codegenHandlers.mapNotNull { it.processClass(clas, module) } }
-            .map { info -> createGeneratedFile(codeGenDir, info.packageName, info.fileName, info.content) }
-            .toList()
+            .map { info ->
+                createGeneratedFile(
+                    codeGenDir = codeGenDir,
+                    packageName = info.packageName,
+                    fileName = info.fileName,
+                    content = info.content,
+                    sourceFiles = setOf(info.sourceFile),
+                )
+            }.toList()
     }
 }
