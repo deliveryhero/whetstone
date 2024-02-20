@@ -20,7 +20,7 @@ public interface ApplicationModule {
 
     @Binds
     @ForScope(ApplicationScope::class)
-    public fun Application.bindContext(): Context
+    public fun bindContext(application: Application): Context
 
     @Multibinds
     public fun membersInjectors(): MembersInjectorMap
