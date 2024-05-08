@@ -1,7 +1,9 @@
 package com.deliveryhero.whetstone.worker
 
+import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import androidx.startup.Initializer
 import androidx.work.Configuration
 import androidx.work.WorkManager
@@ -27,6 +29,11 @@ private fun Whetstone.installWorkerFactory(application: Application) {
         val parentComponent = fromApplication<WorkerComponent.ParentComponent>(application)
         return@runBlocking Configuration.Builder()
             .setWorkerFactory(parentComponent.getWorkerFactory())
+            .setDefaultProcessName(application.packageName)
+            .setInitializationExceptionHandler {
+                (application.getSystemService(ACTIVITY_SERVICE) as? ActivityManager)?.clearApplicationUserData()
+                //TODO the event
+            }
             .build()
     }
     WorkManager.initialize(application, configuration)

@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone)
+x[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone)
 
 # Whetstone
 
