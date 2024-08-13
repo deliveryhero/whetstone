@@ -22,8 +22,8 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Publish artifact
         env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername : ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword : ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername : ${{ secrets.SONATYPE_NEXUS_ACTOR_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword : ${{ secrets.SONATYPE_NEXUS_ACTOR_PASSWORD }}
 
           # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
           # If we split on '/' and take the 3rd value,
