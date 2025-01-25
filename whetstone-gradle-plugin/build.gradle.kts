@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
@@ -18,10 +19,14 @@ java {
     }
 }
 
+kotlin {
+    jvmToolchain(11)
+    explicitApi()
+    compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+}
+
 tasks.compileKotlin {
     dependsOn(generateBuildConfig)
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
-    kotlinOptions.freeCompilerArgs += "-Xexplicit-api=strict"
 }
 
 gradlePlugin {

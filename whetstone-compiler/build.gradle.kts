@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("kapt")
+    id("com.deliveryhero.whetstone.build")
     id("com.vanniktech.maven.publish")
 }
 

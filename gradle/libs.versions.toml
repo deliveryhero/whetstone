@@ -21,6 +21,7 @@ binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator",
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlinSam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]
@@ -43,5 +44,6 @@ anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anv
 anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }

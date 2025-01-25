@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.deliveryhero.whetstone.build")
     id("com.deliveryhero.whetstone")
 }
 
@@ -16,6 +17,7 @@ android {
         versionCode = 1
         versionName = "1.0"
         applicationId = "com.deliveryhero.whetstone.sample"
+        targetSdk = 35
     }
     buildFeatures {
         compose = true
