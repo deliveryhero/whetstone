@@ -40,8 +40,6 @@ dependencies {
     implementation(gradleKotlinDsl())
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
-    compileOnly(libs.autoServiceAnnotations)
-    kapt(libs.autoServiceCompiler)
 }
 
 val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
