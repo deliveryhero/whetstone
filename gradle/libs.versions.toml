@@ -10,7 +10,7 @@ androidxWork = "2.9.0"
 anvil = "2.5.1"
 dagger = "2.53"
 kotlin = "2.0.0"
-mavenPublish = "0.25.3"
+mavenPublish = "0.30.0"
 autoService = "1.1.1"
 
 [plugins]
