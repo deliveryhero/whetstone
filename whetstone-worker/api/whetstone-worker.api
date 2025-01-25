@@ -1,21 +1,21 @@
-public final class anvil/hint/binding/com/deliveryhero/whetstone/worker/MultibindingWorkerFactoryKt {
-	public static final fun getCom_deliveryhero_whetstone_worker_MultibindingWorkerFactory_reference ()Lkotlin/reflect/KClass;
-	public static final fun getCom_deliveryhero_whetstone_worker_MultibindingWorkerFactory_scope0 ()Lkotlin/reflect/KClass;
+public final class anvil/hint/Com_deliveryhero_whetstone_worker_MultibindingWorkerFactory_WorkerFactory_ApplicationScope_BindingModule_da3294bd_c3e9afb4Kt {
+	public static final fun getCom_deliveryhero_whetstone_worker_MultibindingWorkerFactory_WorkerFactory_ApplicationScope_BindingModule_da3294bd_reference ()Lkotlin/reflect/KClass;
+	public static final fun getCom_deliveryhero_whetstone_worker_MultibindingWorkerFactory_WorkerFactory_ApplicationScope_BindingModule_da3294bd_scope0 ()Lkotlin/reflect/KClass;
 }
 
-public final class anvil/hint/merge/com/deliveryhero/whetstone/worker/WorkerComponent_ParentComponentKt {
+public final class anvil/hint/Com_deliveryhero_whetstone_worker_WorkerComponent_ParentComponent_2ef604f9Kt {
 	public static final fun getCom_deliveryhero_whetstone_worker_WorkerComponent_ParentComponent_reference ()Lkotlin/reflect/KClass;
 	public static final fun getCom_deliveryhero_whetstone_worker_WorkerComponent_ParentComponent_scope0 ()Lkotlin/reflect/KClass;
 }
 
-public final class anvil/hint/merge/com/deliveryhero/whetstone/worker/WorkerModuleKt {
-	public static final fun getCom_deliveryhero_whetstone_worker_WorkerModule_reference ()Lkotlin/reflect/KClass;
-	public static final fun getCom_deliveryhero_whetstone_worker_WorkerModule_scope0 ()Lkotlin/reflect/KClass;
-}
-
-public final class anvil/hint/subcomponent/com/deliveryhero/whetstone/worker/WorkerComponentKt {
+public final class anvil/hint/Com_deliveryhero_whetstone_worker_WorkerComponent_ea674893Kt {
 	public static final fun getCom_deliveryhero_whetstone_worker_WorkerComponent_reference ()Lkotlin/reflect/KClass;
 	public static final fun getCom_deliveryhero_whetstone_worker_WorkerComponent_scope ()Lkotlin/reflect/KClass;
+}
+
+public final class anvil/hint/Com_deliveryhero_whetstone_worker_WorkerModule_e43d7815Kt {
+	public static final fun getCom_deliveryhero_whetstone_worker_WorkerModule_reference ()Lkotlin/reflect/KClass;
+	public static final fun getCom_deliveryhero_whetstone_worker_WorkerModule_scope0 ()Lkotlin/reflect/KClass;
 }
 
 public abstract interface annotation class com/deliveryhero/whetstone/worker/ContributesWorker : java/lang/annotation/Annotation {
@@ -38,6 +38,10 @@ public final class com/deliveryhero/whetstone/worker/MultibindingWorkerFactory_F
 public final class com/deliveryhero/whetstone/worker/MultibindingWorkerFactory_Factory$Companion {
 	public final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/worker/MultibindingWorkerFactory_Factory;
 	public final fun newInstance (Lcom/deliveryhero/whetstone/worker/WorkerComponent$Factory;)Lcom/deliveryhero/whetstone/worker/MultibindingWorkerFactory;
+}
+
+public abstract interface class com/deliveryhero/whetstone/worker/MultibindingWorkerFactory_WorkerFactory_ApplicationScope_BindingModule_da3294bd {
+	public abstract fun bindWorkerFactory (Lcom/deliveryhero/whetstone/worker/MultibindingWorkerFactory;)Landroidx/work/WorkerFactory;
 }
 
 public final class com/deliveryhero/whetstone/worker/WhetstoneWorkerInitializer : androidx/startup/Initializer {
