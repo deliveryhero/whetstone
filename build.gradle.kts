@@ -1,18 +1,15 @@
 import com.android.build.gradle.BaseExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        google()
-    }
-
-    dependencies {
-        classpath(libs.androidGradle)
-        classpath(libs.kotlinGradle)
-        classpath(libs.anvilGradle)
-        classpath(libs.mavenPublishGradle)
-    }
+plugins {
+    alias(libs.plugins.kotlinCompose).apply(false)
+    alias(libs.plugins.androidApp).apply(false)
+    alias(libs.plugins.androidLib).apply(false)
+    alias(libs.plugins.kotlinJvm).apply(false)
+    alias(libs.plugins.kotlinKapt).apply(false)
+    alias(libs.plugins.anvil).apply(false)
+    alias(libs.plugins.mavenPublish).apply(false)
+    alias(libs.plugins.binaryValidator)
 }
 
 subprojects {
@@ -54,15 +51,10 @@ fun BaseExtension.configureExtension() {
     }
 }
 
-
-plugins {
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
-}
-
 apiValidation {
     ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
 }
 
-tasks.register("clean", Delete::class) {
+tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
