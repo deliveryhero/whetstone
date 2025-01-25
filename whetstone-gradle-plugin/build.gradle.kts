@@ -1,9 +1,8 @@
+import com.vanniktech.maven.publish.MavenPublishPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("java-library")
     id("java-gradle-plugin")
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinKapt)
@@ -11,18 +10,17 @@ plugins {
 }
 
 loadParentProperties()
-pluginManager.apply(com.vanniktech.maven.publish.MavenPublishPlugin::class)
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of("11"))
-    }
-}
+pluginManager.apply(MavenPublishPlugin::class)
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
     explicitApi()
     compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.compileKotlin {

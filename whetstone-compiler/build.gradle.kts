@@ -5,10 +5,8 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of("11"))
-    }
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
