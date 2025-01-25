@@ -11,10 +11,10 @@ java {
 }
 
 dependencies {
-    implementation(libs.anvilCompiler)
-    implementation(libs.anvilCompilerUtils)
-    implementation(libs.anvilAnnotations)
-    implementation(libs.dagger)
-    implementation(libs.autoServiceAnnotations)
+    compileOnly(libs.anvilCompiler)
+    compileOnly(libs.anvilCompilerUtils)
+    compileOnly(libs.anvilAnnotations)
+    compileOnly(libs.dagger)
+    compileOnly(libs.autoServiceAnnotations)
     kapt(libs.autoServiceCompiler)
 }
