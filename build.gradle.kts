@@ -38,7 +38,7 @@ fun KotlinCompile.configureTask() {
 }
 
 fun BaseExtension.configureExtension() {
-    compileSdkVersion(34)
+    compileSdkVersion(35)
 
     defaultConfig {
         minSdk = 21
