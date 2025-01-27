@@ -1,28 +1,31 @@
 [versions]
-androidGradle = "8.2.2"
-androidxActivity = "1.5.0"
-androidxAppCompat = "1.3.1"
-androidxCompose = "1.6.1"
-androidxComposeCompiler = "1.5.9"
-androidxCore = "1.7.0"
-androidxFragment = "1.5.0"
-androidxLifecycle = "2.5.0"
-androidxWork = "2.7.0"
+agp = "8.8.0"
+androidxActivity = "1.9.0"
+androidxAppCompat = "1.7.0"
+androidxCompose = "1.7.0"
+androidxCore = "1.15.0"
+androidxFragment = "1.6.0"
+androidxLifecycle = "2.7.0"
+androidxWork = "2.9.0"
 anvil = "2.5.0-beta01" #keeping at 2.5.0-beta01 as this is the last version that works with LazyClassKey https://github.com/square/anvil/issues/1079
 dagger = "2.52" #keeping at 2.52 because anything higher breaks anvil generation https://github.com/square/anvil/issues/1079
-kotlin = "1.9.22"
-kotlinxCoroutines = "1.6.4"
-mavenPublish = "0.25.3"
-truth = "1.1.3"
+kotlin = "2.0.0"
+mavenPublish = "0.30.0"
 autoService = "1.1.1"
 
 [plugins]
+androidApp = { id = "com.android.application", version.ref = "agp" }
+androidLib = { id = "com.android.library", version.ref = "agp" }
+anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.17.0" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish"}
+kotlinSam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]
-androidGradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
+androidGradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidxActivity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
 androidxAppCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppCompat" }
 androidxComposeMaterial = { module = "androidx.compose.material:material", version.ref = "androidxCompose" }
@@ -41,9 +44,6 @@ anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anv
 anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-mavenPublishGradle = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "mavenPublish" }
-truth = { module = "com.google.truth:truth", version.ref = "truth" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
