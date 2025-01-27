@@ -1,8 +1,8 @@
-import java.util.*
+import com.vanniktech.maven.publish.MavenPublishPlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("java-library")
     id("java-gradle-plugin")
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinKapt)
@@ -10,18 +10,21 @@ plugins {
 }
 
 loadParentProperties()
-pluginManager.apply(com.vanniktech.maven.publish.MavenPublishPlugin::class)
+pluginManager.apply(MavenPublishPlugin::class)
+
+kotlin {
+    jvmToolchain(17)
+    explicitApi()
+    compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+}
 
 java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of("11"))
-    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.compileKotlin {
     dependsOn(generateBuildConfig)
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
-    kotlinOptions.freeCompilerArgs += "-Xexplicit-api=strict"
 }
 
 gradlePlugin {
@@ -37,8 +40,6 @@ dependencies {
     implementation(gradleKotlinDsl())
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
-    compileOnly(libs.autoServiceAnnotations)
-    kapt(libs.autoServiceCompiler)
 }
 
 val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
