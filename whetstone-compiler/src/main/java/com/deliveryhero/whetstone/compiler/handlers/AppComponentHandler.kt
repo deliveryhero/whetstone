@@ -67,12 +67,11 @@ internal class AppComponentHandler : CodegenHandler {
             .addFunction(
                 FunSpec.builder("create")
                     .addParameter(appParam)
-                    .returns(generatedComponentCn)
+                    .returns(applicationComponentCn)
                     .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
                     .addCode(CodeBlock.of(
-                        "return DaggerGeneratedApplicationComponent.factory().create(%L) as %T",
-                        appParam.name,
-                        generatedComponentCn,
+                        "return DaggerGeneratedApplicationComponent.factory().create(%L)",
+                        appParam.name
                     ))
                     .build())
             .build()
