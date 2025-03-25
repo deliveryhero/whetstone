@@ -15,6 +15,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 
@@ -74,7 +75,7 @@ internal class BindingsModuleHandler : CodegenHandler {
             .addMember("%T::class", componentScopeCn)
             .build()
 
-        val classKeyAnnotation = AnnotationSpec.builder(ClassKey::class)
+        val classKeyAnnotation = AnnotationSpec.builder(LazyClassKey::class)
             .addMember("%T::class", className)
             .build()
 
