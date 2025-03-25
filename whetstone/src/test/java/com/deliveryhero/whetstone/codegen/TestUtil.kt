@@ -12,13 +12,12 @@ import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.tschuchort.compiletesting.JvmCompilationResult
-import com.tschuchort.compiletesting.KotlinCompilation
 import dagger.Binds
 import dagger.Component
 import dagger.MembersInjector
 import dagger.Module
-import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import javax.inject.Singleton
 import kotlin.reflect.KClass
@@ -40,7 +39,7 @@ internal fun JvmCompilationResult.validateInstanceBinding(
     val bindsMethod = bindingModule.declaredMemberFunctions.single { it.name == "binds" }
     assertTrue(bindsMethod.hasAnnotation<Binds>())
     assertTrue(bindsMethod.hasAnnotation<IntoMap>())
-    assertEquals(clas, bindsMethod.findAnnotation<ClassKey>()?.value)
+    assertEquals(clas, bindsMethod.findAnnotation<LazyClassKey>()?.value)
     assertEquals(clas, bindsMethod.findParameterByName("target")?.type?.classifier)
     assertEquals(baseClass, bindsMethod.returnType.classifier)
 }
@@ -56,7 +55,7 @@ internal fun JvmCompilationResult.validateInjectorBinding(classUnderTest: String
     val bindsMethod = bindingModule.declaredMemberFunctions.single { it.name == "binds" }
     assertTrue(bindsMethod.hasAnnotation<Binds>())
     assertTrue(bindsMethod.hasAnnotation<IntoMap>())
-    assertEquals(clas, bindsMethod.findAnnotation<ClassKey>()?.value)
+    assertEquals(clas, bindsMethod.findAnnotation<LazyClassKey>()?.value)
     assertEquals(
         membersInjector.parameterizedBy(clas.asClassName()),
         bindsMethod.findParameterByName("target")?.type?.asTypeName()
