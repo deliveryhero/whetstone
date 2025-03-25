@@ -21,7 +21,7 @@ import com.deliveryhero.whetstone.meta.AutoInstanceBinding
  * interface MyWorkerModule {
  *     @Binds
  *     @IntoMap
- *     @ClassKey(MyWorker::class)
+ *     @LazyClassKey(MyWorker::class)
  *     fun binds(target: MyWorker): ListenableWorker
  * }
  * ```
