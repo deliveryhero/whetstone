@@ -30,8 +30,8 @@ class MainService : Service() {
             .setAutoCancel(true)
             .build()
         startForeground(1, notification)
-
-        return START_STICKY_COMPATIBILITY
+        stopSelf()
+        return START_NOT_STICKY
     }
 
     companion object {

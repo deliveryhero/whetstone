@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.deliveryhero.whetstone.compose.injectedViewModel
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        startService(serviceIntent)
+        ContextCompat.startForegroundService(this, serviceIntent)
         val request = OneTimeWorkRequest.from(MainWorker::class.java)
         WorkManager.getInstance(this).enqueue(request)
     }
