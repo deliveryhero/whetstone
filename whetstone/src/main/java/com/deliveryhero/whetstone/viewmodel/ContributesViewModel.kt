@@ -21,7 +21,7 @@ import com.deliveryhero.whetstone.meta.AutoInstanceBinding
  * interface MyViewModelModule {
  *     @Binds
  *     @IntoMap
- *     @ClassKey(MyViewModel::class)
+ *     @LazyClassKey(MyViewModel::class)
  *     fun binds(target: MyViewModel): ViewModel
  * }
  * ```

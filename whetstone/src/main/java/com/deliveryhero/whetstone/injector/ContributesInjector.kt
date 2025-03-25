@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
  * interface MyActivityModule {
  *     @Binds
  *     @IntoMap
- *     @ClassKey(MyActivity::class)
+ *     @LazyClassKey(MyActivity::class)
  *     fun binds(target: MembersInjector<MyActivity>): MembersInjector<*>
  * }
  * ```

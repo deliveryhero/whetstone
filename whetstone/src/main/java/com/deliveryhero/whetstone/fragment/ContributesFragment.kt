@@ -21,7 +21,7 @@ import com.deliveryhero.whetstone.meta.AutoInstanceBinding
  * interface MyFragmentModule {
  *     @Binds
  *     @IntoMap
- *     @ClassKey(MyFragment::class)
+ *     @LazyClassKey(MyFragment::class)
  *     fun binds(target: MyFragment): Fragment
  * }
  * ```
