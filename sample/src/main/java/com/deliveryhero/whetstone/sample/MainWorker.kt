@@ -17,7 +17,7 @@ class MainWorker @Inject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-        Log.i("Worker", dependency.getMessage("MainWorker"))
+        Log.i("Worker", "${dependency.getMessage("MainWorker")} on ${Thread.currentThread().name}")
         return Result.success()
     }
 }

@@ -9,7 +9,7 @@ androidxLifecycle = "2.8.7"
 androidxWork = "2.10.0" # for sdk 35 compatibility
 anvil = "2.5.0-beta01" #keeping at 2.5.0-beta01 as this is the last version that works with LazyClassKey https://github.com/square/anvil/issues/1079
 dagger = "2.52" #keeping at 2.52 because anything higher breaks anvil generation https://github.com/square/anvil/issues/1079
-kotlin = "2.0.0"
+kotlin = "2.1.20"
 mavenPublish = "0.30.0"
 autoService = "1.1.1"
 
