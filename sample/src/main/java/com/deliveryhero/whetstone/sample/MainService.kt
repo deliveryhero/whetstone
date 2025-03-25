@@ -31,7 +31,7 @@ class MainService : Service() {
             .build()
         startForeground(1, notification)
 
-        return START_NOT_STICKY
+        return START_STICKY_COMPATIBILITY
     }
 
     companion object {

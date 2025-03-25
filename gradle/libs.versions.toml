@@ -1,12 +1,12 @@
 [versions]
-agp = "8.8.0"
-androidxActivity = "1.9.0"
+agp = "8.9.1"
+androidxActivity = "1.10.1"
 androidxAppCompat = "1.7.0"
-androidxCompose = "1.7.0"
+androidxCompose = "1.7.8"
 androidxCore = "1.15.0"
-androidxFragment = "1.6.0"
-androidxLifecycle = "2.7.0"
-androidxWork = "2.9.0"
+androidxFragment = "1.8.6"
+androidxLifecycle = "2.8.7"
+androidxWork = "2.10.0" # for sdk 35 compatibility
 anvil = "2.5.0-beta01" #keeping at 2.5.0-beta01 as this is the last version that works with LazyClassKey https://github.com/square/anvil/issues/1079
 dagger = "2.52" #keeping at 2.52 because anything higher breaks anvil generation https://github.com/square/anvil/issues/1079
 kotlin = "2.0.0"
