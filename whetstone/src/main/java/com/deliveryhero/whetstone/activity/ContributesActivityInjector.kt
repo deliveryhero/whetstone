@@ -20,7 +20,7 @@ import com.deliveryhero.whetstone.meta.AutoInjectorBinding
  * interface MyActivityModule {
  *     @Binds
  *     @IntoMap
- *     @ClassKey(MyActivity::class)
+ *     @LazyClassKey(MyActivity::class)
  *     fun binds(target: MembersInjector<MyActivity>): MembersInjector<*>
  * }
  * ```
