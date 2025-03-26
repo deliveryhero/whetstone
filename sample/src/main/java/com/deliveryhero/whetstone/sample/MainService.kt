@@ -30,7 +30,7 @@ class MainService : Service() {
             .setAutoCancel(true)
             .build()
         startForeground(1, notification)
-
+        stopSelf()
         return START_NOT_STICKY
     }
 

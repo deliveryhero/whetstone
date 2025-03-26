@@ -4,6 +4,7 @@ rootProject.name = "pd-whetstone"
 
 pluginManagement {
     includeBuild("whetstone-gradle-plugin")
+    includeBuild("build-logic")
     repositories {
         gradlePluginPortal()
         google()
