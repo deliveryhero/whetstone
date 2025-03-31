@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.deliveryhero.whetstone.compose.injectedViewModel
@@ -20,8 +21,6 @@ import com.deliveryhero.whetstone.sample.databinding.ActivityMainBinding
 import com.deliveryhero.whetstone.viewmodel.injectedViewModel
 
 class MainActivity : AppCompatActivity() {
-
-    private val viewModel by injectedViewModel<MainViewModel>()
     private val serviceIntent by lazy { Intent(this, MainService::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +35,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        Toast.makeText(this, viewModel.getHelloWorld(), Toast.LENGTH_SHORT).show()
-        startService(serviceIntent)
+        ContextCompat.startForegroundService(this, serviceIntent)
         val request = OneTimeWorkRequest.from(MainWorker::class.java)
         WorkManager.getInstance(this).enqueue(request)
     }

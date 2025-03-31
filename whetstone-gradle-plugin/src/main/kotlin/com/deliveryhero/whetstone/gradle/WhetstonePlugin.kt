@@ -3,14 +3,12 @@ package com.deliveryhero.whetstone.gradle
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
-import com.google.auto.service.AutoService
 import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 
-@AutoService(Plugin::class)
 public class WhetstonePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
