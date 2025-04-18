@@ -19,7 +19,7 @@ import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 
-internal class BindingsModuleHandler : CodegenHandler {
+internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
     private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
         val injectorModule = ExplicitInjectorModuleInfoProvider()
@@ -100,7 +100,7 @@ internal class BindingsModuleHandler : CodegenHandler {
                 .build()
 
             addType(moduleInterfaceSpec)
-            if (provider is InstanceModuleInfoProvider) {
+            if (provider is InstanceModuleInfoProvider && generateFactories) {
                 // Whetstone is explicitly generating this extra type to properly support
                 // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
                 // isn't happening now, so until then, we'll maintain this workaround
