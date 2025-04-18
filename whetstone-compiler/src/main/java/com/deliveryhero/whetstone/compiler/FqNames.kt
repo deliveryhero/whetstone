@@ -11,4 +11,7 @@ internal object FqNames {
     @JvmField val AUTO_INSTANCE = FqName("com.deliveryhero.whetstone.meta.AutoInstanceBinding")
     @JvmField val SINGLE_IN = FqName("com.deliveryhero.whetstone.SingleIn")
     @JvmField val APPLICATION = FqName("android.app.Application")
+    @JvmField val JVM_FIELD = FqName("kotlin.jvm.JvmField")
+    @JvmField val KEEP_FIELD_TYPE = FqName("dagger.internal.KeepFieldType")
+    @JvmField val ID_NAME_STRING = FqName("dagger.internal.IdentifierNameString")
 }
