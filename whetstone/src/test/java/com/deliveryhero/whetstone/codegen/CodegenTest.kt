@@ -25,6 +25,7 @@ internal class CodegenTest {
             """.trimIndent()
         ) {
             validateInstanceBinding("MyFragment", Fragment::class, FragmentScope::class)
+            validateLazyBindingKey("MyFragment")
         }
     }
 
@@ -40,6 +41,7 @@ internal class CodegenTest {
             """.trimIndent()
         ) {
             validateInstanceBinding("MyViewModel", ViewModel::class, ViewModelScope::class)
+            validateLazyBindingKey("MyViewModel")
         }
     }
 
