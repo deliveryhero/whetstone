@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 import kotlin.reflect.full.*
+import kotlin.reflect.typeOf
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -42,6 +43,20 @@ internal fun JvmCompilationResult.validateInstanceBinding(
     assertEquals(clas, bindsMethod.findAnnotation<LazyClassKey>()?.value)
     assertEquals(clas, bindsMethod.findParameterByName("target")?.type?.classifier)
     assertEquals(baseClass, bindsMethod.returnType.classifier)
+}
+
+internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String) {
+    val clas = classLoader.loadClass(classUnderTest).kotlin
+    val className = "${classUnderTest}BindingsModule_Binds_LazyMapKey"
+    val generatedClass = classLoader.loadClass(className).kotlin
+
+    val keepFieldType = generatedClass.declaredMemberProperties.single { it.name == "keepFieldType" }
+    assertEquals(clas, keepFieldType.returnType.classifier)
+
+    val lazyClassKeyName = generatedClass.declaredMemberProperties.single { it.name == "lazyClassKeyName" }
+    assertTrue(lazyClassKeyName.isConst)
+    assertEquals(typeOf<String>(), lazyClassKeyName.returnType)
+    assertEquals(clas.qualifiedName, lazyClassKeyName.call())
 }
 
 internal fun JvmCompilationResult.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {
