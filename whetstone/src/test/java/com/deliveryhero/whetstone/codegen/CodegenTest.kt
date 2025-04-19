@@ -22,9 +22,11 @@ internal class CodegenTest {
 
                 @ContributesFragment
                 class MyFragment : Fragment()
-            """.trimIndent()
+            """.trimIndent(),
+            generateDaggerFactories = true
         ) {
             validateInstanceBinding("MyFragment", Fragment::class, FragmentScope::class)
+            validateLazyBindingKey("MyFragment")
         }
     }
 
@@ -37,9 +39,11 @@ internal class CodegenTest {
 
                 @ContributesViewModel
                 class MyViewModel : ViewModel()
-            """.trimIndent()
+            """.trimIndent(),
+            generateDaggerFactories = true
         ) {
             validateInstanceBinding("MyViewModel", ViewModel::class, ViewModelScope::class)
+            validateLazyBindingKey("MyViewModel")
         }
     }
 
