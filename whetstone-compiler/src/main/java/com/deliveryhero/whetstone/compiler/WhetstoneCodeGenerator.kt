@@ -1,5 +1,7 @@
 package com.deliveryhero.whetstone.compiler
 
+import com.deliveryhero.whetstone.compiler.handlers.AppComponentHandler
+import com.deliveryhero.whetstone.compiler.handlers.BindingsModuleHandler
 import com.google.auto.service.AutoService
 import com.squareup.anvil.compiler.api.AnvilContext
 import com.squareup.anvil.compiler.api.CodeGenerator
@@ -9,16 +11,16 @@ import com.squareup.anvil.compiler.internal.reference.classAndInnerClassReferenc
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
-import kotlin.LazyThreadSafetyMode.NONE
 
 @AutoService(CodeGenerator::class)
 public class WhetstoneCodeGenerator : CodeGenerator {
 
-    private var isAnvilGeneratingDaggerFactories = false
-    private val codegenHandlers by lazy(NONE) { defaultCodegenHandlers(isAnvilGeneratingDaggerFactories) }
+    private val codegenHandlers = mutableListOf<CodegenHandler>()
 
     override fun isApplicable(context: AnvilContext): Boolean {
-        isAnvilGeneratingDaggerFactories = context.generateFactories
+        require(codegenHandlers.isEmpty())
+        codegenHandlers += BindingsModuleHandler(context.generateFactories)
+        codegenHandlers += AppComponentHandler()
         return true
     }
 

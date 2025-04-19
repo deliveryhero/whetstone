@@ -5,7 +5,6 @@ import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.compiler.internal.asClassName
 import com.squareup.anvil.compiler.internal.buildFile
 import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.anvil.compiler.internal.reference.ClassReference
@@ -14,6 +13,8 @@ import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
 import dagger.Binds
 import dagger.Module
+import dagger.internal.IdentifierNameString
+import dagger.internal.KeepFieldType
 import dagger.multibindings.IntoMap
 import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
@@ -28,7 +29,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
 
     override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
         val provider = findProvider(clas) ?: return null
-        return generateModule(provider, clas, module)
+        return generateModule(provider, clas)
     }
 
     private fun findProvider(clas: ClassReference): ModuleInfoProvider? {
@@ -61,7 +62,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         return result
     }
 
-    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo {
+    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference): GeneratedFileInfo {
         val className = clas.asClassName()
         val packageName = clas.packageFqName.safePackageString(
             dotPrefix = false,
@@ -104,17 +105,17 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
                 // Whetstone is explicitly generating this extra type to properly support
                 // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
                 // isn't happening now, so until then, we'll maintain this workaround
-                addType(generateLazyMapKey(outputFileName, className, module))
+                addType(generateLazyMapKey(outputFileName, className))
             }
         }
 
         return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
     }
 
-    private fun generateLazyMapKey(outputFileName: String, className: ClassName, module: ModuleDescriptor): TypeSpec {
+    private fun generateLazyMapKey(outputFileName: String, className: ClassName): TypeSpec {
         val keepFieldType = PropertySpec.builder("keepFieldType", className.copy(nullable = true))
-            .addAnnotation(FqNames.JVM_FIELD.asClassName(module))
-            .addAnnotation(FqNames.KEEP_FIELD_TYPE.asClassName(module))
+            .addAnnotation(JvmField::class)
+            .addAnnotation(KeepFieldType::class)
             .initializer("null")
             .build()
         val lazyClassKeyName = PropertySpec.builder("lazyClassKeyName", STRING)
@@ -122,7 +123,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             .initializer("%S", className.canonicalName)
             .build()
         return TypeSpec.objectBuilder("${outputFileName}_Binds_LazyMapKey")
-            .addAnnotation(FqNames.ID_NAME_STRING.asClassName(module))
+            .addAnnotation(IdentifierNameString::class)
             .addProperty(keepFieldType)
             .addProperty(lazyClassKeyName)
             .build()
