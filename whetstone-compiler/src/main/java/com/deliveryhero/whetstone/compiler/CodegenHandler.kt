@@ -10,6 +10,6 @@ internal interface CodegenHandler {
     fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo?
 }
 
-internal fun defaultCodegenHandlers(): List<CodegenHandler> {
-    return listOf(BindingsModuleHandler(), AppComponentHandler())
+internal fun defaultCodegenHandlers(generateFactories: Boolean): List<CodegenHandler> {
+    return listOf(BindingsModuleHandler(generateFactories), AppComponentHandler())
 }

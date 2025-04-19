@@ -5,6 +5,7 @@ import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.ContributesTo
+import com.squareup.anvil.compiler.internal.asClassName
 import com.squareup.anvil.compiler.internal.buildFile
 import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.anvil.compiler.internal.reference.ClassReference
@@ -13,13 +14,12 @@ import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
 import dagger.Binds
 import dagger.Module
-import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 
-internal class BindingsModuleHandler : CodegenHandler {
+internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
     private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
         val injectorModule = ExplicitInjectorModuleInfoProvider()
@@ -28,7 +28,7 @@ internal class BindingsModuleHandler : CodegenHandler {
 
     override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
         val provider = findProvider(clas) ?: return null
-        return generateModule(provider, clas)
+        return generateModule(provider, clas, module)
     }
 
     private fun findProvider(clas: ClassReference): ModuleInfoProvider? {
@@ -61,7 +61,7 @@ internal class BindingsModuleHandler : CodegenHandler {
         return result
     }
 
-    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference): GeneratedFileInfo {
+    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo {
         val className = clas.asClassName()
         val packageName = clas.packageFqName.safePackageString(
             dotPrefix = false,
@@ -100,9 +100,32 @@ internal class BindingsModuleHandler : CodegenHandler {
                 .build()
 
             addType(moduleInterfaceSpec)
+            if (provider is InstanceModuleInfoProvider && generateFactories) {
+                // Whetstone is explicitly generating this extra type to properly support
+                // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
+                // isn't happening now, so until then, we'll maintain this workaround
+                addType(generateLazyMapKey(outputFileName, className, module))
+            }
         }
 
         return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
+    }
+
+    private fun generateLazyMapKey(outputFileName: String, className: ClassName, module: ModuleDescriptor): TypeSpec {
+        val keepFieldType = PropertySpec.builder("keepFieldType", className.copy(nullable = true))
+            .addAnnotation(FqNames.JVM_FIELD.asClassName(module))
+            .addAnnotation(FqNames.KEEP_FIELD_TYPE.asClassName(module))
+            .initializer("null")
+            .build()
+        val lazyClassKeyName = PropertySpec.builder("lazyClassKeyName", STRING)
+            .addModifiers(KModifier.CONST)
+            .initializer("%S", className.canonicalName)
+            .build()
+        return TypeSpec.objectBuilder("${outputFileName}_Binds_LazyMapKey")
+            .addAnnotation(FqNames.ID_NAME_STRING.asClassName(module))
+            .addProperty(keepFieldType)
+            .addProperty(lazyClassKeyName)
+            .build()
     }
 
     private fun <K, V> MutableMap<K, V?>.getOrPutNullable(key: K, func: () -> V?): V? {

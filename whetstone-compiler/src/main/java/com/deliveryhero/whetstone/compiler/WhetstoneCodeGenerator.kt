@@ -9,13 +9,18 @@ import com.squareup.anvil.compiler.internal.reference.classAndInnerClassReferenc
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
+import kotlin.LazyThreadSafetyMode.NONE
 
 @AutoService(CodeGenerator::class)
 public class WhetstoneCodeGenerator : CodeGenerator {
 
-    private val codegenHandlers = defaultCodegenHandlers()
+    private var isAnvilGeneratingDaggerFactories = false
+    private val codegenHandlers by lazy(NONE) { defaultCodegenHandlers(isAnvilGeneratingDaggerFactories) }
 
-    override fun isApplicable(context: AnvilContext): Boolean = true
+    override fun isApplicable(context: AnvilContext): Boolean {
+        isAnvilGeneratingDaggerFactories = context.generateFactories
+        return true
+    }
 
     override fun generateCode(
         codeGenDir: File,
