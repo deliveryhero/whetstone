@@ -48,6 +48,23 @@ internal class CodegenTest {
     }
 
     @Test
+    fun contributesViewModel_noLazyBinding() {
+        compileAnvil(
+            """
+                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+                import androidx.lifecycle.ViewModel
+
+                @ContributesViewModel
+                class MyViewModel : ViewModel()
+            """.trimIndent(),
+            generateDaggerFactories = false
+        ) {
+            validateInstanceBinding("MyViewModel", ViewModel::class, ViewModelScope::class)
+            validateNoLazyBindingKey("MyViewModel")
+        }
+    }
+
+    @Test
     fun contributesInjector() {
         compileAnvil(
             """
