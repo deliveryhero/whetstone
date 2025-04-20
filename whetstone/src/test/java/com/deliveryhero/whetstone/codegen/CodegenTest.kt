@@ -57,9 +57,11 @@ internal class CodegenTest {
 
                 @ContributesInjector(ActivityScope::class)
                 class MyActivity: Activity()
-            """.trimIndent()
+            """.trimIndent(),
+            generateDaggerFactories = true
         ) {
             validateInjectorBinding("MyActivity", ActivityScope::class)
+            validateLazyBindingKey("MyActivity")
         }
     }
 
@@ -72,9 +74,11 @@ internal class CodegenTest {
 
                 @ContributesActivityInjector
                 class MyActivity: Activity()
-            """.trimIndent()
+            """.trimIndent(),
+            generateDaggerFactories = true
         ) {
             validateInjectorBinding("MyActivity", ActivityScope::class)
+            validateLazyBindingKey("MyActivity")
         }
     }
 
@@ -88,8 +92,10 @@ internal class CodegenTest {
                 @ContributesAppInjector(generateAppComponent = false)
                 class MyApplication: Application()
             """.trimIndent(),
+            generateDaggerFactories = true
         ) {
             validateInjectorBinding("MyApplication", ApplicationScope::class)
+            validateLazyBindingKey("MyApplication")
             // generating app component requires kapt which seems broken in the tests
             // validateAppComponent()
         }
