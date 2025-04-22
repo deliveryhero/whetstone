@@ -24,6 +24,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.*
 import kotlin.reflect.typeOf
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 internal fun JvmCompilationResult.validateInstanceBinding(
@@ -57,6 +58,11 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
     assertTrue(lazyClassKeyName.isConst)
     assertEquals(typeOf<String>(), lazyClassKeyName.returnType)
     assertEquals(clas.qualifiedName, lazyClassKeyName.call())
+}
+
+internal fun JvmCompilationResult.validateNoLazyBindingKey(classUnderTest: String) {
+    val className = "${classUnderTest}BindingsModule_Binds_LazyMapKey"
+    assertFailsWith<ClassNotFoundException> { classLoader.loadClass(className).kotlin }
 }
 
 internal fun JvmCompilationResult.validateInjectorBinding(classUnderTest: String, scope: KClass<*>) {

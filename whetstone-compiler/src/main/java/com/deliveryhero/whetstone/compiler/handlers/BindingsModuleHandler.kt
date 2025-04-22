@@ -101,7 +101,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
                 .build()
 
             addType(moduleInterfaceSpec)
-            if (provider is InstanceModuleInfoProvider && generateFactories) {
+            if (generateFactories) {
                 // Whetstone is explicitly generating this extra type to properly support
                 // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
                 // isn't happening now, so until then, we'll maintain this workaround
