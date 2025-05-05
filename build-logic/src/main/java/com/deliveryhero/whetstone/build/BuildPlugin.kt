@@ -1,12 +1,20 @@
 package com.deliveryhero.whetstone.build
 
 import com.android.build.api.dsl.CommonExtension
+import com.deliveryhero.whetstone.build.Dependency.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.*
+
+
+private const val DETEKT_PLUGINS = "detektPlugins"
+
 
 class BuildPlugin : Plugin<Project> {
 
@@ -14,6 +22,8 @@ class BuildPlugin : Plugin<Project> {
         target.configureJava()
         target.configureKotlin()
         target.configureAndroid()
+        target.configureDetekt()
+        target.configureLint()
     }
 
     private fun Project.configureJava() = configure<JavaPluginExtension> {
@@ -45,4 +55,56 @@ class BuildPlugin : Plugin<Project> {
             }
         }
     }
+
+    private fun Project.configureDetekt() {
+        apply { plugin("io.gitlab.arturbosch.detekt") }
+        dependencies {
+            add(DETEKT_PLUGINS, libs.findLibrary("detekt-formatting").get())
+        }
+        extensions.getByType<io.gitlab.arturbosch.detekt.extensions.DetektExtension>().apply {
+            config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+            buildUponDefaultConfig = true
+            autoCorrect = false
+            baseline = file("$rootDir/config/detekt/baseline.xml")
+            ignoreFailures = false
+        }
+
+        tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+            jvmTarget = "17"
+            ignoreFailures = true
+            reports {
+                html.required.set(true)
+                html.outputLocation.set(rootProject.layout.buildDirectory.file("reports/detekt/detekt.html"))
+                xml.required.set(true)
+                xml.outputLocation.set(rootProject.layout.buildDirectory.file("reports/detekt/detekt.xml"))
+                sarif.required.set(true)
+                sarif.outputLocation.set(rootProject.layout.buildDirectory.file("reports/detekt/detekt.sarif"))
+            }
+
+            doFirst {
+                file("$rootDir/reports/detekt/").mkdirs()
+            }
+
+        }
+    }
+
+    private fun Project.configureLint() {
+        plugins.withId("com.android.base") {
+            extensions.configure(CommonExtension::class) {
+                lint {
+                    htmlReport = true
+                    htmlOutput = file("$rootDir/reports/lint/lint-report.html")
+                    xmlReport = true
+                    xmlOutput = file("$rootDir/reports/lint/lint-report.xml")
+                    // Optional: turn on baseline support if needed
+                    // baseline = file("$rootDir/lint-baseline.xml")
+                    checkDependencies = true
+                   // isAbortOnError = false
+                }
+            }
+        }
+    }
+
+
 }
+
