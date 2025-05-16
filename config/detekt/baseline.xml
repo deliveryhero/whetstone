@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ReturnCount:MultibindingWorkerFactory.kt$MultibindingWorkerFactory.Companion$@RestrictTo(RestrictTo.Scope.LIBRARY) internal fun loadClass( classLoader: ClassLoader, className: String, ): Class&lt;out ListenableWorker&gt;?</ID>
+    <ID>SwallowedException:MultibindingWorkerFactory.kt$MultibindingWorkerFactory.Companion$e: ClassCastException</ID>
+    <ID>SwallowedException:MultibindingWorkerFactory.kt$MultibindingWorkerFactory.Companion$e: ClassNotFoundException</ID>
+  </CurrentIssues>
+</SmellBaseline>
