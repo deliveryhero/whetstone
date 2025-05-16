@@ -63,7 +63,7 @@ class BuildPlugin : Plugin<Project> {
             add(DETEKT_PLUGINS, libs.findLibrary("detekt-formatting").get())
         }
 
-        extensions.getByType<io.gitlab.arturbosch.detekt.extensions.DetektExtension>().apply {
+        extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
             config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
             buildUponDefaultConfig = true
             autoCorrect = false

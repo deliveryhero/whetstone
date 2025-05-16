@@ -32,7 +32,7 @@ tasks.register("mergeLintReports") {
             .toList()
 
         if (reports.isEmpty()) {
-            println("⚠️ No lint reports found to merge.")
+            logger.warn("⚠️ No lint reports found to merge.")
             return@doLast
         }
 
@@ -42,7 +42,7 @@ tasks.register("mergeLintReports") {
         mergedDoc.appendChild(issuesElement)
 
         reports.forEach { report ->
-            println("✅ Merging: ${report.relativeTo(rootDir)}")
+            logger.info("✅ Merging: ${report.relativeTo(rootDir)}")
             val reportDoc = docBuilder.parse(report)
             val issueNodes = reportDoc.getElementsByTagName("issue")
             for (i in 0 until issueNodes.length) {
@@ -59,7 +59,7 @@ tasks.register("mergeLintReports") {
             javax.xml.transform.stream.StreamResult(mergedFile)
         )
 
-        println("✅ Merged lint report written to: ${mergedFile.absolutePath}")
+        logger.info("✅ Merged lint report written to: ${mergedFile.absolutePath}")
     }
 
 }
@@ -78,7 +78,7 @@ tasks.register("mergeDetektSarifReports") {
             .toList()
 
         if (reports.isEmpty()) {
-            println("⚠️ No Detekt SARIF reports found to merge.")
+            logger.warn("⚠️ No Detekt SARIF reports found to merge.")
             return@doLast
         }
 
@@ -87,7 +87,7 @@ tasks.register("mergeDetektSarifReports") {
         val mergedResults = mutableListOf<Map<String, Any>>()
 
         reports.forEach { report ->
-            println("✅ Merging: ${report.relativeTo(rootDir)}")
+            logger.info("✅ Merging: ${report.relativeTo(rootDir)}")
             val sarifData = jsonSlurper.parse(report) as Map<String, Any>
             val runs = sarifData["runs"] as List<Map<String, Any>>?
 
@@ -118,7 +118,7 @@ tasks.register("mergeDetektSarifReports") {
         mergedFile.parentFile.mkdirs()
         mergedFile.writeText(mergedJson)
 
-        println("✅ Merged Detekt SARIF report written to: ${mergedFile.absolutePath}")
+        logger.info("✅ Merged Detekt SARIF report written to: ${mergedFile.absolutePath}")
     }
 }
 
