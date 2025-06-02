@@ -4,24 +4,18 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
+import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
 import com.android.build.gradle.internal.tasks.ExportConsumerProguardFilesTask
 import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.internal.extensions.stdlib.capitalized
-import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.hasPlugin
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 
 internal abstract class ProguardLocatorTask : org.gradle.api.DefaultTask() {
 
@@ -34,9 +28,7 @@ public class WhetstonePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val extension = target.extensions.create<WhetstoneExtension>(WHETSTONE_EXTENSION)
         target.plugins.apply(ANVIL_PLUGIN_ID)
-        target.plugins.withType<AndroidBasePlugin> {
-            target.configureAnvil(extension)
-        }
+        target.configureAnvil(extension)
         if (target.isAppModule) {
             target.pluginManager.apply(KAPT_PLUGIN_ID)
             target.dependencies.add(
@@ -44,18 +36,7 @@ public class WhetstonePlugin : Plugin<Project> {
                 "com.google.dagger:dagger-compiler:${BuildConfig.DAGGER_VERSION}"
             )
         }
-        target.afterEvaluate {
-            if (!target.plugins.hasPlugin(AndroidBasePlugin::class)) {
-                throw GradleException(
-                    """
-                    Whetstone plugin was applied to project '${target.path}', but could not find
-                    a corresponding Android plugin.
-                    Whetstone can only be applied to Android projects!
-                    """.trimIndent().replace('\n', ' ')
-                )
-            }
-            target.addDependencies(extension)
-        }
+        target.afterEvaluate { target.addDependencies(extension) }
 
         addLocateWhetstoneProguardTask(target)
     }
@@ -109,9 +90,22 @@ public class WhetstonePlugin : Plugin<Project> {
     }
 
     private val Project.isAppModule: Boolean
-        get() = extensions.getByType<BaseExtension>() is AppExtension
+        get() = extensions.findByType<BaseExtension>() is AppExtension
 
     private fun Project.addDependencies(extension: WhetstoneExtension) {
+        val hasAndroidPlugin = plugins.hasPlugin(AndroidBasePlugin::class)
+        val hasAndroidKmpPlugin = plugins.hasPlugin(KotlinMultiplatformAndroidPlugin::class)
+
+        if (!hasAndroidPlugin && !hasAndroidKmpPlugin) {
+            throw GradleException(
+                """
+                Whetstone plugin was applied to project '$path', but could not find
+                a corresponding Android plugin.
+                Whetstone can only be applied to Android projects!
+                """.trimIndent().replace('\n', ' ')
+            )
+        }
+
         val useLocal = findProperty("whetstone.internal.project-dependency").toString().toBoolean()
 
         fun dependency(moduleId: String): Any = when {
@@ -120,8 +114,10 @@ public class WhetstonePlugin : Plugin<Project> {
         }
 
         fun DependencyHandlerScope.anvil(moduleId: String) = add("anvil", dependency(moduleId))
-        fun DependencyHandlerScope.implementation(moduleId: String) =
-            add("implementation", dependency(moduleId))
+        fun DependencyHandlerScope.implementation(moduleId: String): Dependency? {
+            val config = if (hasAndroidKmpPlugin) "androidMainImplementation" else "implementation"
+            return add(config, dependency(moduleId))
+        }
 
         dependencies {
             anvil("whetstone-compiler")
