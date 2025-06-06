@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directories:
+      - "/"
+      - "/whetstone"
+      - "/whetstone-compiler"
+      - "/whetstone-compose"
+      - "/whetstone-gradle-plugin"
+      - "/whetstone-worker"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "security"
+    allow:
+      - dependency-type: "all"
