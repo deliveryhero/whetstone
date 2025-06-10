@@ -13,6 +13,7 @@ kotlin = "2.1.20"
 mavenPublish = "0.30.0"
 autoService = "1.1.1"
 detekt = "1.23.8"
+jackson = "2.9.9"
 
 [plugins]
 androidApp = { id = "com.android.application", version.ref = "agp" }
@@ -25,6 +26,7 @@ kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinSam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+
 
 [libraries]
 androidGradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -51,3 +53,4 @@ autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annota
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+jacksonCore = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
