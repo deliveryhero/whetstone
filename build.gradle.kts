@@ -1,4 +1,5 @@
 plugins {
+    id("java-gradle-plugin")
     alias(libs.plugins.kotlinCompose).apply(false)
     alias(libs.plugins.androidApp).apply(false)
     alias(libs.plugins.androidLib).apply(false)
@@ -13,9 +14,13 @@ apiValidation {
     ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
+dependencies {
+    implementation(libs.jacksonCore)
 }
+
+/*tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
+}*/
 
 tasks.register("mergeLintReports") {
     description = "Merges all module lint XML reports into one file."
@@ -121,5 +126,3 @@ tasks.register("mergeDetektSarifReports") {
         logger.info("✅ Merged Detekt SARIF report written to: ${mergedFile.absolutePath}")
     }
 }
-
-
