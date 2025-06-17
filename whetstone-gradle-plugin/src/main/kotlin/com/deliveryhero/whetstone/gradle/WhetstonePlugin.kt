@@ -7,7 +7,13 @@ import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.hasPlugin
+import org.gradle.kotlin.dsl.withType
 
 public class WhetstonePlugin : Plugin<Project> {
 
@@ -17,7 +23,13 @@ public class WhetstonePlugin : Plugin<Project> {
         target.plugins.withType<AndroidBasePlugin> {
             target.configureAnvil(extension)
         }
-
+        if (target.isAppModule) {
+            target.pluginManager.apply(KAPT_PLUGIN_ID)
+            target.dependencies.add(
+                "kapt",
+                "com.google.dagger:dagger-compiler:${BuildConfig.DAGGER_VERSION}"
+            )
+        }
         target.afterEvaluate {
             if (!target.plugins.hasPlugin(AndroidBasePlugin::class)) {
                 throw GradleException(
@@ -53,7 +65,8 @@ public class WhetstonePlugin : Plugin<Project> {
         }
 
         fun DependencyHandlerScope.anvil(moduleId: String) = add("anvil", dependency(moduleId))
-        fun DependencyHandlerScope.implementation(moduleId: String) = add("implementation", dependency(moduleId))
+        fun DependencyHandlerScope.implementation(moduleId: String) =
+            add("implementation", dependency(moduleId))
 
         dependencies {
             anvil("whetstone-compiler")
@@ -67,5 +80,6 @@ public class WhetstonePlugin : Plugin<Project> {
     private companion object {
         const val ANVIL_PLUGIN_ID = "com.squareup.anvil"
         const val WHETSTONE_EXTENSION = "whetstone"
+        const val KAPT_PLUGIN_ID = "kotlin-kapt"
     }
 }
