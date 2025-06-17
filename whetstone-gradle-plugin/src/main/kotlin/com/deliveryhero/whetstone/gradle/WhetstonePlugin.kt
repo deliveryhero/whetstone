@@ -17,13 +17,7 @@ public class WhetstonePlugin : Plugin<Project> {
         target.plugins.withType<AndroidBasePlugin> {
             target.configureAnvil(extension)
         }
-        if (target.isAppModule) {
-            target.pluginManager.apply(KAPT_PLUGIN_ID)
-            target.dependencies.add(
-                "kapt",
-                "com.google.dagger:dagger-compiler:${BuildConfig.DAGGER_VERSION}"
-            )
-        }
+
         target.afterEvaluate {
             if (!target.plugins.hasPlugin(AndroidBasePlugin::class)) {
                 throw GradleException(
@@ -73,6 +67,5 @@ public class WhetstonePlugin : Plugin<Project> {
     private companion object {
         const val ANVIL_PLUGIN_ID = "com.squareup.anvil"
         const val WHETSTONE_EXTENSION = "whetstone"
-        const val KAPT_PLUGIN_ID = "kotlin-kapt"
     }
 }
