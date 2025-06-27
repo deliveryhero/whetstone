@@ -7,13 +7,26 @@ plugins {
     alias(libs.plugins.anvil).apply(false)
     alias(libs.plugins.mavenPublish).apply(false)
     alias(libs.plugins.binaryValidator)
+    `maven-publish`
+    signing
 }
+
+signing {
+    useInMemoryPgpKeys(
+        project.findProperty("signing.keyId") as String?,
+        project.findProperty("signing.key") as String?,
+        project.findProperty("signing.password") as String?
+    )
+    sign(publishing.publications)
+}
+
 
 apiValidation {
     ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
 }
 
-tasks.register<Delete>("clean") {
+
+tasks.named<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
 
