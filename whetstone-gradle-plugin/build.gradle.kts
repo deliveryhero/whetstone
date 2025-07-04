@@ -1,11 +1,11 @@
 import com.vanniktech.maven.publish.MavenPublishPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
     id("java-gradle-plugin")
     alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.kotlinKapt)
     alias(libs.plugins.mavenPublish).apply(false)
 }
 
@@ -23,10 +23,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-tasks.compileKotlin {
-    dependsOn(generateBuildConfig)
-}
-
 gradlePlugin {
     plugins {
         create("whetstone") {
@@ -42,7 +38,7 @@ dependencies {
     compileOnly(libs.androidGradle)
 }
 
-val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
+val generateBuildConfig = tasks.register<GenerateBuildConfigTask>("generateBuildConfig") {
     val props = mapOf(
         "GROUP" to project.property("GROUP").toString(),
         "VERSION" to project.property("VERSION_NAME").toString(),
@@ -51,6 +47,10 @@ val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
     properties.set(props)
     generatedSourceDir.set(layout.buildDirectory.dir("generated/wgp/kotlin/main"))
     sourceSets.main.get().java.srcDir(generatedSourceDir)
+}
+
+tasks.withType<KotlinCompile> {
+    dependsOn(generateBuildConfig)
 }
 
 abstract class GenerateBuildConfigTask : DefaultTask() {
@@ -89,8 +89,6 @@ fun loadParentProperties() {
     }
 }
 
-afterEvaluate {
-    with(tasks) {
-        findByName("kaptGenerateStubsKotlin")?.dependsOn(findByName("generateBuildConfig"))
-    }
+tasks.withType<KotlinCompile> {
+    dependsOn("generateBuildConfig")
 }
