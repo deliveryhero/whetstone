@@ -3,6 +3,7 @@ package com.deliveryhero.whetstone.compiler.handlers
 import com.deliveryhero.whetstone.compiler.CodegenHandler
 import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
+import com.deliveryhero.whetstone.compiler.GeneratedFileType
 import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.compiler.internal.buildFile
@@ -133,7 +134,8 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             packageName = packageName,
             fileName = outputFileName,
             content = content,
-            sourceFile = clas.containingFileAsJavaFile
+            sourceFile = clas.containingFileAsJavaFile,
+            fileType = GeneratedFileType.KOTLIN,
         )
 
         return generatedFiles
@@ -153,7 +155,8 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             packageName = "../proguard",
             fileName = "${outputFileName}_Binds_LazyMapKey",
             content = proguardRuleContent,
-            sourceFile = null
+            sourceFile = null,
+            fileType = GeneratedFileType.PROGUARD,
         )
         return proguardFileInfo
     }

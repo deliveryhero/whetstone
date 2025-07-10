@@ -7,4 +7,11 @@ internal class GeneratedFileInfo(
     val fileName: String,
     val content: String,
     val sourceFile: File?,
+    val fileType: GeneratedFileType,
 )
+
+internal enum class GeneratedFileType {
+
+    KOTLIN,
+    PROGUARD
+}

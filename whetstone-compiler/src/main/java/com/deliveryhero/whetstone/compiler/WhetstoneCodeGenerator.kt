@@ -33,22 +33,26 @@ public class WhetstoneCodeGenerator : CodeGenerator {
             .classAndInnerClassReferences(module)
             .flatMap { clas -> codegenHandlers.flatMap { it.processClass(clas, module) } }
             .mapNotNull { info ->
-                if (info.sourceFile == null) {
-                    writeProguardFileContent(
-                        codeGenDir = codeGenDir,
-                        packageName = info.packageName,
-                        fileName = info.fileName,
-                        content = info.content,
-                    )
-                    null
-                } else {
-                    createGeneratedFile(
-                        codeGenDir = codeGenDir,
-                        packageName = info.packageName,
-                        fileName = info.fileName,
-                        content = info.content,
-                        sourceFiles = setOfNotNull(info.sourceFile),
-                    )
+                when (info.fileType) {
+                    GeneratedFileType.KOTLIN -> {
+                        createGeneratedFile(
+                            codeGenDir = codeGenDir,
+                            packageName = info.packageName,
+                            fileName = info.fileName,
+                            content = info.content,
+                            sourceFiles = setOfNotNull(info.sourceFile),
+                        )
+                    }
+
+                    GeneratedFileType.PROGUARD -> {
+                        writeProguardFileContent(
+                            codeGenDir = codeGenDir,
+                            packageName = info.packageName,
+                            fileName = info.fileName,
+                            content = info.content,
+                        )
+                        null
+                    }
                 }
             }
             .toSet()

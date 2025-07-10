@@ -4,6 +4,7 @@ import com.deliveryhero.whetstone.compiler.CodegenHandler
 import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.FqNames.APPLICATION
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
+import com.deliveryhero.whetstone.compiler.GeneratedFileType
 import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.compiler.internal.asClassName
@@ -42,7 +43,13 @@ internal class AppComponentHandler : CodegenHandler {
             writeAppComponent(module, packageName, outputFileName)
         }
 
-        return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
+        return GeneratedFileInfo(
+            packageName = packageName,
+            fileName = outputFileName,
+            content = content,
+            sourceFile = clas.containingFileAsJavaFile,
+            fileType = GeneratedFileType.KOTLIN,
+        )
     }
 
     private fun FileSpec.Builder.writeAppComponent(module: ModuleDescriptor, packageName: String, className: String) {
