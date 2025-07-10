@@ -134,7 +134,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             packageName = packageName,
             fileName = outputFileName,
             content = content,
-            sourceFile = clas.containingFileAsJavaFile,
+            sourceFiles = setOf(clas.containingFileAsJavaFile),
             fileType = GeneratedFileType.KOTLIN,
         )
 
@@ -155,7 +155,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             packageName = "../proguard",
             fileName = "${outputFileName}_Binds_LazyMapKey",
             content = proguardRuleContent,
-            sourceFile = null,
+            sourceFiles = emptySet(),
             fileType = GeneratedFileType.PROGUARD,
         )
         return proguardFileInfo

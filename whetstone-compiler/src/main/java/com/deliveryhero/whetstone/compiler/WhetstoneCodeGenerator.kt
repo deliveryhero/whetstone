@@ -40,7 +40,7 @@ public class WhetstoneCodeGenerator : CodeGenerator {
                             packageName = info.packageName,
                             fileName = info.fileName,
                             content = info.content,
-                            sourceFiles = setOfNotNull(info.sourceFile),
+                            sourceFiles = info.sourceFiles,
                         )
                     }
 

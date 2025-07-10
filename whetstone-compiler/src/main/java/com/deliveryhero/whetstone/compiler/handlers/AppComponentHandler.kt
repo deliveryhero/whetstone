@@ -47,7 +47,7 @@ internal class AppComponentHandler : CodegenHandler {
             packageName = packageName,
             fileName = outputFileName,
             content = content,
-            sourceFile = clas.containingFileAsJavaFile,
+            sourceFiles = setOf(clas.containingFileAsJavaFile),
             fileType = GeneratedFileType.KOTLIN,
         )
     }
