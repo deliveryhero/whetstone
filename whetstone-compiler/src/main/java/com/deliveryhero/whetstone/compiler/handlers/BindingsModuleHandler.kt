@@ -37,10 +37,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         put(injectorModule.supportedAnnotation, injectorModule)
     }
 
-    override fun processClass(
-        clas: ClassReference,
-        module: ModuleDescriptor
-    ): Collection<GeneratedFileInfo> {
+    override fun processClass(clas: ClassReference, module: ModuleDescriptor): Collection<GeneratedFileInfo> {
         val provider = findProvider(clas) ?: return emptyList()
         return generateModule(provider, clas)
     }
@@ -75,10 +72,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         return result
     }
 
-    private fun generateModule(
-        provider: ModuleInfoProvider,
-        clas: ClassReference
-    ): List<GeneratedFileInfo> {
+    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference): List<GeneratedFileInfo> {
         val className = clas.asClassName()
         val packageName = clas.packageFqName.safePackageString(
             dotPrefix = false,
@@ -141,10 +135,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         return generatedFiles
     }
 
-    private fun generatedProguardFileInfo(
-        outputFileName: String,
-        className: ClassName
-    ): GeneratedFileInfo {
+    private fun generatedProguardFileInfo(outputFileName: String, className: ClassName): GeneratedFileInfo {
         "${outputFileName}_Binds_LazyMapKey"
         // Generate the Proguard rule for the LazyMapKey helper.
         val proguardRuleContent = "$PROGUARD_KEEP_RULE ${className.canonicalName}"
