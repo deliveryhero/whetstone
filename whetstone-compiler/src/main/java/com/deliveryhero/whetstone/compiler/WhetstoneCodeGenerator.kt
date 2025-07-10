@@ -31,15 +31,42 @@ public class WhetstoneCodeGenerator : CodeGenerator {
     ): Collection<GeneratedFileWithSources> {
         return projectFiles
             .classAndInnerClassReferences(module)
-            .flatMap { clas -> codegenHandlers.mapNotNull { it.processClass(clas, module) } }
-            .map { info ->
-                createGeneratedFile(
-                    codeGenDir = codeGenDir,
-                    packageName = info.packageName,
-                    fileName = info.fileName,
-                    content = info.content,
-                    sourceFiles = setOf(info.sourceFile),
-                )
-            }.toList()
+            .flatMap { clas -> codegenHandlers.flatMap { it.processClass(clas, module) } }
+            .mapNotNull { info ->
+                if (info.sourceFile == null) {
+                    writeProguardFileContent(
+                        codeGenDir = codeGenDir,
+                        packageName = info.packageName,
+                        fileName = info.fileName,
+                        content = info.content,
+                    )
+                    null
+                } else {
+                    createGeneratedFile(
+                        codeGenDir = codeGenDir,
+                        packageName = info.packageName,
+                        fileName = info.fileName,
+                        content = info.content,
+                        sourceFiles = setOfNotNull(info.sourceFile),
+                    )
+                }
+            }
+            .toSet()
     }
+}
+
+
+private fun writeProguardFileContent(
+    codeGenDir: File,
+    packageName: String,
+    fileName: String,
+    content: String,
+): File {
+    val directory = File(codeGenDir, packageName)
+    val file = File(directory, "$fileName.txt")
+    check(file.parentFile.exists() || file.parentFile.mkdirs()) {
+        "Could not generate package directory: ${file.parentFile}"
+    }
+    file.writeText(content)
+    return file
 }

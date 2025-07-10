@@ -10,7 +10,14 @@ import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.anvil.compiler.internal.reference.ClassReference
 import com.squareup.anvil.compiler.internal.reference.asClassName
 import com.squareup.anvil.compiler.internal.safePackageString
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STRING
+import com.squareup.kotlinpoet.TypeSpec
 import dagger.Binds
 import dagger.Module
 import dagger.internal.IdentifierNameString
@@ -20,6 +27,8 @@ import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 
+private const val PROGUARD_KEEP_RULE = "-keep,allowshrinking,allowoptimization class"
+
 internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
     private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
@@ -27,8 +36,11 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         put(injectorModule.supportedAnnotation, injectorModule)
     }
 
-    override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
-        val provider = findProvider(clas) ?: return null
+    override fun processClass(
+        clas: ClassReference,
+        module: ModuleDescriptor
+    ): Collection<GeneratedFileInfo> {
+        val provider = findProvider(clas) ?: return emptyList()
         return generateModule(provider, clas)
     }
 
@@ -62,7 +74,10 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         return result
     }
 
-    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference): GeneratedFileInfo {
+    private fun generateModule(
+        provider: ModuleInfoProvider,
+        clas: ClassReference
+    ): List<GeneratedFileInfo> {
         val className = clas.asClassName()
         val packageName = clas.packageFqName.safePackageString(
             dotPrefix = false,
@@ -108,8 +123,39 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
                 addType(generateLazyMapKey(outputFileName, className))
             }
         }
+        val generatedFiles = mutableListOf<GeneratedFileInfo>()
+        if (generateFactories) {
+            val proguardFileInfo = generatedProguardFileInfo(outputFileName, className)
+            generatedFiles += proguardFileInfo
+        }
 
-        return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
+        generatedFiles += GeneratedFileInfo(
+            packageName = packageName,
+            fileName = outputFileName,
+            content = content,
+            sourceFile = clas.containingFileAsJavaFile
+        )
+
+        return generatedFiles
+    }
+
+    private fun generatedProguardFileInfo(
+        outputFileName: String,
+        className: ClassName
+    ): GeneratedFileInfo {
+        "${outputFileName}_Binds_LazyMapKey"
+        // Generate the Proguard rule for the LazyMapKey helper.
+        val proguardRuleContent = "$PROGUARD_KEEP_RULE ${className.canonicalName}"
+
+        // The file must be placed in "META-INF/proguard/" for AGP to find it.
+        // We can use the `packageName` property of GeneratedFileInfo to represent the path.
+        val proguardFileInfo = GeneratedFileInfo(
+            packageName = "../proguard",
+            fileName = "${outputFileName}_Binds_LazyMapKey",
+            content = proguardRuleContent,
+            sourceFile = null
+        )
+        return proguardFileInfo
     }
 
     private fun generateLazyMapKey(outputFileName: String, className: ClassName): TypeSpec {

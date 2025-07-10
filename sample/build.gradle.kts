@@ -1,14 +1,17 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.androidApp)
+    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinCompose)
     id("com.deliveryhero.whetstone.build")
     id("com.deliveryhero.whetstone")
 }
 
-whetstone.addOns {
-    compose.set(true)
-    workManager.set(true)
+whetstone {
+    generateDaggerFactories = false
+    addOns {
+        compose.set(true)
+        workManager.set(true)
+    }
 }
 
 android {
@@ -19,21 +22,49 @@ android {
         applicationId = "com.deliveryhero.whetstone.sample"
         targetSdk = 35
     }
+
+    buildTypes {
+        getByName("release") {
+            isDefault = true
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
     buildFeatures {
         compose = true
         viewBinding = true
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+kapt {
+    javacOptions {
+        option("-Adagger.fastInit=enabled")
+    }
 }
 
 dependencies {
+    implementation(projects.sampleLibrary)
+
     implementation(libs.androidxActivity)
     implementation(libs.androidxCore)
     implementation(libs.androidxAppCompat)
     implementation(libs.androidxComposeMaterial)
     implementation(libs.androidxComposeUi)
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }

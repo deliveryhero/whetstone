@@ -17,9 +17,9 @@ import javax.inject.Singleton
 
 internal class AppComponentHandler : CodegenHandler {
 
-    override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
-        if (!shouldGenerateRoot(clas)) return null
-        return generateAppComponent(module, clas)
+    override fun processClass(clas: ClassReference, module: ModuleDescriptor): Collection<GeneratedFileInfo> {
+        if (!shouldGenerateRoot(clas)) return emptyList()
+        return listOf(generateAppComponent(module, clas))
     }
 
     private fun shouldGenerateRoot(clas: ClassReference): Boolean {
