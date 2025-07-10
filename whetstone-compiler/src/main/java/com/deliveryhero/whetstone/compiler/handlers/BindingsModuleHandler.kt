@@ -143,7 +143,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         // The file must be placed in "META-INF/proguard/" for AGP to find it.
         // We can use the `packageName` property of GeneratedFileInfo to represent the path.
         val proguardFileInfo = GeneratedFileInfo(
-            packageName = "../proguard",
+            packageName = "META-INF/proguard",
             fileName = "${outputFileName}_Binds_LazyMapKey",
             content = proguardRuleContent,
             sourceFiles = emptySet(),

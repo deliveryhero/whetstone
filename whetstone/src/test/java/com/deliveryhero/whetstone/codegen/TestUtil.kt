@@ -60,7 +60,10 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
     assertEquals(typeOf<String>(), lazyClassKeyName.returnType)
     assertEquals(clas.qualifiedName, lazyClassKeyName.call())
 
-    val generatedProFile = File(outputDirectory, "../proguard/$className.txt")
+    val simpleName = classUnderTest.substringAfterLast('.')
+    val proguardFileName = "${simpleName}BindingsModule_Binds_LazyMapKey"
+    val anvilFolder = File(outputDirectory.parentFile, "build/anvil")
+    val generatedProFile = File(anvilFolder, "META-INF/proguard/$proguardFileName.txt")
     assertTrue(generatedProFile.exists())
 }
 
