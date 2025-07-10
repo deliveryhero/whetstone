@@ -1,0 +1,47 @@
+public final class anvil/hint/Com_deliveryhero_whetstone_sample_library_MainViewModelBindingsModule_1a9d6c2aKt {
+	public static final fun getCom_deliveryhero_whetstone_sample_library_MainViewModelBindingsModule_reference ()Lkotlin/reflect/KClass;
+	public static final fun getCom_deliveryhero_whetstone_sample_library_MainViewModelBindingsModule_scope0 ()Lkotlin/reflect/KClass;
+}
+
+public final class com/deliveryhero/whetstone/sample/library/MainDependency {
+	public fun <init> ()V
+	public final fun getMessage (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class com/deliveryhero/whetstone/sample/library/MainDependency_Factory : dagger/internal/Factory {
+	public static final field INSTANCE Lcom/deliveryhero/whetstone/sample/library/MainDependency_Factory;
+	public static final fun create ()Lcom/deliveryhero/whetstone/sample/library/MainDependency_Factory;
+	public fun get ()Lcom/deliveryhero/whetstone/sample/library/MainDependency;
+	public synthetic fun get ()Ljava/lang/Object;
+	public static final fun newInstance ()Lcom/deliveryhero/whetstone/sample/library/MainDependency;
+}
+
+public final class com/deliveryhero/whetstone/sample/library/MainViewModel : androidx/lifecycle/ViewModel {
+	public fun <init> (Lcom/deliveryhero/whetstone/sample/library/MainDependency;)V
+	public final fun getHelloWorld ()Ljava/lang/String;
+}
+
+public abstract interface class com/deliveryhero/whetstone/sample/library/MainViewModelBindingsModule {
+	public abstract fun binds (Lcom/deliveryhero/whetstone/sample/library/MainViewModel;)Landroidx/lifecycle/ViewModel;
+}
+
+public final class com/deliveryhero/whetstone/sample/library/MainViewModelBindingsModule_Binds_LazyMapKey {
+	public static final field INSTANCE Lcom/deliveryhero/whetstone/sample/library/MainViewModelBindingsModule_Binds_LazyMapKey;
+	public static final field keepFieldType Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
+	public static final field lazyClassKeyName Ljava/lang/String;
+}
+
+public final class com/deliveryhero/whetstone/sample/library/MainViewModel_Factory : dagger/internal/Factory {
+	public static final field Companion Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory$Companion;
+	public fun <init> (Ljavax/inject/Provider;)V
+	public static final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory;
+	public fun get ()Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
+	public synthetic fun get ()Ljava/lang/Object;
+	public static final fun newInstance (Lcom/deliveryhero/whetstone/sample/library/MainDependency;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
+}
+
+public final class com/deliveryhero/whetstone/sample/library/MainViewModel_Factory$Companion {
+	public final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory;
+	public final fun newInstance (Lcom/deliveryhero/whetstone/sample/library/MainDependency;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
+}
+
