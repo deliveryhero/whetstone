@@ -79,9 +79,6 @@ public class WhetstonePlugin : Plugin<Project> {
 
                 val generatedProguardFiles = proguardDirProvider.map { dir ->
                     dir.asFileTree.filter { file -> file.name.endsWith(".txt") }
-                        .onEach {
-                            println(it)
-                        }
                 }
 
                 target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
