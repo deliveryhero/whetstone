@@ -4,6 +4,7 @@ import com.deliveryhero.whetstone.compiler.CodegenHandler
 import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.FqNames.APPLICATION
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
+import com.deliveryhero.whetstone.compiler.GeneratedFileType
 import com.deliveryhero.whetstone.compiler.getValue
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.compiler.internal.asClassName
@@ -17,9 +18,9 @@ import javax.inject.Singleton
 
 internal class AppComponentHandler : CodegenHandler {
 
-    override fun processClass(clas: ClassReference, module: ModuleDescriptor): GeneratedFileInfo? {
-        if (!shouldGenerateRoot(clas)) return null
-        return generateAppComponent(module, clas)
+    override fun processClass(clas: ClassReference, module: ModuleDescriptor): Collection<GeneratedFileInfo> {
+        if (!shouldGenerateRoot(clas)) return emptyList()
+        return listOf(generateAppComponent(module, clas))
     }
 
     private fun shouldGenerateRoot(clas: ClassReference): Boolean {
@@ -42,7 +43,13 @@ internal class AppComponentHandler : CodegenHandler {
             writeAppComponent(module, packageName, outputFileName)
         }
 
-        return GeneratedFileInfo(packageName, outputFileName, content, clas.containingFileAsJavaFile)
+        return GeneratedFileInfo(
+            packageName = packageName,
+            fileName = outputFileName,
+            content = content,
+            sourceFiles = setOf(clas.containingFileAsJavaFile),
+            fileType = GeneratedFileType.KOTLIN,
+        )
     }
 
     private fun FileSpec.Builder.writeAppComponent(module: ModuleDescriptor, packageName: String, className: String) {
