@@ -8,23 +8,29 @@ androidxFragment = "1.8.6"
 androidxLifecycle = "2.8.7"
 androidxWork = "2.10.0"
 anvil = "2.6.0"
+constraintlayout = "2.2.0"
 dagger = "2.56.2"
 kotlin = "2.1.21"
 mavenPublish = "0.30.0"
 autoService = "1.1.1"
 detekt = "1.23.8"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+material = "1.12.0"
 
 [plugins]
 androidApp = { id = "com.android.application", version.ref = "agp" }
 androidLib = { id = "com.android.library", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
-binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.17.0" }
+binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.0" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinSam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 [libraries]
 androidGradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -45,9 +51,14 @@ anvilAnnotations = { module = "com.squareup.anvil:annotations", version.ref = "a
 anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
 anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }

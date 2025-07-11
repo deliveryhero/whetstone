@@ -19,6 +19,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import java.io.File
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 import kotlin.reflect.full.*
@@ -58,6 +59,12 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
     assertTrue(lazyClassKeyName.isConst)
     assertEquals(typeOf<String>(), lazyClassKeyName.returnType)
     assertEquals(clas.qualifiedName, lazyClassKeyName.call())
+
+    val simpleName = classUnderTest.substringAfterLast('.')
+    val proguardFileName = "${simpleName}BindingsModule_Binds_LazyMapKey"
+    val anvilFolder = File(outputDirectory.parentFile, "build/anvil")
+    val generatedProFile = File(anvilFolder, "META-INF/proguard/$proguardFileName.txt")
+    assertTrue(generatedProFile.exists())
 }
 
 internal fun JvmCompilationResult.validateNoLazyBindingKey(classUnderTest: String) {

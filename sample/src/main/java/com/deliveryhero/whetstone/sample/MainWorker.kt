@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.deliveryhero.whetstone.ForScope
+import com.deliveryhero.whetstone.sample.library.MainDependency
 import com.deliveryhero.whetstone.worker.ContributesWorker
 import com.deliveryhero.whetstone.worker.WorkerScope
 import javax.inject.Inject

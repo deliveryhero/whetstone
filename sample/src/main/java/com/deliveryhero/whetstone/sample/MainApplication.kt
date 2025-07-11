@@ -11,10 +11,11 @@ import com.deliveryhero.whetstone.Whetstone
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ContributesAppInjector
 import com.deliveryhero.whetstone.sample.MainService.Companion.NOTIFICATION_CHANNEL_ID
+import com.deliveryhero.whetstone.sample.library.MainDependency
 import javax.inject.Inject
 
 @ContributesAppInjector(generateAppComponent = true)
-public class MainApplication : Application(), ApplicationComponentOwner {
+class MainApplication : Application(), ApplicationComponentOwner {
 
     @Inject
     internal lateinit var dependency: MainDependency
