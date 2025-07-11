@@ -28,7 +28,10 @@ import dagger.multibindings.LazyClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
 
-private const val PROGUARD_KEEP_RULE = "-keep,allowshrinking,allowoptimization class"
+// Dagger uses "-keep,allowobfuscation,allowshrinking class "; https://github.com/google/dagger/blob/master/dagger-compiler/main/java/dagger/internal/codegen/processingstep/LazyClassKeyProcessingStep.java
+// When we use the same configuration, application still crash when we use a value from the map injection.
+// That is why we are using slightly different version. keepnames is short of keep,allowobfuscation and it works fine in this case.
+private const val PROGUARD_KEEP_RULE = "-keepnames,allowshrinking,allowoptimization class"
 
 internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
