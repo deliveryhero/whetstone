@@ -33,15 +33,15 @@ public final class com/deliveryhero/whetstone/sample/library/MainViewModelBindin
 
 public final class com/deliveryhero/whetstone/sample/library/MainViewModel_Factory : dagger/internal/Factory {
 	public static final field Companion Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory$Companion;
-	public fun <init> (Ljavax/inject/Provider;)V
-	public static final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory;
+	public fun <init> (Ldagger/internal/Provider;)V
+	public static final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory;
 	public fun get ()Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
 	public synthetic fun get ()Ljava/lang/Object;
 	public static final fun newInstance (Lcom/deliveryhero/whetstone/sample/library/MainDependency;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
 }
 
 public final class com/deliveryhero/whetstone/sample/library/MainViewModel_Factory$Companion {
-	public final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory;
+	public final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel_Factory;
 	public final fun newInstance (Lcom/deliveryhero/whetstone/sample/library/MainDependency;)Lcom/deliveryhero/whetstone/sample/library/MainViewModel;
 }
 
