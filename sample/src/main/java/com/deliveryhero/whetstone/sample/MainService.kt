@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.deliveryhero.whetstone.Whetstone
+import com.deliveryhero.whetstone.sample.library.MainDependency
 import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import javax.inject.Inject
 

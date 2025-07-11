@@ -17,6 +17,8 @@ internal class CodegenTest {
     fun contributesFragment() {
         compileAnvil(
             """
+                package foo
+
                 import com.deliveryhero.whetstone.fragment.ContributesFragment
                 import androidx.fragment.app.Fragment
 
@@ -25,8 +27,8 @@ internal class CodegenTest {
             """.trimIndent(),
             generateDaggerFactories = true
         ) {
-            validateInstanceBinding("MyFragment", Fragment::class, FragmentScope::class)
-            validateLazyBindingKey("MyFragment")
+            validateInstanceBinding("foo.MyFragment", Fragment::class, FragmentScope::class)
+            validateLazyBindingKey("foo.MyFragment")
         }
     }
 
@@ -34,6 +36,8 @@ internal class CodegenTest {
     fun contributesViewModel() {
         compileAnvil(
             """
+                package foo
+
                 import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
                 import androidx.lifecycle.ViewModel
 
@@ -42,8 +46,8 @@ internal class CodegenTest {
             """.trimIndent(),
             generateDaggerFactories = true
         ) {
-            validateInstanceBinding("MyViewModel", ViewModel::class, ViewModelScope::class)
-            validateLazyBindingKey("MyViewModel")
+            validateInstanceBinding("foo.MyViewModel", ViewModel::class, ViewModelScope::class)
+            validateLazyBindingKey("foo.MyViewModel")
         }
     }
 
@@ -51,6 +55,8 @@ internal class CodegenTest {
     fun contributesViewModel_noLazyBinding() {
         compileAnvil(
             """
+                package foo
+
                 import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
                 import androidx.lifecycle.ViewModel
 
@@ -59,8 +65,8 @@ internal class CodegenTest {
             """.trimIndent(),
             generateDaggerFactories = false
         ) {
-            validateInstanceBinding("MyViewModel", ViewModel::class, ViewModelScope::class)
-            validateNoLazyBindingKey("MyViewModel")
+            validateInstanceBinding("foo.MyViewModel", ViewModel::class, ViewModelScope::class)
+            validateNoLazyBindingKey("foo.MyViewModel")
         }
     }
 
@@ -68,6 +74,8 @@ internal class CodegenTest {
     fun contributesInjector() {
         compileAnvil(
             """
+                package foo
+
                 import com.deliveryhero.whetstone.injector.ContributesInjector
                 import com.deliveryhero.whetstone.activity.ActivityScope
                 import android.app.Activity
@@ -77,8 +85,8 @@ internal class CodegenTest {
             """.trimIndent(),
             generateDaggerFactories = true
         ) {
-            validateInjectorBinding("MyActivity", ActivityScope::class)
-            validateLazyBindingKey("MyActivity")
+            validateInjectorBinding("foo.MyActivity", ActivityScope::class)
+            validateLazyBindingKey("foo.MyActivity")
         }
     }
 
@@ -86,6 +94,8 @@ internal class CodegenTest {
     fun contributesActivityInjector() {
         compileAnvil(
             """
+                package foo
+
                 import com.deliveryhero.whetstone.activity.ContributesActivityInjector
                 import android.app.Activity
 
@@ -94,8 +104,8 @@ internal class CodegenTest {
             """.trimIndent(),
             generateDaggerFactories = true
         ) {
-            validateInjectorBinding("MyActivity", ActivityScope::class)
-            validateLazyBindingKey("MyActivity")
+            validateInjectorBinding("foo.MyActivity", ActivityScope::class)
+            validateLazyBindingKey("foo.MyActivity")
         }
     }
 
@@ -103,6 +113,8 @@ internal class CodegenTest {
     fun contributesAppInjector() {
         compileAnvil(
             """
+                package foo
+
                 import com.deliveryhero.whetstone.app.ContributesAppInjector
                 import android.app.Application
 
@@ -111,8 +123,8 @@ internal class CodegenTest {
             """.trimIndent(),
             generateDaggerFactories = true
         ) {
-            validateInjectorBinding("MyApplication", ApplicationScope::class)
-            validateLazyBindingKey("MyApplication")
+            validateInjectorBinding("foo.MyApplication", ApplicationScope::class)
+            validateLazyBindingKey("foo.MyApplication")
             // generating app component requires kapt which seems broken in the tests
             // validateAppComponent()
         }

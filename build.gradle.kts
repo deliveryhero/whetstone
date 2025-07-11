@@ -1,12 +1,13 @@
 plugins {
-    alias(libs.plugins.kotlinCompose).apply(false)
-    alias(libs.plugins.androidApp).apply(false)
-    alias(libs.plugins.androidLib).apply(false)
-    alias(libs.plugins.kotlinJvm).apply(false)
-    alias(libs.plugins.kotlinKapt).apply(false)
-    alias(libs.plugins.anvil).apply(false)
-    alias(libs.plugins.mavenPublish).apply(false)
+    alias(libs.plugins.kotlinCompose) apply false
+    alias(libs.plugins.androidApp) apply false
+    alias(libs.plugins.androidLib) apply false
+    alias(libs.plugins.kotlinJvm) apply false
+    alias(libs.plugins.kotlinKapt) apply false
+    alias(libs.plugins.anvil) apply false
+    alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.binaryValidator)
+    alias(libs.plugins.kotlinAndroid) apply false
     `maven-publish`
     signing
 }
@@ -134,5 +135,3 @@ tasks.register("mergeDetektSarifReports") {
         logger.info("✅ Merged Detekt SARIF report written to: ${mergedFile.absolutePath}")
     }
 }
-
-

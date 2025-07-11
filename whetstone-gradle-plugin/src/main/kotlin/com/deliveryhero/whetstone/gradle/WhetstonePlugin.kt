@@ -1,13 +1,34 @@
 package com.deliveryhero.whetstone.gradle
 
+import com.android.build.api.dsl.LibraryBuildType
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
+import com.android.build.gradle.internal.tasks.ExportConsumerProguardFilesTask
 import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.hasPlugin
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
+
+internal abstract class ProguardLocatorTask : org.gradle.api.DefaultTask() {
+
+    @get:OutputDirectory
+    internal abstract val locatedFiles: DirectoryProperty
+}
 
 public class WhetstonePlugin : Plugin<Project> {
 
@@ -36,6 +57,36 @@ public class WhetstonePlugin : Plugin<Project> {
             }
             target.addDependencies(extension)
         }
+
+        target.extensions.findByType<LibraryExtension>()?.apply {
+            buildTypes.configureEach { type: LibraryBuildType ->
+                val variantName = type.name.capitalized()
+                val sourceTaskName = "compile${variantName}Kotlin"
+                val generatedPath = "anvil/${type.name}/proguard"
+
+                val locateWhetstoneProguardTaskName = "locateWhetstone${variantName}Proguard"
+                target.tasks.register<ProguardLocatorTask>(locateWhetstoneProguardTaskName) {
+                    // This task depends on the task that actually creates the file
+                    dependsOn(sourceTaskName)
+
+                    locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
+                }
+
+                val proguardDirProvider = target
+                    .tasks
+                    .named<ProguardLocatorTask>(locateWhetstoneProguardTaskName)
+                    .flatMap { it.locatedFiles }
+
+                val generatedProguardFiles = proguardDirProvider.map { dir ->
+                    dir.asFileTree.filter { file -> file.name.endsWith(".txt") }
+                }
+
+                target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
+                    if (it.name.contains(type.name, true))
+                        it.consumerProguardFiles.from(generatedProguardFiles)
+                }
+            }
+        }
     }
 
     private fun Project.configureAnvil(whetstone: WhetstoneExtension) {
@@ -59,7 +110,8 @@ public class WhetstonePlugin : Plugin<Project> {
         }
 
         fun DependencyHandlerScope.anvil(moduleId: String) = add("anvil", dependency(moduleId))
-        fun DependencyHandlerScope.implementation(moduleId: String) = add("implementation", dependency(moduleId))
+        fun DependencyHandlerScope.implementation(moduleId: String) =
+            add("implementation", dependency(moduleId))
 
         dependencies {
             anvil("whetstone-compiler")

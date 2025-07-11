@@ -18,6 +18,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.deliveryhero.whetstone.compose.injectedViewModel
 import com.deliveryhero.whetstone.sample.databinding.ActivityMainBinding
+import com.deliveryhero.whetstone.sample.library.MainViewModel
 import com.deliveryhero.whetstone.viewmodel.injectedViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -65,7 +66,7 @@ fun MainScreen(
 }
 
 
-class BasicActivity: ComponentActivity() {
+class BasicActivity : ComponentActivity() {
 
     private val viewModel by injectedViewModel<MainViewModel>()
 

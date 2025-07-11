@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.deliveryhero.whetstone.Whetstone
+import com.deliveryhero.whetstone.sample.library.MainDependency
 import com.deliveryhero.whetstone.view.ContributesViewInjector
 import javax.inject.Inject
 
