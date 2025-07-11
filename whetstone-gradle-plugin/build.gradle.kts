@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinKapt)
     alias(libs.plugins.mavenPublish).apply(false)
+    `kotlin-dsl`
 }
 
 loadParentProperties()
@@ -37,7 +38,6 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(gradleKotlinDsl())
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
 }
