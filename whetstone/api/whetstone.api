@@ -164,15 +164,15 @@ public final class com/deliveryhero/whetstone/app/ApplicationModule$Companion {
 
 public final class com/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory : dagger/internal/Factory {
 	public static final field Companion Lcom/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory$Companion;
-	public fun <init> (Ljavax/inject/Provider;)V
-	public static final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory;
+	public fun <init> (Ldagger/internal/Provider;)V
+	public static final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory;
 	public synthetic fun get ()Ljava/lang/Object;
 	public fun get ()Lkotlinx/coroutines/CoroutineScope;
 	public static final fun provideCoroutineScope (Landroidx/lifecycle/LifecycleOwner;)Lkotlinx/coroutines/CoroutineScope;
 }
 
 public final class com/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory$Companion {
-	public final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory;
+	public final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/app/ApplicationModule_Companion_ProvideCoroutineScopeFactory;
 	public final fun provideCoroutineScope (Landroidx/lifecycle/LifecycleOwner;)Lkotlinx/coroutines/CoroutineScope;
 }
 
@@ -254,15 +254,15 @@ public final class com/deliveryhero/whetstone/fragment/MultibindingFragmentFacto
 
 public final class com/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory : dagger/internal/Factory {
 	public static final field Companion Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory$Companion;
-	public fun <init> (Ljavax/inject/Provider;)V
-	public static final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory;
+	public fun <init> (Ldagger/internal/Provider;)V
+	public static final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory;
 	public fun get ()Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory;
 	public synthetic fun get ()Ljava/lang/Object;
 	public static final fun newInstance (Lcom/deliveryhero/whetstone/fragment/FragmentComponent$Factory;)Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory;
 }
 
 public final class com/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory$Companion {
-	public final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory;
+	public final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory_Factory;
 	public final fun newInstance (Lcom/deliveryhero/whetstone/fragment/FragmentComponent$Factory;)Lcom/deliveryhero/whetstone/fragment/MultibindingFragmentFactory;
 }
 
@@ -337,15 +337,15 @@ public final class com/deliveryhero/whetstone/viewmodel/MultibindingViewModelFac
 
 public final class com/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory : dagger/internal/Factory {
 	public static final field Companion Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory$Companion;
-	public fun <init> (Ljavax/inject/Provider;)V
-	public static final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory;
+	public fun <init> (Ldagger/internal/Provider;)V
+	public static final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory;
 	public fun get ()Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory;
 	public synthetic fun get ()Ljava/lang/Object;
 	public static final fun newInstance (Lcom/deliveryhero/whetstone/viewmodel/ViewModelComponent$Factory;)Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory;
 }
 
 public final class com/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory$Companion {
-	public final fun create (Ljavax/inject/Provider;)Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory;
+	public final fun create (Ldagger/internal/Provider;)Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory_Factory;
 	public final fun newInstance (Lcom/deliveryhero/whetstone/viewmodel/ViewModelComponent$Factory;)Lcom/deliveryhero/whetstone/viewmodel/MultibindingViewModelFactory;
 }
 

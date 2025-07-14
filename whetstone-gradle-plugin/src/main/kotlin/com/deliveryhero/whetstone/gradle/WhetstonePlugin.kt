@@ -1,6 +1,5 @@
 package com.deliveryhero.whetstone.gradle
 
-import com.android.build.api.dsl.LibraryBuildType
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
@@ -59,10 +58,10 @@ public class WhetstonePlugin : Plugin<Project> {
         }
 
         target.extensions.findByType<LibraryExtension>()?.apply {
-            buildTypes.configureEach { type: LibraryBuildType ->
-                val variantName = type.name.capitalized()
+            buildTypes.configureEach {
+                val variantName = name.capitalized()
                 val sourceTaskName = "compile${variantName}Kotlin"
-                val generatedPath = "anvil/${type.name}/proguard"
+                val generatedPath = "anvil/${name}/proguard"
 
                 val locateWhetstoneProguardTaskName = "locateWhetstone${variantName}Proguard"
                 target.tasks.register<ProguardLocatorTask>(locateWhetstoneProguardTaskName) {
@@ -82,8 +81,8 @@ public class WhetstonePlugin : Plugin<Project> {
                 }
 
                 target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
-                    if (it.name.contains(type.name, true))
-                        it.consumerProguardFiles.from(generatedProguardFiles)
+                    if (name.contains(name, true))
+                        consumerProguardFiles.from(generatedProguardFiles)
                 }
             }
         }
