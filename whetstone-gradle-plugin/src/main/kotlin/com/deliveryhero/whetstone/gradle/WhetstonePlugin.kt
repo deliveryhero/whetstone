@@ -78,7 +78,7 @@ public class WhetstonePlugin : Plugin<Project> {
                     }
 
                 target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
-                    if (name.contains( variantName, true)) {
+                    if (name.contains(variantName, true)) {
                         consumerProguardFiles.from(generatedProguardFiles)
                     }
                 }
