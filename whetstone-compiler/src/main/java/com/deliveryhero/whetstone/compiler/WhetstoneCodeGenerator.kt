@@ -66,8 +66,8 @@ private fun writeProguardFileContent(
     fileName: String,
     content: String,
 ): File {
-    val directory = File(codeGenDir, packageName)
-    val file = File(directory, "$fileName.txt")
+    val directory = File(codeGenDir, packageName.replace('.', File.separatorChar))
+    val file = File(directory, "$fileName.pro")
     check(file.parentFile.exists() || file.parentFile.mkdirs()) {
         "Could not generate package directory: ${file.parentFile}"
     }

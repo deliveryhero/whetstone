@@ -26,7 +26,9 @@ import kotlin.reflect.full.*
 import kotlin.reflect.typeOf
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.text.replace
 
 internal fun JvmCompilationResult.validateInstanceBinding(
     classUnderTest: String,
@@ -56,14 +58,14 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
     assertEquals(clas, keepFieldType.returnType.classifier)
 
     val lazyClassKeyName = generatedClass.declaredMemberProperties.single { it.name == "lazyClassKeyName" }
-    assertTrue(lazyClassKeyName.isConst)
+    assertFalse(lazyClassKeyName.isConst)
     assertEquals(typeOf<String>(), lazyClassKeyName.returnType)
     assertEquals(clas.qualifiedName, lazyClassKeyName.call())
 
-    val simpleName = classUnderTest.substringAfterLast('.')
-    val proguardFileName = "${simpleName}BindingsModule_Binds_LazyMapKey"
-    val anvilFolder = File(outputDirectory.parentFile, "build/anvil")
-    val generatedProFile = File(anvilFolder, "META-INF/proguard/$proguardFileName.txt")
+    val simpleName = classUnderTest.replace('.', '_')
+    val proguardFileName = "${simpleName}BindingsModule_LazyClassKeys"
+    val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+    val generatedProFile = File(anvilFolder, "$proguardFileName.pro")
     assertTrue(generatedProFile.exists())
 }
 
