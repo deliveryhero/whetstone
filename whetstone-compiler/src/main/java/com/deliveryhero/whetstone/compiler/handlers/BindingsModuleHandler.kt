@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.name.FqName
 // Dagger uses "-keep,allowobfuscation,allowshrinking class "; https://github.com/google/dagger/blob/master/dagger-compiler/main/java/dagger/internal/codegen/processingstep/LazyClassKeyProcessingStep.java
 // When we use the same configuration, application still crash when we use a value from the map injection.
 // That is why we are using slightly different version. keepnames is short of keep,allowobfuscation and it works fine in this case.
-private const val PROGUARD_KEEP_RULE = "-keepnames,allowshrinking,allowoptimization class"
+private const val PROGUARD_KEEP_RULE = "-keep,allowobfuscation,allowshrinking class"
 
 internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
@@ -114,18 +114,10 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
                 .build()
 
             addType(moduleInterfaceSpec)
-            if (generateFactories) {
-                // Whetstone is explicitly generating this extra type to properly support
-                // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
-                // isn't happening now, so until then, we'll maintain this workaround
-                addType(generateLazyMapKey(outputFileName, className))
-            }
         }
+
         val generatedFiles = mutableListOf<GeneratedFileInfo>()
-        if (generateFactories) {
-            val proguardFileInfo = generatedProguardFileInfo(outputFileName, className)
-            generatedFiles += proguardFileInfo
-        }
+
 
         generatedFiles += GeneratedFileInfo(
             packageName = packageName,
@@ -134,6 +126,34 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             sourceFiles = setOf(clas.containingFileAsJavaFile),
             fileType = GeneratedFileType.KOTLIN,
         )
+
+        if (generateFactories) {
+            val contentLazyMapKey = FileSpec.buildFile(
+                packageName = packageName,
+                fileName = outputFileName,
+                generatorComment = "Automatically generated file. DO NOT MODIFY!"
+            ) {
+
+                // Whetstone is explicitly generating this extra type to properly support
+                // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
+                // isn't happening now, so until then, we'll maintain this workaround
+                addType(generateLazyClassKey(outputFileName, className))
+            }
+            generatedFiles += GeneratedFileInfo(
+                packageName = packageName,
+                fileName = "${outputFileName}_Binds_LazyMapKey",
+                content = contentLazyMapKey,
+                sourceFiles = setOf(clas.containingFileAsJavaFile),
+                fileType = GeneratedFileType.KOTLIN,
+            )
+
+            val proguardFileInfo =
+                generatedProguardFileInfo(
+                    outputFileName = packageName + "_" + outputFileName,
+                    className = className,
+                )
+            generatedFiles += proguardFileInfo
+        }
 
         return generatedFiles
     }
@@ -145,24 +165,23 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
 
         // The file must be placed in "META-INF/proguard/" for AGP to find it.
         // We can use the `packageName` property of GeneratedFileInfo to represent the path.
-        val proguardFileInfo = GeneratedFileInfo(
+        return GeneratedFileInfo(
             packageName = "META-INF/proguard",
-            fileName = "${outputFileName}_Binds_LazyMapKey",
+            fileName = "${outputFileName}_LazyClassKeys".replace('.', '_'),
             content = proguardRuleContent,
             sourceFiles = emptySet(),
             fileType = GeneratedFileType.PROGUARD,
         )
-        return proguardFileInfo
     }
 
-    private fun generateLazyMapKey(outputFileName: String, className: ClassName): TypeSpec {
+    private fun generateLazyClassKey(outputFileName: String, className: ClassName): TypeSpec {
         val keepFieldType = PropertySpec.builder("keepFieldType", className.copy(nullable = true))
             .addAnnotation(JvmField::class)
             .addAnnotation(KeepFieldType::class)
             .initializer("null")
             .build()
         val lazyClassKeyName = PropertySpec.builder("lazyClassKeyName", STRING)
-            .addModifiers(KModifier.CONST)
+            .addAnnotation(JvmField::class)
             .initializer("%S", className.canonicalName)
             .build()
         return TypeSpec.objectBuilder("${outputFileName}_Binds_LazyMapKey")

@@ -19,7 +19,6 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
-import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 
@@ -61,28 +60,27 @@ public class WhetstonePlugin : Plugin<Project> {
             buildTypes.configureEach {
                 val variantName = name.capitalized()
                 val sourceTaskName = "compile${variantName}Kotlin"
-                val generatedPath = "anvil/${name}/proguard"
+                val generatedPath = "anvil/${name}/generated/META-INF/proguard"
 
-                val locateWhetstoneProguardTaskName = "locateWhetstone${variantName}Proguard"
-                target.tasks.register<ProguardLocatorTask>(locateWhetstoneProguardTaskName) {
-                    // This task depends on the task that actually creates the file
-                    dependsOn(sourceTaskName)
-
-                    locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
-                }
-
-                val proguardDirProvider = target
+                val locateWhetstoneProguardTask = target
                     .tasks
-                    .named<ProguardLocatorTask>(locateWhetstoneProguardTaskName)
-                    .flatMap { it.locatedFiles }
+                    .register<ProguardLocatorTask>("locateWhetstone${variantName}Proguard") {
+                        // This task depends on the task that actually creates the file
+                        dependsOn(sourceTaskName)
 
-                val generatedProguardFiles = proguardDirProvider.map { dir ->
-                    dir.asFileTree.filter { file -> file.name.endsWith(".txt") }
-                }
+                        locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
+                    }
+
+                val generatedProguardFiles = locateWhetstoneProguardTask
+                    .flatMap { it.locatedFiles }
+                    .map { dir ->
+                        dir.asFileTree.filter { file -> file.name.endsWith(".pro") }
+                    }
 
                 target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
-                    if (name.contains(name, true))
+                    if (name.contains( variantName, true)) {
                         consumerProguardFiles.from(generatedProguardFiles)
+                    }
                 }
             }
         }
