@@ -4,9 +4,10 @@ import java.util.Properties
 
 plugins {
     id("java-gradle-plugin")
-    alias(libs.plugins.kotlinJvm)
+    `kotlin-dsl`
     alias(libs.plugins.kotlinKapt)
     alias(libs.plugins.mavenPublish).apply(false)
+
 }
 
 loadParentProperties()
@@ -37,7 +38,6 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(gradleKotlinDsl())
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
 }
