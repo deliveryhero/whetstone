@@ -1,11 +1,8 @@
-name: Publish SNAPSHOT
+name: Publish
 
 on:
-  push:
-    branches:
-      - main
   release:
-    types: [created, published]
+    types: [published]
 
 jobs:
   publish-release:
