@@ -14,6 +14,10 @@ apiValidation {
     ignoredProjects.addAll(listOf("sample", "sample-library", "whetstone-compiler"))
 }
 
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
+}
+
 tasks.register("mergeLintReports") {
     description = "Merges all module lint XML reports into one file."
 
