@@ -1,13 +1,13 @@
-name: Publish
+name: Publish Snapshot
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
-  publish-release:
+  publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,10 +29,10 @@ jobs:
           ORG_GRADLE_PROJECT_signing.password: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signing.key: ${{ secrets.SIGNING_KEY }}
 
-          # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
-          # If we split on '/' and take the 3rd value,
-          # we can get the release name.
+        # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
+        # If we split on '/' and take the 3rd value,
+        # we can get the release name.
         run: |
-            echo "New version: $(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)"
-            echo "Github username: ${GITHUB_ACTOR}"
-            ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish
+          echo "New version: $(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)"
+          echo "Github username: ${GITHUB_ACTOR}"
+          ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish
