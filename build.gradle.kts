@@ -22,7 +22,7 @@ signing {
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
+    ignoredProjects.addAll(listOf("sample", "sample-library", "whetstone-compiler"))
 }
 
 tasks.register("mergeLintReports") {
