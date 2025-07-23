@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.MavenPublishPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -6,12 +5,10 @@ plugins {
     id("java-gradle-plugin")
     `kotlin-dsl`
     alias(libs.plugins.kotlinKapt)
-    alias(libs.plugins.mavenPublish).apply(false)
-
+    alias(libs.plugins.mavenPublish)
 }
 
 loadParentProperties()
-pluginManager.apply(MavenPublishPlugin::class)
 
 kotlin {
     jvmToolchain(17)
