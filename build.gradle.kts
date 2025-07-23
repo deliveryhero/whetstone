@@ -15,11 +15,11 @@ plugins {
 signing {
     val signingInMemoryKeyId: String? by project
     val signingInMemoryKey: String? by project
-    val signingInMemoryPassword: String? by project
+    val signingInMemoryKeyPassword: String? by project
     useInMemoryPgpKeys(
         signingInMemoryKeyId,
         signingInMemoryKey,
-        signingInMemoryPassword,
+        signingInMemoryKeyPassword,
     )
     sign(publishing.publications)
 }
