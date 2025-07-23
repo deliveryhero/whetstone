@@ -8,20 +8,6 @@ plugins {
     alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.binaryValidator)
     alias(libs.plugins.kotlinAndroid) apply false
-    `maven-publish`
-    signing
-}
-
-signing {
-    val signingInMemoryKeyId: String? by project
-    val signingInMemoryKey: String? by project
-    val signingInMemoryKeyPassword: String? by project
-    useInMemoryPgpKeys(
-        requireNotNull(signingInMemoryKeyId),
-        requireNotNull(signingInMemoryKey),
-        requireNotNull(signingInMemoryKeyPassword),
-    )
-    sign(publishing.publications)
 }
 
 apiValidation {
