@@ -13,10 +13,13 @@ plugins {
 }
 
 signing {
+    val signingInMemoryKeyId: String? by project
+    val signingInMemoryKey: String? by project
+    val signingInMemoryPassword: String? by project
     useInMemoryPgpKeys(
-        project.findProperty("signing.keyId") as String?,
-        project.findProperty("signing.key") as String?,
-        project.findProperty("signing.password") as String?
+        signingInMemoryKeyId,
+        signingInMemoryKey,
+        signingInMemoryPassword,
     )
     sign(publishing.publications)
 }
