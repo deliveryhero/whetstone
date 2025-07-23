@@ -17,9 +17,9 @@ signing {
     val signingInMemoryKey: String? by project
     val signingInMemoryKeyPassword: String? by project
     useInMemoryPgpKeys(
-        signingInMemoryKeyId,
-        signingInMemoryKey,
-        signingInMemoryKeyPassword,
+        requireNotNull(signingInMemoryKeyId),
+        requireNotNull(signingInMemoryKey),
+        requireNotNull(signingInMemoryKeyPassword),
     )
     sign(publishing.publications)
 }
