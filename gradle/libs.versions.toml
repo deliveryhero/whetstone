@@ -11,7 +11,7 @@ anvil = "2.6.0"
 constraintlayout = "2.2.0"
 dagger = "2.56.2"
 kotlin = "2.1.21"
-mavenPublish = "0.30.0"
+mavenPublish = "0.34.0"
 autoService = "1.1.1"
 detekt = "1.23.8"
 junit = "4.13.2"
@@ -51,14 +51,15 @@ anvilAnnotations = { module = "com.squareup.anvil:annotations", version.ref = "a
 anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
 anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+mavenPublish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "mavenPublish" }
