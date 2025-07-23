@@ -5,10 +5,11 @@ plugins {
     id("java-gradle-plugin")
     `kotlin-dsl`
     alias(libs.plugins.kotlinKapt)
-    alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.mavenPublish) apply false
 }
 
 loadParentProperties()
+pluginManager.apply(MavenPublishPlugin::class)
 
 kotlin {
     jvmToolchain(17)
