@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.MavenPublishPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
@@ -7,11 +6,8 @@ plugins {
     id("java-gradle-plugin")
     `kotlin-dsl`
     alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.mavenPublish) apply false
+    alias(libs.plugins.mavenPublish)
 }
-
-loadParentProperties()
-pluginManager.apply(MavenPublishPlugin::class)
 
 kotlin {
     jvmToolchain(17)
@@ -81,17 +77,6 @@ abstract class GenerateBuildConfigTask : DefaultTask() {
             }
             writeText(content)
         }
-    }
-}
-
-fun loadParentProperties() {
-    val properties = Properties()
-    file("../gradle.properties").inputStream().use { properties.load(it) }
-
-    properties.forEach { (k, v) ->
-        val key = k.toString()
-        val value = providers.gradleProperty(name).getOrElse(v.toString())
-        extra.set(key, value)
     }
 }
 
