@@ -1,10 +1,12 @@
+import com.vanniktech.maven.publish.MavenPublishPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
     id("java-gradle-plugin")
     `kotlin-dsl`
-    alias(libs.plugins.kotlinKapt)
+    alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.mavenPublish) apply false
 }
 
@@ -20,10 +22,6 @@ kotlin {
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-}
-
-tasks.compileKotlin {
-    dependsOn(generateBuildConfig)
 }
 
 gradlePlugin {
@@ -52,8 +50,14 @@ val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
     )
     properties.set(props)
     generatedSourceDir.set(layout.buildDirectory.dir("generated/wgp/kotlin/main"))
-    sourceSets.main.get().java.srcDir(generatedSourceDir)
 }
+
+tasks.named<KotlinCompile>("compileKotlin") {
+    dependsOn(generateBuildConfig)
+}
+
+// Lazily add the generated source directory to the main source set.
+sourceSets.main.get().java.srcDir(generateBuildConfig.flatMap { it.generatedSourceDir })
 
 abstract class GenerateBuildConfigTask : DefaultTask() {
     @get:Input
