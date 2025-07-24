@@ -38,4 +38,5 @@ jobs:
         run: |
             echo "New version: $(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)"
             echo "Github username: ${GITHUB_ACTOR}"
-            ./gradlew clean :whetstone-gradle-plugin:clean -x test -x lint publish :whetstone-gradle-plugin:publish
+            ./gradlew clean :whetstone-gradle-plugin:clean
+            ./gradlew -x test -x lint publish :whetstone-gradle-plugin:publish
