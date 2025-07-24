@@ -3,6 +3,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "pd-whetstone"
 
 pluginManagement {
+    includeBuild("build-logic")
+    includeBuild("whetstone-gradle-plugin")
+
     repositories {
         gradlePluginPortal()
         google()
@@ -17,9 +20,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-includeBuild("build-logic")
-includeBuild("whetstone-gradle-plugin")
 
 include(":sample")
 include(":whetstone")
