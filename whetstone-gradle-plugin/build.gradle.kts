@@ -35,6 +35,10 @@ gradlePlugin {
     }
 }
 
+tasks.named<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
+}
+
 dependencies {
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
