@@ -32,11 +32,16 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
 
-          # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
-          # If we split on '/' and take the 3rd value,
+          # The GITHUB_REF tag comes in the format '''refs/tags/xxx'''.
+          # If we split on '''/''' and take the 3rd value,
           # we can get the release name.
         run: |
-            echo "New version: $(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)"
+            VERSION_NAME=$(grep "^VERSION_NAME=" gradle.properties | cut -d'=' -f2)
+            if [[ "${{ github.event_name }}" == "push" && "$VERSION_NAME" != *SNAPSHOT* ]]; then
+              echo "Skipping publish for non-snapshot version on main branch."
+              exit 0
+            fi
+            echo "New version: $VERSION_NAME"
             echo "Github username: ${GITHUB_ACTOR}"
             cat gradle.properties >> whetstone-gradle-plugin/gradle.properties
             ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish
