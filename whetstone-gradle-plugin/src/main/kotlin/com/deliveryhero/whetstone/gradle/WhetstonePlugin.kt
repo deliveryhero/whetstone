@@ -1,6 +1,6 @@
 package com.deliveryhero.whetstone.gradle
 
-import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
@@ -16,7 +16,6 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.register
@@ -56,31 +55,38 @@ public class WhetstonePlugin : Plugin<Project> {
             target.addDependencies(extension)
         }
 
-        target.extensions.findByType<LibraryExtension>()?.apply {
-            buildTypes.configureEach {
-                val variantName = name.capitalized()
-                val sourceTaskName = "compile${variantName}Kotlin"
-                val generatedPath = "anvil/${name}/generated/META-INF/proguard"
+        addLocateWhetstoneProguardTask(target)
+    }
 
-                val locateWhetstoneProguardTask = target
-                    .tasks
-                    .register<ProguardLocatorTask>("locateWhetstone${variantName}Proguard") {
-                        // This task depends on the task that actually creates the file
-                        dependsOn(sourceTaskName)
+    private fun addLocateWhetstoneProguardTask(target: Project) {
+        val components = target.extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+            ?: return
 
-                        locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
-                    }
+        // onVariants will be called for each variant (e.g., debug, release, freeDebug, etc.)
+        components.onVariants { variant ->
+            val variantName = variant.name.capitalized()
+            val sourceTaskName = "compile${variantName}Kotlin"
+            val generatedPath = "anvil/${variant.name}/generated/META-INF/proguard"
 
-                val generatedProguardFiles = locateWhetstoneProguardTask
-                    .flatMap { it.locatedFiles }
-                    .map { dir ->
-                        dir.asFileTree.filter { file -> file.name.endsWith(".pro") }
-                    }
+            val locateWhetstoneProguardTask = target
+                .tasks
+                .register<ProguardLocatorTask>("locateWhetstone${variantName}Proguard") {
+                    // This task depends on the task that actually creates the file
+                    dependsOn(sourceTaskName)
 
-                target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
-                    if (name.contains(variantName, true)) {
-                        consumerProguardFiles.from(generatedProguardFiles)
-                    }
+                    locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
+                }
+
+
+            val generatedProguardFiles = locateWhetstoneProguardTask
+                .flatMap { it.locatedFiles }
+                .map { dir ->
+                    dir.asFileTree.filter { file -> file.name.endsWith(".pro") }
+                }
+
+            target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
+                if (name.contains(variantName, true)) {
+                    consumerProguardFiles.from(generatedProguardFiles)
                 }
             }
         }

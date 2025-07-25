@@ -25,6 +25,17 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    val dimension = "di_dimension"
+    flavorDimensions += dimension
+    productFlavors {
+        register("hilt") {
+            this.dimension = dimension
+        }
+        register("metro") {
+            this.dimension = dimension
+        }
+    }
 }
 
 dependencies {

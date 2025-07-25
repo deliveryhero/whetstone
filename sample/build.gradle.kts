@@ -31,6 +31,10 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += "hilt"
+        }
+        getByName("debug") {
+            matchingFallbacks += "hilt"
         }
     }
 
@@ -45,6 +49,17 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    val dimension = "di_dimension"
+    flavorDimensions += dimension
+    productFlavors {
+        register("hilt") {
+            this.dimension = dimension
+        }
+        register("metro") {
+            this.dimension = dimension
+        }
     }
 }
 
