@@ -9,6 +9,7 @@ import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.UnknownTaskException
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.internal.extensions.stdlib.capitalized
@@ -18,6 +19,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 
@@ -65,18 +67,25 @@ public class WhetstonePlugin : Plugin<Project> {
         // onVariants will be called for each variant (e.g., debug, release, freeDebug, etc.)
         components.onVariants { variant ->
             val variantName = variant.name.capitalized()
+
+            val exportTaskName = "export${variantName}ConsumerProguardFiles"
+            val task = try {
+                target.tasks.named<ExportConsumerProguardFilesTask>(exportTaskName)
+            } catch (ignored: UnknownTaskException) {
+                return@onVariants
+            }
+
             val sourceTaskName = "compile${variantName}Kotlin"
             val generatedPath = "anvil/${variant.name}/generated/META-INF/proguard"
 
             val locateWhetstoneProguardTask = target
                 .tasks
-                .register<ProguardLocatorTask>("locateWhetstone${variantName}Proguard") {
+                .register<ProguardLocatorTask>("locateWhetstone${variantName}ProguardRules") {
                     // This task depends on the task that actually creates the file
                     dependsOn(sourceTaskName)
 
                     locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
                 }
-
 
             val generatedProguardFiles = locateWhetstoneProguardTask
                 .flatMap { it.locatedFiles }
@@ -84,10 +93,8 @@ public class WhetstonePlugin : Plugin<Project> {
                     dir.asFileTree.filter { file -> file.name.endsWith(".pro") }
                 }
 
-            target.tasks.withType<ExportConsumerProguardFilesTask>().configureEach {
-                if (name.contains(variantName, true)) {
-                    consumerProguardFiles.from(generatedProguardFiles)
-                }
+            task.configure {
+                consumerProguardFiles.from(generatedProguardFiles)
             }
         }
     }

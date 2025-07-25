@@ -23,7 +23,6 @@ class MainService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("${this.javaClass.simpleName} is running")
             .setContentText(dependency.getMessage("Service"))
