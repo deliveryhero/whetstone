@@ -1,5 +1,5 @@
 name: Run tests
-on: [pull_request]
+on: [ pull_request ]
 
 jobs:
   run-tests:
@@ -14,6 +14,6 @@ jobs:
           distribution: zulu
           java-version: 17
       - name: Run unit tests
-        run: ./gradlew -x sample:testDebugUnitTest whetstone-compiler:test testDebugUnitTest
+        run: ./gradlew build
       - name: Build sample app
-        run: ./gradlew sample:assembleDebug
+        run: ./gradlew sample:assembleRelease
