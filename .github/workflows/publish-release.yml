@@ -38,5 +38,5 @@ jobs:
         run: |
             echo "New version: $(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)"
             echo "Github username: ${GITHUB_ACTOR}"
-            cat gradle.properties > whetstone-gradle-plugin/gradle.properties
+            cat gradle.properties >> whetstone-gradle-plugin/gradle.properties
             ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish
