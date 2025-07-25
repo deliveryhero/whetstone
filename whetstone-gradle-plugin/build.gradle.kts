@@ -9,6 +9,19 @@ plugins {
     alias(libs.plugins.mavenPublish)
 }
 
+loadParentProperties()
+
+fun loadParentProperties() {
+    val properties = Properties()
+    file("../gradle.properties").inputStream().use { properties.load(it) }
+
+    properties.forEach { (k, v) ->
+        val key = k.toString()
+        val value = providers.gradleProperty(name).getOrElse(v.toString())
+        extra.set(key, value)
+    }
+}
+
 kotlin {
     jvmToolchain(17)
     explicitApi()
