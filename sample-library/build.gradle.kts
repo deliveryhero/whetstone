@@ -26,14 +26,14 @@ android {
         jvmTarget = "11"
     }
 
-    val dimension = "di_dimension"
-    flavorDimensions += dimension
+    val dimensionName = "di_dimension"
+    flavorDimensions += dimensionName
     productFlavors {
         register("hilt") {
-            this.dimension = dimension
+            dimension = dimensionName
         }
         register("metro") {
-            this.dimension = dimension
+            dimension = dimensionName
         }
     }
 }
