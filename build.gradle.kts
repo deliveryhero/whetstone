@@ -11,7 +11,11 @@ plugins {
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("sample", "whetstone-compiler"))
+    ignoredProjects.addAll(listOf("sample", "sample-library", "whetstone-compiler"))
+}
+
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
 
 tasks.register("mergeLintReports") {
