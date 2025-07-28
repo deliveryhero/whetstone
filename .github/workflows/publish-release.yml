@@ -44,4 +44,4 @@ jobs:
             echo "New version: $VERSION_NAME"
             echo "Github username: ${GITHUB_ACTOR}"
             cat gradle.properties >> whetstone-gradle-plugin/gradle.properties
-            ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish
+            ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish -PmavenCentralAutomaticPublishing=true
