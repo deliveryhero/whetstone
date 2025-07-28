@@ -7,10 +7,10 @@ androidxCore = "1.16.0"
 androidxFragment = "1.8.6"
 androidxLifecycle = "2.8.7"
 androidxWork = "2.10.0"
-anvil = "2.6.0"
+anvil = "2.6.1"
 constraintlayout = "2.2.0"
 dagger = "2.56.2"
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 mavenPublish = "0.34.0"
 autoService = "1.1.1"
 detekt = "1.23.8"
@@ -23,7 +23,7 @@ material = "1.12.0"
 androidApp = { id = "com.android.application", version.ref = "agp" }
 androidLib = { id = "com.android.library", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
-binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.0" }
+binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
