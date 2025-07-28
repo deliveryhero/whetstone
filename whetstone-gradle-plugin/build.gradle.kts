@@ -1,14 +1,26 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
     id("java-gradle-plugin")
     `kotlin-dsl`
-    alias(libs.plugins.kotlinKapt)
+    alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.mavenPublish)
 }
 
 loadParentProperties()
+
+fun loadParentProperties() {
+    val properties = Properties()
+    file("../gradle.properties").inputStream().use { properties.load(it) }
+
+    properties.forEach { (k, v) ->
+        val key = k.toString()
+        val value = providers.gradleProperty(name).getOrElse(v.toString())
+        extra.set(key, value)
+    }
+}
 
 kotlin {
     jvmToolchain(17)
@@ -21,10 +33,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-tasks.compileKotlin {
-    dependsOn(generateBuildConfig)
-}
-
 gradlePlugin {
     plugins {
         create("whetstone") {
@@ -32,6 +40,10 @@ gradlePlugin {
             implementationClass = "com.deliveryhero.whetstone.gradle.WhetstonePlugin"
         }
     }
+}
+
+tasks.named<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
 
 dependencies {
@@ -47,8 +59,14 @@ val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
     )
     properties.set(props)
     generatedSourceDir.set(layout.buildDirectory.dir("generated/wgp/kotlin/main"))
-    sourceSets.main.get().java.srcDir(generatedSourceDir)
 }
+
+tasks.named<KotlinCompile>("compileKotlin") {
+    dependsOn(generateBuildConfig)
+}
+
+// Lazily add the generated source directory to the main source set.
+sourceSets.main.get().java.srcDir(generateBuildConfig.flatMap { it.generatedSourceDir })
 
 abstract class GenerateBuildConfigTask : DefaultTask() {
     @get:Input
@@ -72,17 +90,6 @@ abstract class GenerateBuildConfigTask : DefaultTask() {
             }
             writeText(content)
         }
-    }
-}
-
-fun loadParentProperties() {
-    val properties = Properties()
-    file("../gradle.properties").inputStream().use { properties.load(it) }
-
-    properties.forEach { (k, v) ->
-        val key = k.toString()
-        val value = providers.gradleProperty(name).getOrElse(v.toString())
-        extra.set(key, value)
     }
 }
 

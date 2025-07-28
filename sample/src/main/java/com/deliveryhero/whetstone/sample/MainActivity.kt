@@ -65,7 +65,6 @@ fun MainScreen(
     }
 }
 
-
 class BasicActivity : ComponentActivity() {
 
     private val viewModel by injectedViewModel<MainViewModel>()

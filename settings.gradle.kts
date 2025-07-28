@@ -8,6 +8,9 @@ pluginManagement {
         google()
         mavenCentral()
     }
+
+    includeBuild("whetstone-gradle-plugin")
+    includeBuild("build-logic")
 }
 
 dependencyResolutionManagement {
@@ -17,9 +20,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-includeBuild("build-logic")
-includeBuild("whetstone-gradle-plugin")
 
 include(":sample")
 include(":whetstone")
