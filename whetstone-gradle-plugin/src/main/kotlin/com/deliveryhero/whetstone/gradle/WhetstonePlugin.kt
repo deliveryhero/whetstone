@@ -1,18 +1,16 @@
 package com.deliveryhero.whetstone.gradle
 
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import com.android.build.api.variant.impl.capitalizeFirstChar
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
-import com.android.build.gradle.internal.tasks.ExportConsumerProguardFilesTask
 import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.api.provider.Provider
+import java.io.File
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -20,14 +18,10 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
-
-internal abstract class ProguardLocatorTask : org.gradle.api.DefaultTask() {
-
-    @get:OutputDirectory
-    internal abstract val locatedFiles: DirectoryProperty
-}
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 public class WhetstonePlugin : Plugin<Project> {
 
@@ -36,6 +30,11 @@ public class WhetstonePlugin : Plugin<Project> {
         target.plugins.apply(ANVIL_PLUGIN_ID)
         target.plugins.withType<AndroidBasePlugin> {
             target.configureAnvil(extension)
+            // Only setup proguard export for library modules
+            // App modules don't export consumer proguard files
+            if (!target.isAppModule) {
+                target.addLocateWhetstoneProguardTask()
+            }
         }
         if (target.isAppModule) {
             target.pluginManager.apply(KAPT_PLUGIN_ID)
@@ -56,45 +55,68 @@ public class WhetstonePlugin : Plugin<Project> {
             }
             target.addDependencies(extension)
         }
-
-        addLocateWhetstoneProguardTask(target)
     }
 
-    private fun addLocateWhetstoneProguardTask(target: Project) {
-        val components = target.extensions.findByType(LibraryAndroidComponentsExtension::class.java)
-            ?: return
+    /**
+     * Configures proguard rule export for library modules by copying Anvil-generated
+     * proguard files to the Kotlin classes output directory where AGP auto-discovers them.
+     *
+     * This mimics how KAPT works - KAPT writes proguard files to its classes output
+     * which AGP automatically includes in the AAR. By copying Anvil's proguard files
+     * to the same location (build/tmp/kotlin-classes/{variant}/META-INF/proguard/),
+     * AGP will auto-discover and package them without any manual wiring.
+     *
+     * Uses a separate Copy task with proper input/output declarations for correct
+     * caching behavior and dependency tracking.
+     */
+    private fun Project.addLocateWhetstoneProguardTask() {
+        val androidComponents = extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+        if (androidComponents == null) {
+            logger.warn("Whetstone: LibraryAndroidComponentsExtension not found for $name - skipping proguard configuration")
+            return
+        }
 
-        // onVariants will be called for each variant (e.g., debug, release, freeDebug, etc.)
-        components.onVariants { variant ->
-            val variantName = variant.name.capitalized()
+        androidComponents.onVariants { variant ->
+            val variantName = variant.name
 
-            val exportTaskName = "export${variantName}ConsumerProguardFiles"
-            val task = try {
-                target.tasks.named<ExportConsumerProguardFilesTask>(exportTaskName)
-            } catch (ignored: UnknownTaskException) {
-                return@onVariants
+            val kotlinCompilationProvider: Provider<KotlinCompilation<*>> = provider {
+                extensions
+                    .getByType<KotlinAndroidExtension>()
+                    .target
+                    .compilations
+                    .getByName(variantName)
             }
 
-            val sourceTaskName = "compile${variantName}Kotlin"
-            val generatedPath = "anvil/${variant.name}/generated/META-INF/proguard"
+            val compileTaskNameProvider: Provider<String> = kotlinCompilationProvider
+                .map { it.compileKotlinTaskName }
 
-            val locateWhetstoneProguardTask = target
-                .tasks
-                .register<ProguardLocatorTask>("locateWhetstone${variantName}ProguardRules") {
-                    // This task depends on the task that actually creates the file
-                    dependsOn(sourceTaskName)
+            // Copy proguard files as part of KotlinCompile task
+            // This ensures they're in kotlin-classes before any AGP task reads from it
+            tasks.withType<KotlinCompile> {
+                doLast {
+                    // Check task name at execution time to avoid configuration-time errors
+                    val expectedTaskName = compileTaskNameProvider.get()
 
-                    locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
+                    if (name == expectedTaskName) {
+                        val anvilProguardDir = layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated").get().asFile
+                        val kotlinClassesDir = destinationDirectory.get().asFile
+                        val targetDir = File(kotlinClassesDir, "META-INF/proguard")
+
+                        // Find all .pro files in Anvil's output
+                        val proguardFiles = anvilProguardDir.walk()
+                            .filter { it.isFile && it.extension == "pro" }
+                            .toList()
+
+                        if (proguardFiles.isNotEmpty()) {
+                            targetDir.mkdirs()
+                            proguardFiles.forEach { sourceFile ->
+                                val targetFile = File(targetDir, sourceFile.name)
+                                sourceFile.copyTo(targetFile, overwrite = true)
+                            }
+                            logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
+                        }
+                    }
                 }
-
-            val generatedProguardFiles = locateWhetstoneProguardTask
-                .flatMap { it.locatedFiles }
-                .map { dir ->
-                    dir.asFileTree.filter { file -> file.name.endsWith(".pro") }
-                }
-
-            task.configure {
-                consumerProguardFiles.from(generatedProguardFiles)
             }
         }
     }
@@ -136,5 +158,7 @@ public class WhetstonePlugin : Plugin<Project> {
         const val ANVIL_PLUGIN_ID = "com.squareup.anvil"
         const val WHETSTONE_EXTENSION = "whetstone"
         const val KAPT_PLUGIN_ID = "kotlin-kapt"
+        const val META_INF_PROGUARD_PATH = "META-INF/proguard"
+        const val ANVIL_GENERATED_SUBPATH = "anvil"
     }
 }

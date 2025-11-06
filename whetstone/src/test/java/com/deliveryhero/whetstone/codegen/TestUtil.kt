@@ -67,6 +67,10 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
     val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
     val generatedProFile = File(anvilFolder, "$proguardFileName.pro")
     assertTrue(generatedProFile.exists())
+
+    val expectedProguardContent = "-keep,allowobfuscation,allowshrinking class ${clas.qualifiedName}"
+    val actualProguardContent = generatedProFile.readText()
+    assertEquals(expectedProguardContent, actualProguardContent)
 }
 
 internal fun JvmCompilationResult.validateNoLazyBindingKey(classUnderTest: String) {

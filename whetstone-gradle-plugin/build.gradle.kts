@@ -49,6 +49,7 @@ tasks.named<Delete>("clean") {
 dependencies {
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
+    compileOnly(libs.kotlinGradle)
 }
 
 val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
