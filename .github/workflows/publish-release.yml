@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Set JDK version
         uses: actions/setup-java@v4
@@ -24,6 +27,44 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Validate version
+        id: version
+        run: |
+          VERSION_NAME=$(grep "^VERSION_NAME=" gradle.properties | cut -d'=' -f2)
+
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            # For releases, validate it's not a SNAPSHOT
+            if [[ "$VERSION_NAME" == *SNAPSHOT* ]]; then
+              echo "Error: Release version cannot contain SNAPSHOT: $VERSION_NAME"
+              echo "Please update VERSION_NAME in gradle.properties to a release version (e.g., 1.2.3)"
+              exit 1
+            fi
+
+            # Validate version format
+            if [[ ! "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Error: Invalid version format '$VERSION_NAME'. Expected format: X.Y.Z"
+              exit 1
+            fi
+
+            echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "Publishing release version: $VERSION_NAME"
+          else
+            # For main branch, validate it IS a SNAPSHOT
+            if [[ "$VERSION_NAME" != *SNAPSHOT* ]]; then
+              echo "Error: Main branch must have SNAPSHOT version, found: $VERSION_NAME"
+              echo "Skipping publish for non-snapshot version on main branch."
+              exit 0
+            fi
+
+            echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
+            echo "is_release=false" >> $GITHUB_OUTPUT
+            echo "Publishing snapshot version: $VERSION_NAME"
+          fi
+
+      - name: Run tests
+        run: ./gradlew build
+
       - name: Publish artifact
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_ACTOR_USERNAME }}
@@ -31,17 +72,37 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
-
-          # The GITHUB_REF tag comes in the format '''refs/tags/xxx'''.
-          # If we split on '''/''' and take the 3rd value,
-          # we can get the release name.
         run: |
-            VERSION_NAME=$(grep "^VERSION_NAME=" gradle.properties | cut -d'=' -f2)
-            if [[ "${{ github.event_name }}" == "push" && "$VERSION_NAME" != *SNAPSHOT* ]]; then
-              echo "Skipping publish for non-snapshot version on main branch."
-              exit 0
-            fi
-            echo "New version: $VERSION_NAME"
+            echo "Publishing version: ${{ steps.version.outputs.version }}"
             echo "Github username: ${GITHUB_ACTOR}"
             cat gradle.properties >> whetstone-gradle-plugin/gradle.properties
             ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish -PmavenCentralAutomaticPublishing=true
+
+      - name: Bump to next SNAPSHOT version
+        if: github.event_name == 'release' && steps.version.outputs.is_release == 'true'
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          # Increment patch version for next development cycle
+          NEXT_PATCH=$((PATCH + 1))
+          NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}-SNAPSHOT"
+
+          echo "Bumping version to: $NEXT_VERSION"
+
+          # Update gradle.properties
+          sed -i.bak "s/^VERSION_NAME=.*/VERSION_NAME=$NEXT_VERSION/" gradle.properties
+          rm gradle.properties.bak
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Commit and push
+          git add gradle.properties
+          git commit -m "Prepare next development version ${NEXT_VERSION}"
+          git push origin main
+
+          echo "Committed and pushed next development version: $NEXT_VERSION"
