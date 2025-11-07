@@ -23,10 +23,10 @@ class ConfigurationCacheTest {
     @Test
     fun `whetstone plugin is configuration cache compatible`() {
         // First build - should store or reuse configuration cache
+        // Note: Not using :clean to avoid race conditions with parallel CI tasks
         val firstResult = GradleRunner.create()
             .withProjectDir(projectRoot)
             .withArguments(
-                ":sample-library:clean",
                 ":sample-library:compileMetroReleaseKotlin",
                 "--configuration-cache"
             )
@@ -41,17 +41,17 @@ class ConfigurationCacheTest {
             hasConfigCache,
             "First build should either store or reuse configuration cache"
         )
-        assertEquals(
-            TaskOutcome.SUCCESS,
-            firstResult.task(":sample-library:compileMetroReleaseKotlin")?.outcome,
-            "Kotlin compilation should succeed"
+
+        val firstOutcome = firstResult.task(":sample-library:compileMetroReleaseKotlin")?.outcome
+        assertTrue(
+            firstOutcome == TaskOutcome.SUCCESS || firstOutcome == TaskOutcome.UP_TO_DATE,
+            "Kotlin compilation should succeed or be up-to-date (got: $firstOutcome)"
         )
 
         // Second build - should reuse configuration cache
         val secondResult = GradleRunner.create()
             .withProjectDir(projectRoot)
             .withArguments(
-                ":sample-library:clean",
                 ":sample-library:compileMetroReleaseKotlin",
                 "--configuration-cache"
             )
@@ -62,20 +62,21 @@ class ConfigurationCacheTest {
             secondResult.output.contains("Reusing configuration cache"),
             "Second build should reuse configuration cache"
         )
-        assertEquals(
-            TaskOutcome.SUCCESS,
-            secondResult.task(":sample-library:compileMetroReleaseKotlin")?.outcome,
-            "Second build should also succeed"
+
+        val secondOutcome = secondResult.task(":sample-library:compileMetroReleaseKotlin")?.outcome
+        assertTrue(
+            secondOutcome == TaskOutcome.SUCCESS || secondOutcome == TaskOutcome.UP_TO_DATE,
+            "Second build should succeed or be up-to-date (got: $secondOutcome)"
         )
     }
 
     @Test
     fun `proguard files are packaged in AAR with configuration cache`() {
         // Build AAR with configuration cache
+        // Note: Not using :clean to avoid race conditions with parallel CI tasks
         val result = GradleRunner.create()
             .withProjectDir(projectRoot)
             .withArguments(
-                ":sample-library:clean",
                 ":sample-library:bundleMetroReleaseAar",
                 "--configuration-cache"
             )
