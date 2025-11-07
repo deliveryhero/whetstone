@@ -4,30 +4,22 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
-import com.android.build.gradle.internal.tasks.ExportConsumerProguardFilesTask
 import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
-
-internal abstract class ProguardLocatorTask : org.gradle.api.DefaultTask() {
-
-    @get:OutputDirectory
-    internal abstract val locatedFiles: DirectoryProperty
-}
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
 
 public class WhetstonePlugin : Plugin<Project> {
 
@@ -36,6 +28,11 @@ public class WhetstonePlugin : Plugin<Project> {
         target.plugins.apply(ANVIL_PLUGIN_ID)
         target.plugins.withType<AndroidBasePlugin> {
             target.configureAnvil(extension)
+            // Only setup proguard export for library modules
+            // App modules don't export consumer proguard files
+            if (!target.isAppModule) {
+                target.addLocateWhetstoneProguardTask()
+            }
         }
         if (target.isAppModule) {
             target.pluginManager.apply(KAPT_PLUGIN_ID)
@@ -56,45 +53,83 @@ public class WhetstonePlugin : Plugin<Project> {
             }
             target.addDependencies(extension)
         }
-
-        addLocateWhetstoneProguardTask(target)
     }
 
-    private fun addLocateWhetstoneProguardTask(target: Project) {
-        val components = target.extensions.findByType(LibraryAndroidComponentsExtension::class.java)
-            ?: return
+    /**
+     * Configures proguard rule export for library modules by copying Anvil-generated
+     * proguard files to the Kotlin classes output directory where AGP auto-discovers them.
+     *
+     * Background:
+     * - Whetstone code generator (via Anvil) produces .pro files in build/anvil/{variant}/generated/
+     * - These files contain -keep rules for classes using @ContributesViewModel, @ContributesFragment, etc.
+     * - AGP automatically packages proguard files from META-INF/proguard/ in kotlin-classes into AARs
+     *
+     * This implementation:
+     * - Hooks into KotlinCompile's doLast to copy .pro files after compilation completes
+     * - Declares proper inputs/outputs for Gradle caching and up-to-date checks
+     * - Copies from: build/anvil/{variant}/generated/.pro
+     * - Copies to: build/tmp/kotlin-classes/{variant}/META-INF/proguard/.pro
+     * - AGP then auto-discovers and packages these files into the AAR's proguard.txt
+     *
+     * This mimics how KAPT works and ensures proper ProGuard rule propagation to consuming apps.
+     */
+    private fun Project.addLocateWhetstoneProguardTask() {
+        val androidComponents = extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+        if (androidComponents == null) {
+            logger.warn("Whetstone: LibraryAndroidComponentsExtension not found for $name - skipping proguard configuration")
+            return
+        }
 
-        // onVariants will be called for each variant (e.g., debug, release, freeDebug, etc.)
-        components.onVariants { variant ->
-            val variantName = variant.name.capitalized()
+        androidComponents.onVariants { variant ->
+            val variantName = variant.name
 
-            val exportTaskName = "export${variantName}ConsumerProguardFiles"
-            val task = try {
-                target.tasks.named<ExportConsumerProguardFilesTask>(exportTaskName)
-            } catch (ignored: UnknownTaskException) {
-                return@onVariants
+            val kotlinCompilationProvider: Provider<KotlinCompilation<*>> = provider {
+                extensions
+                    .getByType<KotlinAndroidExtension>()
+                    .target
+                    .compilations
+                    .getByName(variantName)
             }
 
-            val sourceTaskName = "compile${variantName}Kotlin"
-            val generatedPath = "anvil/${variant.name}/generated/META-INF/proguard"
+            val compileTaskNameProvider: Provider<String> =
+                kotlinCompilationProvider.map { it.compileKotlinTaskName }
 
-            val locateWhetstoneProguardTask = target
-                .tasks
-                .register<ProguardLocatorTask>("locateWhetstone${variantName}ProguardRules") {
-                    // This task depends on the task that actually creates the file
-                    dependsOn(sourceTaskName)
+            // Configure all KotlinCompile tasks, filtering for our specific variant
+            // This approach allows us to use the Provider without early evaluation
+            tasks.withType<KotlinCompile>().configureEach {
+                // Only configure the task if it matches our variant's compile task
+                val expectedTaskName = compileTaskNameProvider.get()
+                if (name == expectedTaskName) {
+                    doLast {
+                        val anvilGenDir =
+                            layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
+                        val targetDirProvider = destinationDirectory.dir(META_INF_PROGUARD_PATH)
 
-                    locatedFiles.set(target.layout.buildDirectory.dir(generatedPath))
+                        val sourceDir = anvilGenDir.get().asFile
+                        val targetDir = targetDirProvider.get().asFile
+
+                        if (!sourceDir.exists()) {
+                            logger.debug("Whetstone: No Anvil proguard directory found for variant $variantName")
+                            return@doLast
+                        }
+
+                        // Find all .pro files in Anvil's output
+                        val proguardFiles = sourceDir.walk()
+                            .filter { it.isFile && it.extension == "pro" }
+                            .toList()
+
+                        if (proguardFiles.isNotEmpty()) {
+                            targetDir.mkdirs()
+                            proguardFiles.forEach { sourceFile ->
+                                val targetFile = File(targetDir, sourceFile.name)
+                                sourceFile.copyTo(targetFile, overwrite = true)
+                            }
+                            logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
+                        } else {
+                            logger.debug("Whetstone: No .pro files found for variant $variantName")
+                        }
+                    }
                 }
-
-            val generatedProguardFiles = locateWhetstoneProguardTask
-                .flatMap { it.locatedFiles }
-                .map { dir ->
-                    dir.asFileTree.filter { file -> file.name.endsWith(".pro") }
-                }
-
-            task.configure {
-                consumerProguardFiles.from(generatedProguardFiles)
             }
         }
     }
@@ -136,5 +171,7 @@ public class WhetstonePlugin : Plugin<Project> {
         const val ANVIL_PLUGIN_ID = "com.squareup.anvil"
         const val WHETSTONE_EXTENSION = "whetstone"
         const val KAPT_PLUGIN_ID = "kotlin-kapt"
+        const val META_INF_PROGUARD_PATH = "META-INF/proguard"
+        const val ANVIL_GENERATED_SUBPATH = "anvil"
     }
 }
