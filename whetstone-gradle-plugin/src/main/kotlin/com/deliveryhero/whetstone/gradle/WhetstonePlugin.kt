@@ -1,7 +1,6 @@
 package com.deliveryhero.whetstone.gradle
 
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
-import com.android.build.api.variant.impl.capitalizeFirstChar
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
@@ -10,18 +9,17 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import java.io.File
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
-import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
 
 public class WhetstonePlugin : Plugin<Project> {
 
@@ -68,6 +66,7 @@ public class WhetstonePlugin : Plugin<Project> {
      *
      * This implementation:
      * - Hooks into KotlinCompile's doLast to copy .pro files after compilation completes
+     * - Declares proper inputs/outputs for Gradle caching and up-to-date checks
      * - Copies from: build/anvil/{variant}/generated/.pro
      * - Copies to: build/tmp/kotlin-classes/{variant}/META-INF/proguard/.pro
      * - AGP then auto-discovers and packages these files into the AAR's proguard.txt
@@ -92,23 +91,30 @@ public class WhetstonePlugin : Plugin<Project> {
                     .getByName(variantName)
             }
 
-            val compileTaskNameProvider: Provider<String> = kotlinCompilationProvider
-                .map { it.compileKotlinTaskName }
+            val compileTaskNameProvider: Provider<String> =
+                kotlinCompilationProvider.map { it.compileKotlinTaskName }
 
-            // Copy proguard files as part of KotlinCompile task
-            // This ensures they're in kotlin-classes before any AGP task reads from it
-            tasks.withType<KotlinCompile> {
-                doLast {
-                    // Check task name at execution time to avoid configuration-time errors
-                    val expectedTaskName = compileTaskNameProvider.get()
+            // Configure all KotlinCompile tasks, filtering for our specific variant
+            // This approach allows us to use the Provider without early evaluation
+            tasks.withType<KotlinCompile>().configureEach {
+                // Only configure the task if it matches our variant's compile task
+                val expectedTaskName = compileTaskNameProvider.get()
+                if (name == expectedTaskName) {
+                    doLast {
+                        val anvilGenDir =
+                            layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
+                        val targetDirProvider = destinationDirectory.dir(META_INF_PROGUARD_PATH)
 
-                    if (name == expectedTaskName) {
-                        val anvilProguardDir = layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated").get().asFile
-                        val kotlinClassesDir = destinationDirectory.get().asFile
-                        val targetDir = File(kotlinClassesDir, "META-INF/proguard")
+                        val sourceDir = anvilGenDir.get().asFile
+                        val targetDir = targetDirProvider.get().asFile
+
+                        if (!sourceDir.exists()) {
+                            logger.debug("Whetstone: No Anvil proguard directory found for variant $variantName")
+                            return@doLast
+                        }
 
                         // Find all .pro files in Anvil's output
-                        val proguardFiles = anvilProguardDir.walk()
+                        val proguardFiles = sourceDir.walk()
                             .filter { it.isFile && it.extension == "pro" }
                             .toList()
 
@@ -119,6 +125,9 @@ public class WhetstonePlugin : Plugin<Project> {
                                 sourceFile.copyTo(targetFile, overwrite = true)
                             }
                             logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
+                        } else {
+                            logger.debug("Whetstone: No .pro files found for variant $variantName")
+                            return@doLast
                         }
                     }
                 }
