@@ -1,4 +1,5 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.deliveryhero.whetstone/whetstone)
+[![Maven Central](https://img.shields.io/maven-central/v/com.deliveryhero.whetstone/whetstone?label=stable)](https://central.sonatype.com/artifact/com.deliveryhero.whetstone/whetstone)
+[![Sonatype Snapshot](https://img.shields.io/nexus/s/com.deliveryhero.whetstone/whetstone?server=https%3A%2F%2Foss.sonatype.org&label=snapshot)](https://oss.sonatype.org/content/repositories/snapshots/com/deliveryhero/whetstone/)
 
 # Whetstone
 
@@ -48,6 +49,34 @@ apply(plugin = "com.deliveryhero.whetstone")
 ```
 
 This automatically configures Dagger and Anvil, and also adds the necessary whetstone dependencies for you.
+
+### Using Snapshot Builds
+
+Snapshot builds are published automatically from the `main` branch and contain the latest unreleased changes. These builds are useful for testing new features or bug fixes before they are officially released.
+
+To use snapshot builds, add the Sonatype snapshots repository to your project:
+
+```kotlin
+// In root build.gradle.kts or settings.gradle.kts
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
+}
+```
+
+Then use the snapshot version in your plugin dependency:
+
+```kotlin
+plugins {
+    id("com.deliveryhero.whetstone").version("<version>-SNAPSHOT")
+}
+```
+
+For example, if the current stable version is `1.1.4`, the snapshot version would be `1.1.5-SNAPSHOT`.
+
+**Note:** Snapshot versions are development builds and may be unstable. Use them at your own risk and only for testing purposes.
 
 ## Basic Usage
 
