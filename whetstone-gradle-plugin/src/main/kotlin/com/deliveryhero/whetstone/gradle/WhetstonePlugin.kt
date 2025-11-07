@@ -8,7 +8,8 @@ import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
+import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -17,7 +18,6 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
@@ -65,8 +65,8 @@ public class WhetstonePlugin : Plugin<Project> {
      * - AGP automatically packages proguard files from META-INF/proguard/ in kotlin-classes into AARs
      *
      * This implementation:
+     * - Uses lazy configuration via named() to access Kotlin compilations
      * - Hooks into KotlinCompile's doLast to copy .pro files after compilation completes
-     * - Declares proper inputs/outputs for Gradle caching and up-to-date checks
      * - Copies from: build/anvil/{variant}/generated/.pro
      * - Copies to: build/tmp/kotlin-classes/{variant}/META-INF/proguard/.pro
      * - AGP then auto-discovers and packages these files into the AAR's proguard.txt
@@ -80,57 +80,65 @@ public class WhetstonePlugin : Plugin<Project> {
             return
         }
 
-        androidComponents.onVariants { variant ->
-            val variantName = variant.name
+        val kotlinAndroid = extensions.findByType(KotlinAndroidExtension::class.java)
+        if (kotlinAndroid == null) {
+            logger.warn("Whetstone: KotlinAndroidExtension not found for $name - skipping proguard configuration")
+            return
+        }
 
-            val kotlinCompilationProvider: Provider<KotlinCompilation<*>> = provider {
-                extensions
-                    .getByType<KotlinAndroidExtension>()
-                    .target
-                    .compilations
-                    .getByName(variantName)
-            }
+        // Configure proguard copying for each compilation as it's created
+        // Using `all {}` ensures this runs for each compilation without afterEvaluate
+        kotlinAndroid.target.compilations.configureEach {
+            val variantName = name
 
-            val compileTaskNameProvider: Provider<String> =
-                kotlinCompilationProvider.map { it.compileKotlinTaskName }
+            @Suppress("UNCHECKED_CAST")
+            val kotlinCompileProvider = compileTaskProvider as TaskProvider<KotlinCompile>
 
-            // Configure all KotlinCompile tasks, filtering for our specific variant
-            // This approach allows us to use the Provider without early evaluation
-            tasks.withType<KotlinCompile>().configureEach {
-                // Only configure the task if it matches our variant's compile task
-                val expectedTaskName = compileTaskNameProvider.get()
-                if (name == expectedTaskName) {
-                    doLast {
-                        val anvilGenDir =
-                            layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
-                        val targetDirProvider = destinationDirectory.dir(META_INF_PROGUARD_PATH)
+            kotlinCompileProvider.configure {
+                // Create directory providers at configuration time
+                val anvilGenDir =
+                    layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
+                val targetDir = destinationDirectory.dir(META_INF_PROGUARD_PATH)
 
-                        val sourceDir = anvilGenDir.get().asFile
-                        val targetDir = targetDirProvider.get().asFile
-
-                        if (!sourceDir.exists()) {
-                            logger.debug("Whetstone: No Anvil proguard directory found for variant $variantName")
-                            return@doLast
-                        }
-
-                        // Find all .pro files in Anvil's output
-                        val proguardFiles = sourceDir.walk()
-                            .filter { it.isFile && it.extension == "pro" }
-                            .toList()
-
-                        if (proguardFiles.isNotEmpty()) {
-                            targetDir.mkdirs()
-                            proguardFiles.forEach { sourceFile ->
-                                val targetFile = File(targetDir, sourceFile.name)
-                                sourceFile.copyTo(targetFile, overwrite = true)
-                            }
-                            logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
-                        } else {
-                            logger.debug("Whetstone: No .pro files found for variant $variantName")
-                        }
-                    }
+                doLast {
+                    copyWhetstoneProguardRules(
+                        sourceDir = anvilGenDir.get().asFile,
+                        targetDir = targetDir.get().asFile,
+                        variantName = variantName,
+                    )
                 }
             }
+        }
+    }
+
+    /**
+     * Copies Anvil-generated proguard files to META-INF/proguard/ in kotlin-classes output.
+     * Extracted to a separate function to make configuration cache dependencies explicit.
+     * All parameters are simple types (File, String, Logger) to avoid capturing Project references.
+     */
+    private fun Task.copyWhetstoneProguardRules(
+        sourceDir: File,
+        targetDir: File,
+        variantName: String,
+    ) {
+        if (!sourceDir.exists()) {
+            logger.debug("Whetstone: No Anvil proguard directory found for variant $variantName")
+            return
+        }
+
+        val proguardFiles = sourceDir.walk()
+            .filter { it.isFile && it.extension == "pro" }
+            .toList()
+
+        if (proguardFiles.isNotEmpty()) {
+            targetDir.mkdirs()
+            proguardFiles.forEach { sourceFile ->
+                val targetFile = File(targetDir, sourceFile.name)
+                sourceFile.copyTo(targetFile, overwrite = true)
+            }
+            logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
+        } else {
+            logger.debug("Whetstone: No .pro files found for variant $variantName")
         }
     }
 
