@@ -61,13 +61,18 @@ public class WhetstonePlugin : Plugin<Project> {
      * Configures proguard rule export for library modules by copying Anvil-generated
      * proguard files to the Kotlin classes output directory where AGP auto-discovers them.
      *
-     * This mimics how KAPT works - KAPT writes proguard files to its classes output
-     * which AGP automatically includes in the AAR. By copying Anvil's proguard files
-     * to the same location (build/tmp/kotlin-classes/{variant}/META-INF/proguard/),
-     * AGP will auto-discover and package them without any manual wiring.
+     * Background:
+     * - Whetstone code generator (via Anvil) produces .pro files in build/anvil/{variant}/generated/
+     * - These files contain -keep rules for classes using @ContributesViewModel, @ContributesFragment, etc.
+     * - AGP automatically packages proguard files from META-INF/proguard/ in kotlin-classes into AARs
      *
-     * Uses a separate Copy task with proper input/output declarations for correct
-     * caching behavior and dependency tracking.
+     * This implementation:
+     * - Hooks into KotlinCompile's doLast to copy .pro files after compilation completes
+     * - Copies from: build/anvil/{variant}/generated/.pro
+     * - Copies to: build/tmp/kotlin-classes/{variant}/META-INF/proguard/.pro
+     * - AGP then auto-discovers and packages these files into the AAR's proguard.txt
+     *
+     * This mimics how KAPT works and ensures proper ProGuard rule propagation to consuming apps.
      */
     private fun Project.addLocateWhetstoneProguardTask() {
         val androidComponents = extensions.findByType(LibraryAndroidComponentsExtension::class.java)
