@@ -4,6 +4,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.util.zip.ZipFile
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -34,8 +35,7 @@ class ConfigurationCacheTest {
 
         val firstOutput = firstResult.output
         val hasConfigCache = firstOutput.contains("Configuration cache entry stored") ||
-                firstOutput.contains("Reusing configuration cache") ||
-                firstOutput.contains("Calculating task graph")
+                firstOutput.contains("Reusing configuration cache")
 
         assertTrue(
             hasConfigCache,
@@ -113,16 +113,13 @@ class ConfigurationCacheTest {
 
         assertTrue(aarFile.exists(), "AAR file should exist")
 
-        // Verify proguard.txt is in the AAR by attempting to extract it
-        val process = ProcessBuilder("unzip", "-p", aarFile.absolutePath, "proguard.txt")
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.PIPE)
-            .start()
+        // Verify proguard.txt is in the AAR using ZipFile API for platform independence
+        val proguardContent = ZipFile(aarFile).use { zipFile ->
+            val entry = zipFile.getEntry("proguard.txt")
+            assertTrue(entry != null, "Should be able to extract proguard.txt from AAR")
+            zipFile.getInputStream(entry!!).bufferedReader().readText()
+        }
 
-        val proguardContent = process.inputStream.bufferedReader().readText()
-        val exitCode = process.waitFor()
-
-        assertEquals(0, exitCode, "Should be able to extract proguard.txt from AAR")
         assertTrue(
             proguardContent.contains("-keep"),
             "Proguard file should contain keep rules. Content: $proguardContent"

@@ -87,17 +87,16 @@ public class WhetstonePlugin : Plugin<Project> {
         }
 
         // Configure proguard copying for each compilation as it's created
-        // Using `all {}` ensures this runs for each compilation without afterEvaluate
+        // Using `configureEach` ensures this runs for each compilation without afterEvaluate
         kotlinAndroid.target.compilations.configureEach {
             val variantName = name
+            val compilationTaskProvider = compileTaskProvider
 
-            @Suppress("UNCHECKED_CAST")
-            val kotlinCompileProvider = compileTaskProvider as TaskProvider<KotlinCompile>
-
-            kotlinCompileProvider.configure {
+            // Access the task through the project's task container for type safety
+            project.tasks.named(compilationTaskProvider.name, KotlinCompile::class.java).configure {
                 // Create directory providers at configuration time
                 val anvilGenDir =
-                    layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
+                    project.layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
                 val targetDir = destinationDirectory.dir(META_INF_PROGUARD_PATH)
 
                 doLast {
