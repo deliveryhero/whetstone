@@ -73,6 +73,56 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
     assertEquals(expectedProguardContent, actualProguardContent)
 }
 
+/**
+ * Simulates and validates the Gradle plugin's file copying behavior.
+ *
+ * In a real Gradle build, the Whetstone plugin copies .pro files from Anvil's output
+ * to kotlin-classes/META-INF/proguard/ for AGP to discover and package into AARs.
+ *
+ * This function:
+ * 1. Simulates that copying by manually doing it in the test environment
+ * 2. Validates the files exist in the correct location with correct content
+ *
+ * Note: This is a simulation test, not an integration test of the actual Gradle plugin.
+ * The actual Gradle plugin behavior is tested via AAR verification in integration tests.
+ */
+internal fun JvmCompilationResult.simulateAndValidateGradlePluginCopy(
+    classUnderTest: String
+) {
+    val clas = classLoader.loadClass(classUnderTest).kotlin
+    val simpleName = classUnderTest.replace('.', '_')
+    val proguardFileName = "${simpleName}BindingsModule_LazyClassKeys"
+
+    // Source: where Anvil generates the file
+    val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+    val sourceProFile = File(anvilFolder, "$proguardFileName.pro")
+
+    // Destination: where Gradle plugin should copy it (simulating kotlin-classes directory)
+    val kotlinClassesFolder = File(outputDirectory, "META-INF/proguard")
+    val copiedProFile = File(kotlinClassesFolder, "$proguardFileName.pro")
+
+    // Manually copy to simulate what Gradle plugin does (since we're in unit test, not full Gradle build)
+    if (sourceProFile.exists()) {
+        kotlinClassesFolder.mkdirs()
+        sourceProFile.copyTo(copiedProFile, overwrite = true)
+    }
+
+    // Verify the file exists in kotlin-classes location
+    assertTrue(
+        copiedProFile.exists(),
+        "Proguard file should be copied to kotlin-classes at ${copiedProFile.absolutePath}"
+    )
+
+    // Verify content matches
+    val expectedProguardContent = "-keep,allowobfuscation,allowshrinking class ${clas.qualifiedName}"
+    val actualProguardContent = copiedProFile.readText()
+    assertEquals(
+        expectedProguardContent,
+        actualProguardContent,
+        "Copied proguard file content should match original"
+    )
+}
+
 internal fun JvmCompilationResult.validateNoLazyBindingKey(classUnderTest: String) {
     val className = "${classUnderTest}BindingsModule_Binds_LazyMapKey"
     assertFailsWith<ClassNotFoundException> { classLoader.loadClass(className).kotlin }

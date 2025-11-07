@@ -50,6 +50,9 @@ dependencies {
     implementation(libs.anvilGradle)
     compileOnly(libs.androidGradle)
     compileOnly(libs.kotlinGradle)
+
+    testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
 }
 
 val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {

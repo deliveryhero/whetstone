@@ -127,7 +127,6 @@ public class WhetstonePlugin : Plugin<Project> {
                             logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
                         } else {
                             logger.debug("Whetstone: No .pro files found for variant $variantName")
-                            return@doLast
                         }
                     }
                 }

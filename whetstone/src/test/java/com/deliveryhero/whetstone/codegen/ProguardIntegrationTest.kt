@@ -244,4 +244,158 @@ internal class ProguardIntegrationTest {
             assertTrue(proguardFiles.isNotEmpty(), "Should have at least one .pro file")
         }
     }
+
+    // ========== Gradle Plugin Simulation Tests ==========
+    // These tests SIMULATE what the Whetstone Gradle plugin does by manually copying files.
+    // They verify the expected file structure and content, but do NOT test the actual plugin.
+    // For true integration testing, see AAR verification tests that run actual Gradle builds.
+
+    @Test
+    fun `proguard files are copied to kotlin-classes directory`() {
+        compileAnvil(
+            """
+                package com.test
+
+                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+                import androidx.lifecycle.ViewModel
+
+                @ContributesViewModel
+                class MainViewModel : ViewModel()
+            """.trimIndent(),
+            generateDaggerFactories = true
+        ) {
+            simulateAndValidateGradlePluginCopy("com.test.MainViewModel")
+        }
+    }
+
+    @Test
+    fun `copied proguard files have correct content`() {
+        compileAnvil(
+            """
+                package com.test.feature
+
+                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+                import androidx.lifecycle.ViewModel
+
+                @ContributesViewModel
+                class ProfileViewModel : ViewModel()
+            """.trimIndent(),
+            generateDaggerFactories = true
+        ) {
+            // Validate both generation and copying
+            validateLazyBindingKey("com.test.feature.ProfileViewModel")
+            simulateAndValidateGradlePluginCopy("com.test.feature.ProfileViewModel")
+
+            // Additional verification that content is exactly the same
+            val simpleName = "com_test_feature_ProfileViewModel"
+            val anvilFile = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard/${simpleName}BindingsModule_LazyClassKeys.pro")
+            val copiedFile = File(outputDirectory, "META-INF/proguard/${simpleName}BindingsModule_LazyClassKeys.pro")
+
+            assertEquals(
+                anvilFile.readText(),
+                copiedFile.readText(),
+                "Copied file content should match source exactly"
+            )
+        }
+    }
+
+    @Test
+    fun `multiple ViewModels have all proguard files copied`() {
+        compileAnvil(
+            """
+                package com.test
+
+                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+                import androidx.lifecycle.ViewModel
+
+                @ContributesViewModel
+                class FirstViewModel : ViewModel()
+
+                @ContributesViewModel
+                class SecondViewModel : ViewModel()
+
+                @ContributesViewModel
+                class ThirdViewModel : ViewModel()
+            """.trimIndent(),
+            generateDaggerFactories = true
+        ) {
+            // Verify all files are copied
+            simulateAndValidateGradlePluginCopy("com.test.FirstViewModel")
+            simulateAndValidateGradlePluginCopy("com.test.SecondViewModel")
+            simulateAndValidateGradlePluginCopy("com.test.ThirdViewModel")
+
+            // Verify all files exist in kotlin-classes
+            val kotlinClassesProguard = File(outputDirectory, "META-INF/proguard")
+            val copiedFiles = kotlinClassesProguard.listFiles { file -> file.extension == "pro" } ?: emptyArray()
+            assertEquals(3, copiedFiles.size, "Should have 3 copied .pro files in kotlin-classes")
+        }
+    }
+
+    @Test
+    fun `no proguard files copied when generateDaggerFactories is false`() {
+        compileAnvil(
+            """
+                package com.test
+
+                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+                import androidx.lifecycle.ViewModel
+
+                @ContributesViewModel
+                class MainViewModel : ViewModel()
+            """.trimIndent(),
+            generateDaggerFactories = false
+        ) {
+            // Anvil folder should not have files
+            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilProFile = File(anvilFolder, "com_test_MainViewModelBindingsModule_LazyClassKeys.pro")
+            assertFalse(anvilProFile.exists(), "Anvil should not generate proguard file")
+
+            // kotlin-classes should also not have files
+            val kotlinClassesFolder = File(outputDirectory, "META-INF/proguard")
+            val copiedFiles = kotlinClassesFolder.listFiles { file -> file.extension == "pro" } ?: emptyArray()
+            assertEquals(0, copiedFiles.size, "No files should be copied when generateDaggerFactories is false")
+        }
+    }
+
+    @Test
+    fun `mixed annotation types have all proguard files copied`() {
+        compileAnvil(
+            """
+                package com.test
+
+                import com.deliveryhero.whetstone.viewmodel.ContributesViewModel
+                import com.deliveryhero.whetstone.fragment.ContributesFragment
+                import androidx.lifecycle.ViewModel
+                import androidx.fragment.app.Fragment
+
+                @ContributesViewModel
+                class MyViewModel : ViewModel()
+
+                @ContributesFragment
+                class MyFragment : Fragment()
+            """.trimIndent(),
+            generateDaggerFactories = true
+        ) {
+            // Verify both types are copied
+            simulateAndValidateGradlePluginCopy("com.test.MyViewModel")
+            simulateAndValidateGradlePluginCopy("com.test.MyFragment")
+
+            // Verify both files exist in kotlin-classes
+            val kotlinClassesProguard = File(outputDirectory, "META-INF/proguard")
+            val vmFile = File(kotlinClassesProguard, "com_test_MyViewModelBindingsModule_LazyClassKeys.pro")
+            val fragmentFile = File(kotlinClassesProguard, "com_test_MyFragmentBindingsModule_LazyClassKeys.pro")
+
+            assertTrue(vmFile.exists(), "ViewModel proguard file should be copied")
+            assertTrue(fragmentFile.exists(), "Fragment proguard file should be copied")
+
+            assertEquals(
+                "-keep,allowobfuscation,allowshrinking class com.test.MyViewModel",
+                vmFile.readText()
+            )
+            assertEquals(
+                "-keep,allowobfuscation,allowshrinking class com.test.MyFragment",
+                fragmentFile.readText()
+            )
+        }
+    }
 }
