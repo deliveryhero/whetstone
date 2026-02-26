@@ -6,7 +6,6 @@ import android.app.Application
 import android.app.Service
 import android.content.ContextWrapper
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
@@ -15,13 +14,13 @@ import com.deliveryhero.whetstone.activity.ContributesActivityInjector
 import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ContributesAppInjector
-import com.deliveryhero.whetstone.fragment.ContributesFragment
 import com.deliveryhero.whetstone.event.GlobalAndroidComponentListener
 import com.deliveryhero.whetstone.event.InjectedComponent
 import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent
 import dagger.MembersInjector
+import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -31,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference
 public object Whetstone {
 
     private val root = AtomicReference<ApplicationComponent>()
+    private val activityComponents = WeakHashMap<Activity, Any>()
 
     @SuppressLint("NewApi")
     @InternalWhetstoneApi // This method path is not used yet
@@ -56,8 +56,8 @@ public object Whetstone {
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromActivity(activity: Activity): T {
-        val contentView = activity.findViewById<View>(android.R.id.content)
-        return contentView.getTagOrSet(R.id.activityComponentId) {
+        @Suppress("UNCHECKED_CAST")
+        return activityComponents.getOrPut(activity) {
             fromApplication<ActivityComponent.ParentComponent>(activity.application)
                 .getActivityComponentFactory()
                 .create(activity)
@@ -185,18 +185,6 @@ public object Whetstone {
         }
         val activityComponent = fromActivity<ActivityComponent>(activity)
         activity.supportFragmentManager.fragmentFactory = activityComponent.fragmentFactory
-    }
-}
-
-@Suppress("UNCHECKED_CAST")
-private fun <V> View.getTagOrSet(@IdRes key: Int, defaultValue: () -> V): V {
-    val value = getTag(key) as? V
-    return if (value == null) {
-        val answer = defaultValue()
-        setTag(key, answer)
-        answer
-    } else {
-        value
     }
 }
 
