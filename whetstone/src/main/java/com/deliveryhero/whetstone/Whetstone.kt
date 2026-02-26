@@ -20,7 +20,6 @@ import com.deliveryhero.whetstone.service.ContributesServiceInjector
 import com.deliveryhero.whetstone.service.ServiceComponent
 import com.deliveryhero.whetstone.view.ViewComponent
 import dagger.MembersInjector
-import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -30,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference
 public object Whetstone {
 
     private val root = AtomicReference<ApplicationComponent>()
-    private val activityComponents = WeakHashMap<Activity, Any>()
+    private val activityComponents = HashMap<Activity, Any>()
 
     @SuppressLint("NewApi")
     @InternalWhetstoneApi // This method path is not used yet
