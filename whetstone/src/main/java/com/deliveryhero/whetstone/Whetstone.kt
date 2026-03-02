@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Application
 import android.app.Service
 import android.content.ContextWrapper
+import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
@@ -30,6 +31,7 @@ public object Whetstone {
 
     private val root = AtomicReference<ApplicationComponent>()
     private val activityComponents = HashMap<Activity, Any>()
+    private var registeredApplication: Application? = null
 
     @SuppressLint("NewApi")
     @InternalWhetstoneApi // This method path is not used yet
@@ -55,9 +57,14 @@ public object Whetstone {
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromActivity(activity: Activity): T {
+        val app = activity.application
+        if (registeredApplication !== app) {
+            registeredApplication = app
+            app.registerActivityLifecycleCallbacks(ActivityComponentCleanupCallback(activityComponents))
+        }
         @Suppress("UNCHECKED_CAST")
         return activityComponents.getOrPut(activity) {
-            fromApplication<ActivityComponent.ParentComponent>(activity.application)
+            fromApplication<ActivityComponent.ParentComponent>(app)
                 .getActivityComponentFactory()
                 .create(activity)
         } as T
@@ -185,6 +192,18 @@ public object Whetstone {
         val activityComponent = fromActivity<ActivityComponent>(activity)
         activity.supportFragmentManager.fragmentFactory = activityComponent.fragmentFactory
     }
+}
+
+private class ActivityComponentCleanupCallback(
+    private val components: HashMap<Activity, Any>
+) : Application.ActivityLifecycleCallbacks {
+    override fun onActivityDestroyed(activity: Activity) { components.remove(activity) }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+    override fun onActivityStarted(activity: Activity) = Unit
+    override fun onActivityResumed(activity: Activity) = Unit
+    override fun onActivityPaused(activity: Activity) = Unit
+    override fun onActivityStopped(activity: Activity) = Unit
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 }
 
 private fun View.findActivity(): Activity = requireNotNull(findActivityOrNull())
