@@ -5,8 +5,8 @@ import android.app.Activity
 import android.app.Application
 import android.app.Service
 import android.content.ContextWrapper
+import android.os.Bundle
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Lifecycle
@@ -15,7 +15,6 @@ import com.deliveryhero.whetstone.activity.ContributesActivityInjector
 import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationComponentOwner
 import com.deliveryhero.whetstone.app.ContributesAppInjector
-import com.deliveryhero.whetstone.fragment.ContributesFragment
 import com.deliveryhero.whetstone.event.GlobalAndroidComponentListener
 import com.deliveryhero.whetstone.event.InjectedComponent
 import com.deliveryhero.whetstone.service.ContributesServiceInjector
@@ -31,6 +30,8 @@ import java.util.concurrent.atomic.AtomicReference
 public object Whetstone {
 
     private val root = AtomicReference<ApplicationComponent>()
+    private val activityComponents = HashMap<Activity, Any>()
+    private var registeredApplication: Application? = null
 
     @SuppressLint("NewApi")
     @InternalWhetstoneApi // This method path is not used yet
@@ -56,9 +57,14 @@ public object Whetstone {
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun <T : Any> fromActivity(activity: Activity): T {
-        val contentView = activity.findViewById<View>(android.R.id.content)
-        return contentView.getTagOrSet(R.id.activityComponentId) {
-            fromApplication<ActivityComponent.ParentComponent>(activity.application)
+        val app = activity.application
+        if (registeredApplication !== app) {
+            registeredApplication = app
+            app.registerActivityLifecycleCallbacks(ActivityComponentCleanupCallback(activityComponents))
+        }
+        @Suppress("UNCHECKED_CAST")
+        return activityComponents.getOrPut(activity) {
+            fromApplication<ActivityComponent.ParentComponent>(app)
                 .getActivityComponentFactory()
                 .create(activity)
         } as T
@@ -188,16 +194,16 @@ public object Whetstone {
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-private fun <V> View.getTagOrSet(@IdRes key: Int, defaultValue: () -> V): V {
-    val value = getTag(key) as? V
-    return if (value == null) {
-        val answer = defaultValue()
-        setTag(key, answer)
-        answer
-    } else {
-        value
-    }
+private class ActivityComponentCleanupCallback(
+    private val components: HashMap<Activity, Any>
+) : Application.ActivityLifecycleCallbacks {
+    override fun onActivityDestroyed(activity: Activity) { components.remove(activity) }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+    override fun onActivityStarted(activity: Activity) = Unit
+    override fun onActivityResumed(activity: Activity) = Unit
+    override fun onActivityPaused(activity: Activity) = Unit
+    override fun onActivityStopped(activity: Activity) = Unit
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 }
 
 private fun View.findActivity(): Activity = requireNotNull(findActivityOrNull())
