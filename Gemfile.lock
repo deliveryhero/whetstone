@@ -47,7 +47,7 @@ GEM
     nap (1.1.0)
     net-http (0.6.0)
       uri
-    nokogiri (1.18.8)
+    nokogiri (1.18.9)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     octokit (10.0.0)
@@ -72,7 +72,7 @@ PLATFORMS
 
 DEPENDENCIES
   danger (= 9.5.1)
-  nokogiri (~> 1.18.8)
+  nokogiri (~> 1.18.9)
 
 BUNDLED WITH
    2.6.9
