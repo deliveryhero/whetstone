@@ -1,5 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.deliveryhero.whetstone/whetstone?label=stable)](https://central.sonatype.com/artifact/com.deliveryhero.whetstone/whetstone)
-[![Sonatype Snapshot](https://img.shields.io/nexus/s/com.deliveryhero.whetstone/whetstone?server=https%3A%2F%2Foss.sonatype.org&label=snapshot)](https://oss.sonatype.org/content/repositories/snapshots/com/deliveryhero/whetstone/)
+[![Snapshot](https://img.shields.io/maven-metadata/v?metadataUrl=https://central.sonatype.com/repository/maven-snapshots/com/deliveryhero/whetstone/whetstone/maven-metadata.xml&label=snapshot)](https://central.sonatype.com/repository/maven-snapshots/com/deliveryhero/whetstone/whetstone/)
 
 # Whetstone
 
@@ -61,7 +61,11 @@ To use snapshot builds, add the Sonatype snapshots repository to your project:
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+        name = "Central Portal Snapshots"
+        url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        mavenContent {
+            snapshotsOnly()
+        }
     }
 }
 ```
