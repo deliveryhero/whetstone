@@ -56,8 +56,8 @@ That push is performed by the `delivery-hero-tech` org bot and depends on:
   ("Allow specified actors to bypass required pull requests"). Without this the push
   is rejected with `GH006: Protected branch update failed`.
 
-If a fork ever needs to run this workflow, swap `GH_TOKEN` for an equivalent bot/PAT
-available there and add that identity to the fork's branch-protection bypass list.
+If a fork needs to run this workflow, configure a `GH_TOKEN` secret with an
+equivalent bot/PAT and add that identity to the fork's branch-protection bypass list.
 
 ## Version Scheme
 
