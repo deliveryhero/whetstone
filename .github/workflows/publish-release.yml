@@ -15,7 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # delivery-hero-tech bot PAT — actions/checkout persists this as the
+          # git credential for the rest of the job, so the post-release SNAPSHOT
+          # bump step can push to the protected `main` branch (the bot is on
+          # the branch-protection bypass list; the default GITHUB_TOKEN is not).
+          token: ${{ secrets.GH_TOKEN }}
           fetch-depth: 0
 
       - name: Set JDK version
@@ -96,13 +100,15 @@ jobs:
           sed -i.bak "s/^VERSION_NAME=.*/VERSION_NAME=$NEXT_VERSION/" gradle.properties
           rm gradle.properties.bak
 
-          # Configure git
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Author the commit as the delivery-hero-tech bot (whose PAT is the
+          # persisted git credential from actions/checkout, and which is on the
+          # `main` branch-protection bypass list).
+          git config user.name "Delivery-Hero-Tech"
+          git config user.email "pd-mobile-bot@deliveryhero.com"
 
           # Checkout main branch (release events check out tags, leaving us in detached HEAD)
           git checkout main
-          git pull origin main
+          git pull --ff-only origin main
 
           # Commit and push
           git add gradle.properties

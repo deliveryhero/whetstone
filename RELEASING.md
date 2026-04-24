@@ -44,6 +44,21 @@ When you create a GitHub release:
 3. **Publishing**: Publishes artifacts to Maven Central with automatic promotion
 4. **Next Version**: Automatically commits `X.Y.(Z+1)-SNAPSHOT` to main branch
 
+## Required repo configuration
+
+The post-release SNAPSHOT bump pushes a commit directly to the protected `main` branch.
+That push is performed by the `delivery-hero-tech` org bot and depends on:
+
+- The `GH_TOKEN` repo secret (the bot's PAT) being available to
+  `.github/workflows/publish-release.yml` — wired via `actions/checkout`'s `token:`
+  input so the persisted git credentials carry the bot identity for the rest of the job.
+- `delivery-hero-tech` being included in the `main` branch-protection bypass list
+  ("Allow specified actors to bypass required pull requests"). Without this the push
+  is rejected with `GH006: Protected branch update failed`.
+
+If a fork needs to run this workflow, configure a `GH_TOKEN` secret with an
+equivalent bot/PAT and add that identity to the fork's branch-protection bypass list.
+
 ## Version Scheme
 
 - **Release versions**: `1.2.3` (no SNAPSHOT suffix) - committed to main before creating GitHub release
