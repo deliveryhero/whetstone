@@ -114,7 +114,7 @@ Note: Using GitHub Releases is strongly recommended as it provides full automati
 
 **Maven Central not showing new version**
 - Automatic publishing is enabled, but Maven Central can take a few minutes to sync.
-- Check [Sonatype Nexus](https://central.sonatype.com/publishing/deployments) for deployment status.
+- Check the [Maven Central Publisher Portal](https://central.sonatype.com/publishing/deployments) for deployment status.
 
 **Next SNAPSHOT version not committed to `main`**
 - Most common cause: `GH_TOKEN` is missing or the bot is not on the branch-protection bypass list — see [Required repo configuration](#required-repo-configuration). The default `GITHUB_TOKEN` cannot push to a protected `main`, and the failure surfaces only at the bump step (after the artifact is already published to Maven Central).
