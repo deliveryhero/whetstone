@@ -17,7 +17,7 @@ fun loadParentProperties() {
 
     properties.forEach { (k, v) ->
         val key = k.toString()
-        val value = providers.gradleProperty(name).getOrElse(v.toString())
+        val value = providers.gradleProperty(key).getOrElse(v.toString())
         extra.set(key, value)
     }
 }
