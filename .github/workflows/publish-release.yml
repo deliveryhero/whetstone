@@ -81,6 +81,13 @@ jobs:
             echo "Github username: ${GITHUB_ACTOR}"
             cat gradle.properties >> whetstone-gradle-plugin/gradle.properties
             ./gradlew clean -x test -x lint publish :whetstone-gradle-plugin:publish -PmavenCentralAutomaticPublishing=true
+            echo "Submitted to Maven Central (sync may take up to 30 min)"
+            if [[ "${{ steps.version.outputs.is_release }}" == "true" ]]; then
+              echo "Verify release: https://repo1.maven.org/maven2/com/deliveryhero/whetstone/"
+              echo "Portal: https://central.sonatype.com/publishing/deployments"
+            else
+              echo "Verify snapshot metadata: https://central.sonatype.com/repository/maven-snapshots/com/deliveryhero/whetstone/whetstone/maven-metadata.xml"
+            fi
 
       - name: Bump to next SNAPSHOT version
         if: github.event_name == 'release' && steps.version.outputs.is_release == 'true'
