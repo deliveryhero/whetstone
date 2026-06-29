@@ -6,7 +6,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 dependencies {
@@ -14,6 +14,7 @@ dependencies {
     compileOnly(libs.anvilCompilerUtils)
     compileOnly(libs.anvilAnnotations)
     compileOnly(libs.dagger)
+    compileOnly(libs.metroRuntime)
     compileOnly(libs.autoServiceAnnotations)
     kapt(libs.autoServiceCompiler)
 }

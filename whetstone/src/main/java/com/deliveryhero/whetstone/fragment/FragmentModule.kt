@@ -1,14 +1,15 @@
 package com.deliveryhero.whetstone.fragment
 
 import androidx.fragment.app.Fragment
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
+import kotlin.reflect.KClass
 
-@Module
+@BindingContainer
 @ContributesTo(FragmentScope::class)
 public interface FragmentModule {
 
-    @Multibinds
-    public fun provideFragments(): Map<Class<*>, Fragment>
+    @Multibinds(allowEmpty = true)
+    public fun provideFragments(): Map<KClass<*>, Fragment>
 }

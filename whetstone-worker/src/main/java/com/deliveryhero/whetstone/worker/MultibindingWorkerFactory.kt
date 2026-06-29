@@ -6,11 +6,9 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.deliveryhero.whetstone.app.ApplicationScope
-import com.squareup.anvil.annotations.ContributesBinding
-import dagger.Reusable
+import dev.zacsweers.metro.ContributesBinding
 import javax.inject.Inject
 
-@Reusable
 @ContributesBinding(ApplicationScope::class)
 public class MultibindingWorkerFactory @Inject constructor(
     private val workerComponentFactory: WorkerComponent.Factory
@@ -24,7 +22,7 @@ public class MultibindingWorkerFactory @Inject constructor(
         val workerComponent = workerComponentFactory.create(appContext, workerParameters)
         val workerClass = loadClass(appContext.classLoader, workerClassName) ?: return null
 
-        return workerComponent.workerMap[workerClass]?.get()
+        return workerComponent.workerMap[workerClass.kotlin]?.get()
     }
 
     internal companion object {

@@ -1,14 +1,14 @@
 package com.deliveryhero.whetstone.service
 
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
 
-@Module
+@BindingContainer
 @ContributesTo(ServiceScope::class)
 public interface ServiceModule {
 
-    @Multibinds
+    @Multibinds(allowEmpty = true)
     public fun membersInjectors(): MembersInjectorMap
 }

@@ -8,9 +8,10 @@ androidxFragment = "1.8.6"
 androidxLifecycle = "2.8.7"
 androidxWork = "2.10.0"
 anvil = "2.6.1"
+metro = "1.2.1"
 constraintlayout = "2.2.0"
 dagger = "2.56.2"
-kotlin = "2.2.0"
+kotlin = "2.3.0"
 mavenPublish = "0.34.0"
 autoService = "1.1.1"
 detekt = "1.23.8"
@@ -23,6 +24,7 @@ material = "1.12.0"
 androidApp = { id = "com.android.application", version.ref = "agp" }
 androidLib = { id = "com.android.library", version.ref = "agp" }
 anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -51,6 +53,9 @@ anvilAnnotations = { module = "com.squareup.anvil:annotations", version.ref = "a
 anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
 anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
 anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
+metroRuntime = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }
+metroCompiler = { module = "dev.zacsweers.metro:compiler", version.ref = "metro" }
+metroGradle = { module = "dev.zacsweers.metro:gradle-plugin", version.ref = "metro" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }

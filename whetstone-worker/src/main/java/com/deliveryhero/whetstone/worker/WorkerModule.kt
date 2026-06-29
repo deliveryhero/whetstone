@@ -1,14 +1,15 @@
 package com.deliveryhero.whetstone.worker
 
 import androidx.work.ListenableWorker
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
+import kotlin.reflect.KClass
 
-@Module
+@BindingContainer
 @ContributesTo(WorkerScope::class)
 public interface WorkerModule {
 
-    @Multibinds
-    public fun provideWorkers(): Map<Class<*>, ListenableWorker>
+    @Multibinds(allowEmpty = true)
+    public fun provideWorkers(): Map<KClass<*>, ListenableWorker>
 }

@@ -20,7 +20,7 @@ class MainApplication : Application(), ApplicationComponentOwner {
     @Inject
     internal lateinit var dependency: MainDependency
 
-    override val applicationComponent = GeneratedApplicationComponent.create(this)
+    override val applicationComponent = dev.zacsweers.metro.createGraphFactory<GeneratedApplicationComponent.GraphFactory>().create(this)
 
     override fun onCreate() {
         Whetstone.inject(this)

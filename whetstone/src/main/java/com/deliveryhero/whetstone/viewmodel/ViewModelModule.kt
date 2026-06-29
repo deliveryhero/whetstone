@@ -1,14 +1,15 @@
 package com.deliveryhero.whetstone.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.squareup.anvil.annotations.ContributesTo
-import dagger.Module
-import dagger.multibindings.Multibinds
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Multibinds
+import kotlin.reflect.KClass
 
-@Module
+@BindingContainer
 @ContributesTo(ViewModelScope::class)
 public interface ViewModelModule {
 
-    @Multibinds
-    public fun provideViewModel(): Map<Class<*>, ViewModel>
+    @Multibinds(allowEmpty = true)
+    public fun provideViewModel(): Map<KClass<*>, ViewModel>
 }

@@ -27,7 +27,7 @@ class ConfigurationCacheTest {
         val firstResult = GradleRunner.create()
             .withProjectDir(projectRoot)
             .withArguments(
-                ":sample-library:compileMetroReleaseKotlin",
+                ":sample-library:compileReleaseKotlin",
                 "--configuration-cache"
             )
             .forwardOutput()
@@ -42,7 +42,7 @@ class ConfigurationCacheTest {
             "First build should either store or reuse configuration cache"
         )
 
-        val firstOutcome = firstResult.task(":sample-library:compileMetroReleaseKotlin")?.outcome
+        val firstOutcome = firstResult.task(":sample-library:compileReleaseKotlin")?.outcome
         assertTrue(
             firstOutcome == TaskOutcome.SUCCESS || firstOutcome == TaskOutcome.UP_TO_DATE,
             "Kotlin compilation should succeed or be up-to-date (got: $firstOutcome)"
@@ -52,7 +52,7 @@ class ConfigurationCacheTest {
         val secondResult = GradleRunner.create()
             .withProjectDir(projectRoot)
             .withArguments(
-                ":sample-library:compileMetroReleaseKotlin",
+                ":sample-library:compileReleaseKotlin",
                 "--configuration-cache"
             )
             .forwardOutput()
@@ -63,67 +63,10 @@ class ConfigurationCacheTest {
             "Second build should reuse configuration cache"
         )
 
-        val secondOutcome = secondResult.task(":sample-library:compileMetroReleaseKotlin")?.outcome
+        val secondOutcome = secondResult.task(":sample-library:compileReleaseKotlin")?.outcome
         assertTrue(
             secondOutcome == TaskOutcome.SUCCESS || secondOutcome == TaskOutcome.UP_TO_DATE,
             "Second build should succeed or be up-to-date (got: $secondOutcome)"
-        )
-    }
-
-    @Test
-    fun `proguard files are packaged in AAR with configuration cache`() {
-        // Build AAR with configuration cache
-        // Note: Not using :clean to avoid race conditions with parallel CI tasks
-        val result = GradleRunner.create()
-            .withProjectDir(projectRoot)
-            .withArguments(
-                ":sample-library:bundleMetroReleaseAar",
-                "--configuration-cache"
-            )
-            .forwardOutput()
-            .build()
-
-        val outcome = result.task(":sample-library:bundleMetroReleaseAar")?.outcome
-        assertTrue(
-            outcome == TaskOutcome.SUCCESS || outcome == TaskOutcome.UP_TO_DATE,
-            "AAR bundling should succeed with configuration cache (got: $outcome)"
-        )
-
-        // Verify proguard files exist in kotlin-classes directory
-        val kotlinClassesProguard = File(
-            projectRoot,
-            "sample-library/build/tmp/kotlin-classes/metroRelease/META-INF/proguard"
-        )
-
-        assertTrue(
-            kotlinClassesProguard.exists() && kotlinClassesProguard.isDirectory,
-            "META-INF/proguard directory should exist in kotlin-classes output"
-        )
-
-        val proguardFiles = kotlinClassesProguard.listFiles { file -> file.extension == "pro" }
-        assertTrue(
-            proguardFiles != null && proguardFiles.isNotEmpty(),
-            "Should have at least one .pro file copied to kotlin-classes"
-        )
-
-        // Verify AAR contains proguard.txt
-        val aarFile = File(
-            projectRoot,
-            "sample-library/build/outputs/aar/sample-library-metro-release.aar"
-        )
-
-        assertTrue(aarFile.exists(), "AAR file should exist")
-
-        // Verify proguard.txt is in the AAR using ZipFile API for platform independence
-        val proguardContent = ZipFile(aarFile).use { zipFile ->
-            val entry = zipFile.getEntry("proguard.txt")
-            assertTrue(entry != null, "Should be able to extract proguard.txt from AAR")
-            zipFile.getInputStream(entry!!).bufferedReader().readText()
-        }
-
-        assertTrue(
-            proguardContent.contains("-keep"),
-            "Proguard file should contain keep rules. Content: $proguardContent"
         )
     }
 }

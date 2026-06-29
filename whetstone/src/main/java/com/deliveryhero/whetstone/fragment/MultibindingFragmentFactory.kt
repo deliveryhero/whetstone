@@ -3,15 +3,13 @@ package com.deliveryhero.whetstone.fragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.deliveryhero.whetstone.activity.ActivityScope
-import com.squareup.anvil.annotations.ContributesBinding
-import dagger.Reusable
+import dev.zacsweers.metro.ContributesBinding
 import javax.inject.Inject
 import javax.inject.Provider
 
 /**
  * A [FragmentFactory] that can hold onto multiple other FragmentFactory [Provider]'s.
  */
-@Reusable
 @ContributesBinding(ActivityScope::class)
 public class MultibindingFragmentFactory @Inject constructor(
     private val fragmentComponentFactory: FragmentComponent.Factory
@@ -21,7 +19,7 @@ public class MultibindingFragmentFactory @Inject constructor(
         val fragmentComponent = fragmentComponentFactory.create()
         val fragmentClass = loadFragmentClass(classLoader, className)
         val fragmentMap = fragmentComponent.fragmentMap
-        val fragmentProvider = fragmentMap[fragmentClass]
+        val fragmentProvider = fragmentMap[fragmentClass.kotlin]
         return try {
             fragmentProvider?.get() ?: super.instantiate(classLoader, className)
         } catch (throwable: Throwable) {

@@ -5,15 +5,14 @@ import androidx.fragment.app.FragmentFactory
 import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
-import dagger.BindsInstance
+import dev.zacsweers.metro.GraphExtension
+import dev.zacsweers.metro.Provides
 
 /**
- * A Dagger component that has the lifetime of the [android.app.Activity].
+ * A Metro component that has the lifetime of the [android.app.Activity].
  */
-@ContributesSubcomponent(scope = ActivityScope::class, parentScope = ApplicationScope::class)
-@SingleIn(ActivityScope::class)
+@GraphExtension
 public interface ActivityComponent {
     public val fragmentFactory: FragmentFactory
     public val membersInjectorMap: MembersInjectorMap
@@ -21,9 +20,9 @@ public interface ActivityComponent {
     /**
      * Interface for creating an [ActivityComponent].
      */
-    @ContributesSubcomponent.Factory
+    @GraphExtension.Factory
     public interface Factory {
-        public fun create(@BindsInstance activity: Activity): ActivityComponent
+        public fun create(@Provides activity: Activity): ActivityComponent
     }
 
     @ContributesTo(ApplicationScope::class)

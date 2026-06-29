@@ -36,6 +36,8 @@ class BuildPlugin : Plugin<Project> {
             optIn.add("com.squareup.anvil.annotations.ExperimentalAnvilApi")
             freeCompilerArgs.addAll("-Xjvm-default=all", "-Xassertions=jvm")
             jvmTarget.set(JvmTarget.JVM_11)
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3)
         }
         when (this) {
             is KotlinJvmProjectExtension -> compilerOptions(config)

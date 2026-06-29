@@ -4,24 +4,23 @@ import android.view.View
 import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.activity.ActivityScope
 import com.deliveryhero.whetstone.injector.MembersInjectorMap
-import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
-import dagger.BindsInstance
+import dev.zacsweers.metro.GraphExtension
+import dev.zacsweers.metro.Provides
 
 /**
- * A Dagger component that has the lifetime of the [android.view.View].
+ * A Metro component that has the lifetime of the [android.view.View].
  */
-@ContributesSubcomponent(scope = ViewScope::class, parentScope = ActivityScope::class)
-@SingleIn(ViewScope::class)
+@GraphExtension
 public interface ViewComponent {
     public val membersInjectorMap: MembersInjectorMap
 
     /**
      * Interface for creating an [ViewComponent].
      */
-    @ContributesSubcomponent.Factory
+    @GraphExtension.Factory
     public interface Factory {
-        public fun create(@BindsInstance view: View): ViewComponent
+        public fun create(@Provides view: View): ViewComponent
     }
 
     @ContributesTo(ActivityScope::class)
