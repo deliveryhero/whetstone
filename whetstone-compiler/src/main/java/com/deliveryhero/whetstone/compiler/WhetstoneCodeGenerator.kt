@@ -18,9 +18,10 @@ public class WhetstoneCodeGenerator : CodeGenerator {
     private val codegenHandlers = mutableListOf<CodegenHandler>()
 
     override fun isApplicable(context: AnvilContext): Boolean {
-        require(codegenHandlers.isEmpty())
-        codegenHandlers += BindingsModuleHandler(context.generateFactories)
-        codegenHandlers += AppComponentHandler()
+        if (codegenHandlers.isEmpty()) {
+            codegenHandlers += BindingsModuleHandler(context.generateFactories)
+            codegenHandlers += AppComponentHandler()
+        }
         return true
     }
 
@@ -29,6 +30,11 @@ public class WhetstoneCodeGenerator : CodeGenerator {
         module: ModuleDescriptor,
         projectFiles: Collection<KtFile>
     ): Collection<GeneratedFileWithSources> {
+        System.err.println("--- WHETSTONE GENERATE CODE CALLED ---")
+        if (codegenHandlers.isEmpty()) {
+            codegenHandlers += BindingsModuleHandler(generateFactories = true)
+            codegenHandlers += AppComponentHandler()
+        }
         return projectFiles
             .classAndInnerClassReferences(module)
             .flatMap { clas -> codegenHandlers.flatMap { it.processClass(clas, module) } }

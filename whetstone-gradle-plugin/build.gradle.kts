@@ -11,6 +11,9 @@ plugins {
 
 loadParentProperties()
 
+group = extra["GROUP"] ?: "com.deliveryhero.whetstone"
+version = extra["VERSION_NAME"] ?: "1.1.8-SNAPSHOT"
+
 fun loadParentProperties() {
     val properties = Properties()
     file("../gradle.properties").inputStream().use { properties.load(it) }
@@ -23,14 +26,14 @@ fun loadParentProperties() {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
     explicitApi()
-    compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+    compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 gradlePlugin {
@@ -47,7 +50,7 @@ tasks.named<Delete>("clean") {
 }
 
 dependencies {
-    implementation(libs.anvilGradle)
+    implementation(libs.metroGradle)
     compileOnly(libs.androidGradle)
     compileOnly(libs.kotlinGradle)
 }
@@ -56,7 +59,7 @@ val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
     val props = mapOf(
         "GROUP" to project.property("GROUP").toString(),
         "VERSION" to project.property("VERSION_NAME").toString(),
-        "DAGGER_VERSION" to libs.versions.dagger.get()
+        "METRO_VERSION" to libs.versions.metro.get()
     )
     properties.set(props)
     generatedSourceDir.set(layout.buildDirectory.dir("generated/wgp/kotlin/main"))
@@ -64,6 +67,10 @@ val generateBuildConfig by tasks.registering(GenerateBuildConfigTask::class) {
 
 tasks.named<KotlinCompile>("compileKotlin") {
     dependsOn(generateBuildConfig)
+    compilerOptions {
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
+    }
 }
 
 // Lazily add the generated source directory to the main source set.

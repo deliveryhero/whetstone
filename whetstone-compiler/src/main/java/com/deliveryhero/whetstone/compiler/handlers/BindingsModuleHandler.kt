@@ -5,7 +5,6 @@ import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.GeneratedFileType
 import com.deliveryhero.whetstone.compiler.getValue
-import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.compiler.internal.buildFile
 import com.squareup.anvil.compiler.internal.reference.AnnotationReference
 import com.squareup.anvil.compiler.internal.reference.ClassReference
@@ -16,19 +15,14 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
-import dagger.Binds
-import dagger.Module
-import dagger.internal.IdentifierNameString
-import dagger.internal.KeepFieldType
-import dagger.multibindings.IntoMap
-import dagger.multibindings.LazyClassKey
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Binds
+import dev.zacsweers.metro.IntoMap
+import dev.zacsweers.metro.ClassKey
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.name.FqName
-
-private const val PROGUARD_KEEP_RULE = "-keep,allowobfuscation,allowshrinking class"
 
 internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
@@ -86,7 +80,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             .addMember("%T::class", componentScopeCn)
             .build()
 
-        val classKeyAnnotation = AnnotationSpec.builder(LazyClassKey::class)
+        val classKeyAnnotation = AnnotationSpec.builder(ClassKey::class)
             .addMember("%T::class", className)
             .build()
 
@@ -105,7 +99,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             generatorComment = "Automatically generated file. DO NOT MODIFY!"
         ) {
             val moduleInterfaceSpec = TypeSpec.interfaceBuilder(outputFileName)
-                .addAnnotation(Module::class)
+                .addAnnotation(BindingContainer::class)
                 .addAnnotation(contributesToAnnotation)
                 .addFunction(bindsFunction)
                 .build()
@@ -115,7 +109,6 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
 
         val generatedFiles = mutableListOf<GeneratedFileInfo>()
 
-
         generatedFiles += GeneratedFileInfo(
             packageName = packageName,
             fileName = outputFileName,
@@ -124,68 +117,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             fileType = GeneratedFileType.KOTLIN,
         )
 
-        if (generateFactories) {
-            val contentLazyMapKey = FileSpec.buildFile(
-                packageName = packageName,
-                fileName = outputFileName,
-                generatorComment = "Automatically generated file. DO NOT MODIFY!"
-            ) {
-
-                // Whetstone is explicitly generating this extra type to properly support
-                // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
-                // isn't happening now, so until then, we'll maintain this workaround
-                addType(generateLazyClassKey(outputFileName, className))
-            }
-            generatedFiles += GeneratedFileInfo(
-                packageName = packageName,
-                fileName = "${outputFileName}_Binds_LazyMapKey",
-                content = contentLazyMapKey,
-                sourceFiles = setOf(clas.containingFileAsJavaFile),
-                fileType = GeneratedFileType.KOTLIN,
-            )
-
-            val proguardFileInfo =
-                generatedProguardFileInfo(
-                    outputFileName = packageName + "_" + outputFileName,
-                    className = className,
-                )
-            generatedFiles += proguardFileInfo
-        }
-
         return generatedFiles
-    }
-
-    private fun generatedProguardFileInfo(outputFileName: String, className: ClassName): GeneratedFileInfo {
-        "${outputFileName}_Binds_LazyMapKey"
-        // Generate the Proguard rule for the LazyMapKey helper.
-        val proguardRuleContent = "$PROGUARD_KEEP_RULE ${className.canonicalName}"
-
-        // The file must be placed in "META-INF/proguard/" for AGP to find it.
-        // We can use the `packageName` property of GeneratedFileInfo to represent the path.
-        return GeneratedFileInfo(
-            packageName = "META-INF/proguard",
-            fileName = "${outputFileName}_LazyClassKeys".replace('.', '_'),
-            content = proguardRuleContent,
-            sourceFiles = emptySet(),
-            fileType = GeneratedFileType.PROGUARD,
-        )
-    }
-
-    private fun generateLazyClassKey(outputFileName: String, className: ClassName): TypeSpec {
-        val keepFieldType = PropertySpec.builder("keepFieldType", className.copy(nullable = true))
-            .addAnnotation(JvmField::class)
-            .addAnnotation(KeepFieldType::class)
-            .initializer("null")
-            .build()
-        val lazyClassKeyName = PropertySpec.builder("lazyClassKeyName", STRING)
-            .addAnnotation(JvmField::class)
-            .initializer("%S", className.canonicalName)
-            .build()
-        return TypeSpec.objectBuilder("${outputFileName}_Binds_LazyMapKey")
-            .addAnnotation(IdentifierNameString::class)
-            .addProperty(keepFieldType)
-            .addProperty(lazyClassKeyName)
-            .build()
     }
 
     private fun <K, V> MutableMap<K, V?>.getOrPutNullable(key: K, func: () -> V?): V? {

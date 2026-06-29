@@ -7,27 +7,31 @@ import androidx.work.WorkerParameters
 import com.deliveryhero.whetstone.ForScope
 import com.deliveryhero.whetstone.SingleIn
 import com.deliveryhero.whetstone.app.ApplicationScope
-import com.squareup.anvil.annotations.ContributesSubcomponent
 import com.squareup.anvil.annotations.ContributesTo
-import dagger.BindsInstance
+import dev.zacsweers.metro.GraphExtension
+import dev.zacsweers.metro.Multibinds
+import dev.zacsweers.metro.Provides
 import javax.inject.Provider
+import kotlin.reflect.KClass
 
 /**
- * A Dagger component that has the lifetime of the [androidx.work.ListenableWorker].
+ * A Metro component that has the lifetime of the [androidx.work.ListenableWorker].
  */
-@ContributesSubcomponent(scope = WorkerScope::class, parentScope = ApplicationScope::class)
-@SingleIn(WorkerScope::class)
+@GraphExtension
 public interface WorkerComponent {
-    public val workerMap: Map<Class<*>, Provider<ListenableWorker>>
+    public val workerMap: Map<KClass<*>, Provider<ListenableWorker>>
+
+    @Multibinds(allowEmpty = true)
+    public fun provideWorkers(): Map<KClass<*>, ListenableWorker>
 
     /**
      * Interface for creating an [WorkerComponent].
      */
-    @ContributesSubcomponent.Factory
+    @GraphExtension.Factory
     public interface Factory {
         public fun create(
-            @BindsInstance @ForScope(WorkerScope::class) appContext: Context,
-            @BindsInstance parameters: WorkerParameters
+            @Provides @ForScope(WorkerScope::class) appContext: Context,
+            @Provides parameters: WorkerParameters
         ): WorkerComponent
     }
 

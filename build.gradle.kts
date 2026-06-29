@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.androidLib) apply false
     alias(libs.plugins.kotlinJvm) apply false
     alias(libs.plugins.kotlinKapt) apply false
-    alias(libs.plugins.anvil) apply false
+    alias(libs.plugins.metro) apply false
     alias(libs.plugins.mavenPublish) apply false
     alias(libs.plugins.binaryValidator)
     alias(libs.plugins.kotlinAndroid) apply false

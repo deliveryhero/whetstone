@@ -43,26 +43,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 
-    val dimensionName = "di_dimension"
-    flavorDimensions += dimensionName
-    productFlavors {
-        register("hilt") {
-            dimension = dimensionName
-        }
-        register("metro") {
-            dimension = dimensionName
-        }
-    }
-}
-
-kapt {
-    javacOptions {
-        option("-Adagger.fastInit=enabled")
-    }
 }
 
 dependencies {

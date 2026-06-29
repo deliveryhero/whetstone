@@ -6,13 +6,12 @@ import com.deliveryhero.whetstone.compiler.FqNames.APPLICATION
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.GeneratedFileType
 import com.deliveryhero.whetstone.compiler.getValue
-import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.anvil.compiler.internal.asClassName
 import com.squareup.anvil.compiler.internal.buildFile
 import com.squareup.anvil.compiler.internal.reference.ClassReference
 import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.*
-import dagger.Component
+import dev.zacsweers.metro.DependencyGraph
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import javax.inject.Singleton
 
@@ -57,15 +56,15 @@ internal class AppComponentHandler : CodegenHandler {
         val applicationScopeCn = FqNames.APPLICATION_SCOPE.asClassName(module)
         val generatedComponentCn = ClassName(packageName, className)
 
-        val mergeComponent = AnnotationSpec.builder(MergeComponent::class)
-            .addMember("%T::class", applicationScopeCn)
+        val dependencyGraph = AnnotationSpec.builder(DependencyGraph::class)
+            .addMember("scope = %T::class", applicationScopeCn)
             .build()
         val singleIn = AnnotationSpec.builder(FqNames.SINGLE_IN.asClassName(module))
             .addMember("%T::class", applicationScopeCn)
             .build()
         val factorySpec = TypeSpec.interfaceBuilder(generatedComponentCn.nestedClass("Factory"))
             .addSuperinterface(applicationComponentCn.nestedClass("Factory"))
-            .addAnnotation(Component.Factory::class)
+            .addAnnotation(DependencyGraph.Factory::class)
             .build()
         val appParam = ParameterSpec.builder("application", APPLICATION.asClassName(module))
             .build()
@@ -77,7 +76,8 @@ internal class AppComponentHandler : CodegenHandler {
                     .returns(applicationComponentCn)
                     .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
                     .addCode(CodeBlock.of(
-                        "return DaggerGeneratedApplicationComponent.factory().create(%L)",
+                        "return dev.zacsweers.metro.createGraphFactory<%T.Factory>().create(%L)",
+                        generatedComponentCn,
                         appParam.name
                     ))
                     .build())
@@ -85,7 +85,7 @@ internal class AppComponentHandler : CodegenHandler {
 
         val appComponentSpec = TypeSpec.interfaceBuilder(generatedComponentCn)
             .addSuperinterface(applicationComponentCn)
-            .addAnnotation(mergeComponent)
+            .addAnnotation(dependencyGraph)
             .addAnnotation(singleIn)
             .addAnnotation(Singleton::class)
             .addType(factorySpec)
