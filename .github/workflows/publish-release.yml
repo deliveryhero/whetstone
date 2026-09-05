@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - main
+  # Manual trigger for publishing a SNAPSHOT build from a feature branch (e.g.
+  # to let a consumer repo's CI validate against it before the branch merges
+  # to main). Requires VERSION_NAME to contain SNAPSHOT - the same "Validate
+  # version" step used by the push-to-main trigger enforces this.
+  workflow_dispatch:
 
 jobs:
   publish-release:
