@@ -1,6 +1,5 @@
 package com.deliveryhero.whetstone.gradle
 
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.AndroidBasePlugin
@@ -8,8 +7,6 @@ import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -17,9 +14,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.File
+import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 public class WhetstonePlugin : Plugin<Project> {
 
@@ -28,13 +23,22 @@ public class WhetstonePlugin : Plugin<Project> {
         target.plugins.apply(ANVIL_PLUGIN_ID)
         target.plugins.withType<AndroidBasePlugin> {
             target.configureAnvil(extension)
-            // Only setup proguard export for library modules
-            // App modules don't export consumer proguard files
-            if (!target.isAppModule) {
-                target.addLocateWhetstoneProguardTask()
-            }
         }
         if (target.isAppModule) {
+            target.pluginManager.apply(KSP_PLUGIN_ID)
+            // dagger-compiler stays on kapt here, not ksp, even though Anvil-KSP's component
+            // merging (below) runs on KSP. Reason: dagger-compiler-via-KSP cannot correctly
+            // resolve @Composable-typed @Provides methods (e.g. `typealias Foo = @Composable
+            // () -> T`) across module boundaries when generating the merged component - the
+            // Compose compiler rewrites `@Composable () -> T` to `Function2<Composer, Int, T>`
+            // at the bytecode level, but Dagger's KSP frontend resolves the pre-rewrite
+            // `Function0<T>` shape, producing a hard type mismatch in the generated Java
+            // (confirmed against a real consumer app; kapt does not have this problem since it
+            // operates closer to actual bytecode). So: KSP merges contributions, kapt runs
+            // dagger-compiler against the merged component. Anvil-KSP's own docs describe this
+            // exact hybrid and note the KSP-generated sources need to be wired as inputs to the
+            // kapt stub-generation task, which is what the withType<KaptGenerateStubsTask> block
+            // in configureAnvil below does.
             target.pluginManager.apply(KAPT_PLUGIN_ID)
             target.dependencies.add(
                 "kapt",
@@ -55,98 +59,29 @@ public class WhetstonePlugin : Plugin<Project> {
         }
     }
 
-    /**
-     * Configures proguard rule export for library modules by copying Anvil-generated
-     * proguard files to the Kotlin classes output directory where AGP auto-discovers them.
-     *
-     * Background:
-     * - Whetstone code generator (via Anvil) produces .pro files in build/anvil/{variant}/generated/
-     * - These files contain -keep rules for classes using @ContributesViewModel, @ContributesFragment, etc.
-     * - AGP automatically packages proguard files from META-INF/proguard/ in kotlin-classes into AARs
-     *
-     * This implementation:
-     * - Uses lazy configuration via named() to access Kotlin compilations
-     * - Hooks into KotlinCompile's doLast to copy .pro files after compilation completes
-     * - Copies from: build/anvil/{variant}/generated/.pro
-     * - Copies to: build/tmp/kotlin-classes/{variant}/META-INF/proguard/.pro
-     * - AGP then auto-discovers and packages these files into the AAR's proguard.txt
-     *
-     * This mimics how KAPT works and ensures proper ProGuard rule propagation to consuming apps.
-     */
-    private fun Project.addLocateWhetstoneProguardTask() {
-        val androidComponents = extensions.findByType(LibraryAndroidComponentsExtension::class.java)
-        if (androidComponents == null) {
-            logger.warn("Whetstone: LibraryAndroidComponentsExtension not found for $name - skipping proguard configuration")
-            return
-        }
-
-        val kotlinAndroid = extensions.findByType(KotlinAndroidExtension::class.java)
-        if (kotlinAndroid == null) {
-            logger.warn("Whetstone: KotlinAndroidExtension not found for $name - skipping proguard configuration")
-            return
-        }
-
-        // Configure proguard copying for each compilation as it's created
-        // Using `configureEach` ensures this runs for each compilation without afterEvaluate
-        kotlinAndroid.target.compilations.configureEach {
-            val variantName = name
-            val compilationTaskProvider = compileTaskProvider
-
-            // Access the task through the project's task container for type safety
-            project.tasks.named(compilationTaskProvider.name, KotlinCompile::class.java).configure {
-                // Create directory providers at configuration time
-                val anvilGenDir =
-                    project.layout.buildDirectory.dir("$ANVIL_GENERATED_SUBPATH/$variantName/generated")
-                val targetDir = destinationDirectory.dir(META_INF_PROGUARD_PATH)
-
-                doLast {
-                    copyWhetstoneProguardRules(
-                        sourceDir = anvilGenDir.get().asFile,
-                        targetDir = targetDir.get().asFile,
-                        variantName = variantName,
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * Copies Anvil-generated proguard files to META-INF/proguard/ in kotlin-classes output.
-     * Extracted to a separate function to make configuration cache dependencies explicit.
-     * All parameters are simple types (File, String, Logger) to avoid capturing Project references.
-     */
-    private fun Task.copyWhetstoneProguardRules(
-        sourceDir: File,
-        targetDir: File,
-        variantName: String,
-    ) {
-        if (!sourceDir.exists()) {
-            logger.debug("Whetstone: No Anvil proguard directory found for variant $variantName")
-            return
-        }
-
-        val proguardFiles = sourceDir.walk()
-            .filter { it.isFile && it.extension == "pro" }
-            .toList()
-
-        if (proguardFiles.isNotEmpty()) {
-            targetDir.mkdirs()
-            proguardFiles.forEach { sourceFile ->
-                val targetFile = File(targetDir, sourceFile.name)
-                sourceFile.copyTo(targetFile, overwrite = true)
-            }
-            logger.info("Whetstone: Copied ${proguardFiles.size} proguard file(s) for variant $variantName")
-        } else {
-            logger.debug("Whetstone: No .pro files found for variant $variantName")
-        }
-    }
-
     private fun Project.configureAnvil(whetstone: WhetstoneExtension) {
         extensions.configure<AnvilExtension> {
             // We apply default setting for anvil here based on whether/not the project
             // is an Android application module
             generateDaggerFactories.set(whetstone.generateDaggerFactories.orElse(!isAppModule))
             syncGeneratedSources.set(whetstone.syncGeneratedSources.orElse(isAppModule))
+            // Anvil-KSP's classic (non-KSP) backend doesn't run under this project's Kotlin/K2
+            // setup - contribution and factory generation silently produce nothing. KSP is the
+            // only backend that works here, so it's enabled everywhere. Component merging (only
+            // relevant where @MergeComponent is declared, i.e. app modules) also has to run on
+            // KSP so dagger-compiler - also on KSP - can see the merged @Component.
+            useKsp(contributesAndFactoryGeneration = true, componentMerging = isAppModule)
+        }
+        if (isAppModule) {
+            // dagger-compiler runs via kapt in app modules (see the comment in apply() above), but
+            // the merged @MergeComponent it processes is generated by Anvil-KSP. kapt's own stub
+            // generation task needs to run after (and see the output of) the matching ksp task for
+            // the same variant, or it stub-generates against a component that doesn't exist yet.
+            // Per Anvil-KSP's docs on this exact hybrid setup.
+            tasks.withType<KaptGenerateStubsTask>().configureEach {
+                val variant = name.removePrefix("kaptGenerateStubs").removeSuffix("Kotlin")
+                tasks.findByName("ksp${variant}Kotlin")?.let { kspTask -> dependsOn(kspTask) }
+            }
         }
     }
 
@@ -161,12 +96,17 @@ public class WhetstonePlugin : Plugin<Project> {
             else -> "${BuildConfig.GROUP}:$moduleId:${BuildConfig.VERSION}"
         }
 
-        fun DependencyHandlerScope.anvil(moduleId: String) = add("anvil", dependency(moduleId))
+        // whetstone-compiler is now an Anvil-KSP AnvilKspExtension (KSP processor), not a legacy
+        // Anvil CodeGenerator. The "anvil" Gradle configuration only ever feeds the classic K1
+        // compiler-plugin classpath, which is bypassed entirely once useKsp(...) is enabled, so
+        // this must go on the "ksp" configuration instead for its ServiceLoader registration to
+        // be visible to the KSP task.
+        fun DependencyHandlerScope.ksp(moduleId: String) = add("ksp", dependency(moduleId))
         fun DependencyHandlerScope.implementation(moduleId: String) =
             add("implementation", dependency(moduleId))
 
         dependencies {
-            anvil("whetstone-compiler")
+            ksp("whetstone-compiler")
             implementation("whetstone")
 
             if (extension.addOns.compose.get()) implementation("whetstone-compose")
@@ -175,10 +115,9 @@ public class WhetstonePlugin : Plugin<Project> {
     }
 
     private companion object {
-        const val ANVIL_PLUGIN_ID = "com.squareup.anvil"
+        const val ANVIL_PLUGIN_ID = "dev.zacsweers.anvil"
         const val WHETSTONE_EXTENSION = "whetstone"
-        const val KAPT_PLUGIN_ID = "kotlin-kapt"
-        const val META_INF_PROGUARD_PATH = "META-INF/proguard"
-        const val ANVIL_GENERATED_SUBPATH = "anvil"
+        const val KSP_PLUGIN_ID = "com.google.devtools.ksp"
+        const val KAPT_PLUGIN_ID = "org.jetbrains.kotlin.kapt"
     }
 }

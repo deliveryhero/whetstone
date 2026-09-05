@@ -1,5 +1,6 @@
 package com.deliveryhero.whetstone.worker
 
+import com.squareup.anvil.compiler.internal.testing.AnvilCompilationMode
 import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import com.tschuchort.compiletesting.KotlinCompilation
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -24,12 +25,18 @@ internal class CodegenTest {
 
                 @ContributesWorker
                 class MyWorker @Inject constructor(
-                    @ForScope(WorkerScope::class) context: Context, 
+                    @ForScope(WorkerScope::class) context: Context,
                     parameters: WorkerParameters
                 ) : Worker(context, parameters) {
                     override fun doWork() = TODO("not implemented")
                 }
-            """.trimIndent()
+            """.trimIndent(),
+            mode = AnvilCompilationMode.Ksp(),
+            onCompilation = {
+                // kctfork's bundled compiler-embeddable expects an older metadata version than
+                // this project's pinned Kotlin.
+                kotlinCompilation.kotlincArguments += "-Xskip-metadata-version-check"
+            },
         ) {
             assertEquals(KotlinCompilation.ExitCode.OK, exitCode)
 

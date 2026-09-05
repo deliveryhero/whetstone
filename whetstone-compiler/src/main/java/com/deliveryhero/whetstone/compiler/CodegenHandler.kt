@@ -1,9 +1,8 @@
 package com.deliveryhero.whetstone.compiler
 
-import com.squareup.anvil.compiler.internal.reference.ClassReference
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 
 internal interface CodegenHandler {
 
-    fun processClass(clas: ClassReference, module: ModuleDescriptor): Collection<GeneratedFileInfo>
+    fun processClass(clas: KSClassDeclaration): Collection<GeneratedFileInfo>
 }

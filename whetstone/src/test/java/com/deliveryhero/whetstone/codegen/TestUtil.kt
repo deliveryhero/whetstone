@@ -7,17 +7,20 @@ import com.deliveryhero.whetstone.app.ApplicationComponent
 import com.deliveryhero.whetstone.app.ApplicationScope
 import com.squareup.anvil.annotations.ContributesTo
 import com.squareup.anvil.annotations.MergeComponent
+import com.squareup.anvil.compiler.internal.testing.AnvilCompilationMode
+import com.squareup.anvil.compiler.internal.testing.ComponentProcessingMode
+import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.tschuchort.compiletesting.JvmCompilationResult
 import dagger.Binds
-import dagger.Component
 import dagger.MembersInjector
 import dagger.Module
 import dagger.multibindings.IntoMap
 import dagger.multibindings.LazyClassKey
+import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import javax.inject.Singleton
@@ -29,6 +32,29 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.text.replace
+
+/**
+ * Compiles [sources] against Whetstone's Anvil-KSP based codegen (see
+ * [WhetstoneAnvilKspExtension][com.deliveryhero.whetstone.compiler.WhetstoneAnvilKspExtension]).
+ *
+ * kctfork's bundled compiler-embeddable expects an older metadata version than this project's
+ * pinned Kotlin, so `-Xskip-metadata-version-check` is required for KSP-mode test compilations.
+ */
+internal fun compileWhetstone(
+    @Language("kotlin") vararg sources: String,
+    generateDaggerFactories: Boolean = false,
+    componentProcessingMode: ComponentProcessingMode = ComponentProcessingMode.NONE,
+    block: JvmCompilationResult.() -> Unit = {},
+): JvmCompilationResult = compileAnvil(
+    *sources,
+    generateDaggerFactories = generateDaggerFactories,
+    componentProcessingMode = componentProcessingMode,
+    mode = AnvilCompilationMode.Ksp(),
+    onCompilation = {
+        kotlinCompilation.kotlincArguments += "-Xskip-metadata-version-check"
+    },
+    block = block,
+)
 
 internal fun JvmCompilationResult.validateInstanceBinding(
     classUnderTest: String,
@@ -64,7 +90,7 @@ internal fun JvmCompilationResult.validateLazyBindingKey(classUnderTest: String)
 
     val simpleName = classUnderTest.replace('.', '_')
     val proguardFileName = "${simpleName}BindingsModule_LazyClassKeys"
-    val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+    val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
     val generatedProFile = File(anvilFolder, "$proguardFileName.pro")
     assertTrue(generatedProFile.exists())
 
@@ -94,7 +120,7 @@ internal fun JvmCompilationResult.simulateAndValidateGradlePluginCopy(
     val proguardFileName = "${simpleName}BindingsModule_LazyClassKeys"
 
     // Source: where Anvil generates the file
-    val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+    val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
     val sourceProFile = File(anvilFolder, "$proguardFileName.pro")
 
     // Destination: where Gradle plugin should copy it (simulating kotlin-classes directory)
@@ -147,8 +173,9 @@ internal fun JvmCompilationResult.validateInjectorBinding(classUnderTest: String
     assertEquals(membersInjector.parameterizedBy(STAR), bindsMethod.returnType.asTypeName())
 }
 
-internal fun JvmCompilationResult.validateAppComponent() {
-    val appComponent = classLoader.loadClass("GeneratedApplicationComponent").kotlin
+internal fun JvmCompilationResult.validateAppComponent(packageName: String = "") {
+    val qualifiedName = if (packageName.isEmpty()) "GeneratedApplicationComponent" else "$packageName.GeneratedApplicationComponent"
+    val appComponent = classLoader.loadClass(qualifiedName).kotlin
 
     assertTrue(appComponent.isAbstract)
     assertTrue(appComponent.hasAnnotation<Singleton>())
@@ -156,12 +183,12 @@ internal fun JvmCompilationResult.validateAppComponent() {
     assertEquals(ApplicationScope::class, appComponent.findAnnotation<MergeComponent>()?.scope)
 
     val appComponentFactoryCn = appComponent.asClassName().nestedClass("Factory")
-    val appComponentFactory = classLoader.loadClass(appComponentFactoryCn.canonicalName).kotlin
+    val appComponentFactory = classLoader.loadClass(appComponentFactoryCn.reflectionName()).kotlin
     val appComponentCompanionCn = appComponent.asClassName().nestedClass("Default")
-    val appComponentCompanion = classLoader.loadClass(appComponentCompanionCn.canonicalName).kotlin
+    val appComponentCompanion = classLoader.loadClass(appComponentCompanionCn.reflectionName()).kotlin
 
-    assertTrue(appComponentFactory.hasAnnotation<Component.Factory>())
-    assertEquals(ApplicationComponent.Factory::class, appComponentFactory.superclasses.single())
+    assertTrue(appComponentFactory.hasAnnotation<MergeComponent.Factory>())
+    assertTrue(appComponentFactory.superclasses.contains(ApplicationComponent.Factory::class))
     assertTrue(appComponentCompanion.isCompanion)
-    assertEquals(appComponentFactory, appComponentFactory.superclasses.single())
+    assertTrue(appComponentCompanion.superclasses.contains(appComponentFactory))
 }

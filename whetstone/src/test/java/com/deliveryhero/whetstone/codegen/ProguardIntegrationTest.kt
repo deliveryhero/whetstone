@@ -1,6 +1,5 @@
 package com.deliveryhero.whetstone.codegen
 
-import com.squareup.anvil.compiler.internal.testing.compileAnvil
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import java.io.File
@@ -19,7 +18,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `ContributesViewModel generates proguard file with generateDaggerFactories enabled`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -29,10 +28,10 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class MainViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
             // Verify proguard file exists in correct location
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
             val proguardFile = File(anvilFolder, "com_test_MainViewModelBindingsModule_LazyClassKeys.pro")
 
             assertTrue(proguardFile.exists(), "Proguard file should exist at ${proguardFile.absolutePath}")
@@ -46,7 +45,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `ContributesViewModel does not generate proguard file with generateDaggerFactories disabled`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -56,10 +55,10 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class MainViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = false
+            generateDaggerFactories = false,
         ) {
             // Verify no proguard file is generated when generateDaggerFactories is false
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
             val proguardFile = File(anvilFolder, "com_test_MainViewModelBindingsModule_LazyClassKeys.pro")
 
             assertFalse(proguardFile.exists(), "Proguard file should not exist when generateDaggerFactories is false")
@@ -68,7 +67,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `multiple ViewModels generate separate proguard files`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -84,9 +83,9 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class ThirdViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
 
             // Verify all three proguard files exist
             val firstProFile = File(anvilFolder, "com_test_FirstViewModelBindingsModule_LazyClassKeys.pro")
@@ -106,7 +105,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `ContributesFragment generates proguard file`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -116,9 +115,9 @@ internal class ProguardIntegrationTest {
                 @ContributesFragment
                 class MainFragment : Fragment()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
             val proguardFile = File(anvilFolder, "com_test_MainFragmentBindingsModule_LazyClassKeys.pro")
 
             assertTrue(proguardFile.exists(), "Fragment proguard file should exist")
@@ -130,7 +129,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `ContributesActivityInjector generates proguard file`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -140,9 +139,9 @@ internal class ProguardIntegrationTest {
                 @ContributesActivityInjector
                 class MainActivity : Activity()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
             val proguardFile = File(anvilFolder, "com_test_MainActivityBindingsModule_LazyClassKeys.pro")
 
             assertTrue(proguardFile.exists(), "Activity proguard file should exist")
@@ -154,7 +153,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `proguard file handles qualified package names correctly`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.example.app.feature.auth.viewmodel
 
@@ -164,9 +163,9 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class LoginViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
             val proguardFile = File(
                 anvilFolder,
                 "com_example_app_feature_auth_viewmodel_LoginViewModelBindingsModule_LazyClassKeys.pro"
@@ -181,7 +180,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `mixed annotations generate multiple proguard files`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -196,9 +195,9 @@ internal class ProguardIntegrationTest {
                 @ContributesFragment
                 class MyFragment : Fragment()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
 
             val vmProFile = File(anvilFolder, "com_test_MyViewModelBindingsModule_LazyClassKeys.pro")
             val fragmentProFile = File(anvilFolder, "com_test_MyFragmentBindingsModule_LazyClassKeys.pro")
@@ -213,7 +212,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `proguard files are placed in correct directory structure`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -223,16 +222,16 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class TestViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
             // Verify the directory structure
-            val buildDir = File(outputDirectory.parentFile, "build")
-            assertTrue(buildDir.exists(), "build directory should exist")
+            val kspDir = File(outputDirectory.parentFile, "ksp")
+            assertTrue(kspDir.exists(), "ksp directory should exist")
 
-            val anvilDir = File(buildDir, "anvil")
-            assertTrue(anvilDir.exists(), "anvil directory should exist")
+            val resourcesDir = File(kspDir, "sources/resources")
+            assertTrue(resourcesDir.exists(), "resources directory should exist")
 
-            val metaInfDir = File(anvilDir, "META-INF")
+            val metaInfDir = File(resourcesDir, "META-INF")
             assertTrue(metaInfDir.exists(), "META-INF directory should exist")
 
             val proguardDir = File(metaInfDir, "proguard")
@@ -252,7 +251,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `proguard files are copied to kotlin-classes directory`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -262,7 +261,7 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class MainViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
             simulateAndValidateGradlePluginCopy("com.test.MainViewModel")
         }
@@ -270,7 +269,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `copied proguard files have correct content`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test.feature
 
@@ -280,7 +279,7 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class ProfileViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
             // Validate both generation and copying
             validateLazyBindingKey("com.test.feature.ProfileViewModel")
@@ -288,7 +287,7 @@ internal class ProguardIntegrationTest {
 
             // Additional verification that content is exactly the same
             val simpleName = "com_test_feature_ProfileViewModel"
-            val anvilFile = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard/${simpleName}BindingsModule_LazyClassKeys.pro")
+            val anvilFile = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard/${simpleName}BindingsModule_LazyClassKeys.pro")
             val copiedFile = File(outputDirectory, "META-INF/proguard/${simpleName}BindingsModule_LazyClassKeys.pro")
 
             assertEquals(
@@ -301,7 +300,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `multiple ViewModels have all proguard files copied`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -317,7 +316,7 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class ThirdViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
             // Verify all files are copied
             simulateAndValidateGradlePluginCopy("com.test.FirstViewModel")
@@ -333,7 +332,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `no proguard files copied when generateDaggerFactories is false`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -343,10 +342,10 @@ internal class ProguardIntegrationTest {
                 @ContributesViewModel
                 class MainViewModel : ViewModel()
             """.trimIndent(),
-            generateDaggerFactories = false
+            generateDaggerFactories = false,
         ) {
             // Anvil folder should not have files
-            val anvilFolder = File(outputDirectory.parentFile, "build/anvil/META-INF/proguard")
+            val anvilFolder = File(outputDirectory.parentFile, "ksp/sources/resources/META-INF/proguard")
             val anvilProFile = File(anvilFolder, "com_test_MainViewModelBindingsModule_LazyClassKeys.pro")
             assertFalse(anvilProFile.exists(), "Anvil should not generate proguard file")
 
@@ -359,7 +358,7 @@ internal class ProguardIntegrationTest {
 
     @Test
     fun `mixed annotation types have all proguard files copied`() {
-        compileAnvil(
+        compileWhetstone(
             """
                 package com.test
 
@@ -374,7 +373,7 @@ internal class ProguardIntegrationTest {
                 @ContributesFragment
                 class MyFragment : Fragment()
             """.trimIndent(),
-            generateDaggerFactories = true
+            generateDaggerFactories = true,
         ) {
             // Verify both types are copied
             simulateAndValidateGradlePluginCopy("com.test.MyViewModel")

@@ -18,7 +18,11 @@ gradlePlugin {
 
 kotlin.compilerOptions {
     optIn.add("kotlin.ExperimentalStdlibApi")
-    freeCompilerArgs.add("-Xjvm-default=all")
+    // gradleKotlinDsl() pulls in the kotlin-stdlib bundled with the Gradle
+    // distribution itself (newer than this project's pinned Kotlin compiler,
+    // which is capped to stay compatible with Square Anvil). The stdlib ABI
+    // used here is unaffected, so skip the forward-metadata-version check.
+    freeCompilerArgs.addAll("-Xjvm-default=all", "-Xskip-metadata-version-check")
 }
 
 dependencies {
