@@ -1,0 +1,138 @@
+build-logic/src/main/java/com/deliveryhero/whetstone/build/BuildPlugin.kt
+  s_3ac0d563d0c9fe::t_8db58d96e1cf49 52-53
+  s_3ac0d563d0c9fe::t_24a648a87e4370 96-97,99-100,102-103
+whetstone/api/whetstone.api
+  s_3ac0d563d0c9fe::t_9978fd54229536 167-168,175,257-258,265,340-341,348
+sample-library/build.gradle.kts
+  s_3ac0d563d0c9fe::t_4e32fc7eb209a6 38-40
+  s_3ac0d563d0c9fe::t_c7ceb80d0d0a10 41-43
+whetstone/src/test/java/com/deliveryhero/whetstone/codegen/TestUtil.kt
+  s_3ac0d563d0c9fe::t_5a4f2fa26f0130 10-12,23,36-57
+  s_3ac0d563d0c9fe::t_cbc739b008ff72 186,188
+  s_3ac0d563d0c9fe::t_5da8d3340483f2 176-178,190
+  s_3ac0d563d0c9fe::t_957c3935f00f56 191,193
+  s_3ac0d563d0c9fe::t_848b2a2368ffec 93,123
+  s_3ac0d563d0c9fe::t_c8eb2cf9c83e49 58
+whetstone/src/test/java/com/deliveryhero/whetstone/codegen/CodegenTest.kt
+  s_3ac0d563d0c9fe::t_838b621fa64d24 66
+  s_3ac0d563d0c9fe::t_e958caa142346e 143-146
+  s_3ac0d563d0c9fe::t_3ad973cab0638c 28,47,86,105,124
+  s_3ac0d563d0c9fe::t_64b433429b9595 18,37,56,75,95,114,133
+  s_3ac0d563d0c9fe::t_92a32ce3a43b77 128-132,134-142,147-148
+  s_3ac0d563d0c9fe::t_d7e1e6d3608dbb 149
+  s_3ac0d563d0c9fe::t_b07ae60efbf451 9
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/CodegenHandler.kt
+  s_3ac0d563d0c9fe::t_5d6e737ac1d325 3,7
+configuration-cache-test/build.gradle.kts
+  s_3ac0d563d0c9fe::t_b09837e0be5e17 6-12
+gradle/wrapper/gradle-wrapper.properties
+  s_1d70da31e308f3::t_38c9c39a2bff97 3
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/WhetstoneAnvilKspExtension.kt
+  s_3ac0d563d0c9fe::t_756ee93f3ca85b 38
+  s_3ac0d563d0c9fe::t_3f5ea8e17b725a 61,70,79
+  s_3ac0d563d0c9fe::t_1bdb261fdc6cf4 1-37,39-60,62-69,71-78,80-101
+whetstone-gradle-plugin/build.gradle.kts
+  s_3ac0d563d0c9fe::t_56aa70d1074cd8 60
+  s_3ac0d563d0c9fe::t_74094c6f957d82 23-29
+  s_3ac0d563d0c9fe::t_d66b26c8e83aaf 35-37,41-42
+whetstone-worker/build.gradle.kts
+  s_3ac0d563d0c9fe::t_d9d2d897e02e60 11
+  s_3ac0d563d0c9fe::t_36475f08e34b93 5
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/FqNames.kt
+  s_3ac0d563d0c9fe::t_52352db191d7b8 3,6-19
+whetstone-worker/api/whetstone-worker.api
+  s_3ac0d563d0c9fe::t_9978fd54229536 31-32,39
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/Util.kt
+  s_3ac0d563d0c9fe::t_ef518324d0a5e1 3-6,8-19
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/handlers/ModuleInfoProviders.kt
+  s_3ac0d563d0c9fe::t_90fc4ca5e739f0 5,26,31,39,44
+  s_3ac0d563d0c9fe::t_1774e8ff0f35b8 4,18
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/GeneratedFileInfo.kt
+  s_3ac0d563d0c9fe::t_5da37b0dcf6bc5 3,9
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/handlers/ModuleInfoProvider.kt
+  s_3ac0d563d0c9fe::t_e8474c2cc9288c 3
+  s_3ac0d563d0c9fe::t_d10fe3b1c46242 39,44,47
+whetstone/src/test/java/com/deliveryhero/whetstone/codegen/ProguardIntegrationTest.kt
+  s_3ac0d563d0c9fe::t_a76cdb8bfd36e2 228-229,231-232,234
+  s_3ac0d563d0c9fe::t_30907633b8e85a 58,61,86,88,118,120,142,144,166,168,198,200,225,264,282,319,345,348,376
+  s_3ac0d563d0c9fe::t_f4612f8bba13c7 31
+  s_3ac0d563d0c9fe::t_64b433429b9595 21,48,70,108,132,156,183,215,254,272,303,335,361
+  s_3ac0d563d0c9fe::t_506d6f5eb3560c 34
+  s_3ac0d563d0c9fe::t_94be7c3db974c2 290
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/handlers/AppComponentHandler.kt
+  s_3ac0d563d0c9fe::t_57cc26c00fd515 7-9,11-18,23,25,28-30,33-34,36,38-42,48,53,55,57-58,61,64,70,72-79,82-83
+  s_3ac0d563d0c9fe::t_80344c226cc9a1 62
+gradle.properties
+  s_3ac0d563d0c9fe::t_c5f79e46e1d21c 15-16
+  s_3ac0d563d0c9fe::t_4bca90f283d23c 35-38
+whetstone-compiler/build.gradle.kts
+  s_3ac0d563d0c9fe::t_89be7176cf9650 16-17
+  s_3ac0d563d0c9fe::t_8a4a1c05f276ed 3,18-19
+whetstone-gradle-plugin/src/main/kotlin/com/deliveryhero/whetstone/gradle/WhetstonePlugin.kt
+  s_3ac0d563d0c9fe::t_39e0cc9b529098 28
+  s_3ac0d563d0c9fe::t_0cfedaa6327360 17
+  s_3ac0d563d0c9fe::t_088cdd06e3e04b 68-73
+  s_3ac0d563d0c9fe::t_1cf6fe34109097 99-104,109
+  s_3ac0d563d0c9fe::t_d3d25bcc2dcff7 118
+  s_3ac0d563d0c9fe::t_aab6ad5f648c38 120
+  s_3ac0d563d0c9fe::t_05bb2b2333a477 29-41
+  s_3ac0d563d0c9fe::t_b1d4faef7383b1 75-84
+  s_3ac0d563d0c9fe::t_12736600ed11ff 121
+  s_3ac0d563d0c9fe::t_65225400f1b69c 74
+whetstone-compiler/src/main/java/com/deliveryhero/whetstone/compiler/handlers/BindingsModuleHandler.kt
+  s_3ac0d563d0c9fe::t_9178dfd8908e05 12
+  s_3ac0d563d0c9fe::t_904690d70d81ed 7-11,22,34,39,44,47,49-50,52-53,57,66,74-76,79,98-102,104-108,116,124-129,133-134,138-142,148-150,152,161
+  s_3ac0d563d0c9fe::t_78c86a27425ba6 151
+  s_3ac0d563d0c9fe::t_1d57c0fdf85ca5 121-123
+gradle/libs.versions.toml
+  s_3ac0d563d0c9fe::t_7ca990253caf6f 61
+  s_3ac0d563d0c9fe::t_3fbcc43bee9733 2,12,18
+  s_3ac0d563d0c9fe::t_421838e820ca92 15
+  s_3ac0d563d0c9fe::t_89dae543075e2b 28
+  s_3ac0d563d0c9fe::t_3edc5048635f73 53-55
+  s_3ac0d563d0c9fe::t_231d75ad566658 56
+  s_3ac0d563d0c9fe::t_72687f4b3537f3 57
+  s_3ac0d563d0c9fe::t_93fd0343414fcd 10
+  s_3ac0d563d0c9fe::t_864046dcce35a2 58-59
+  s_3ac0d563d0c9fe::t_657ac30c94e654 33
+  s_3ac0d563d0c9fe::t_2d2b4a8af9619c 13-14
+configuration-cache-test/src/test/kotlin/com/deliveryhero/whetstone/ConfigurationCacheTest.kt
+  s_3ac0d563d0c9fe::t_986dc8d0b32b56 92-95,97,101-102,105,108
+build-logic/build.gradle.kts
+  s_3ac0d563d0c9fe::t_6db1acec2af256 21-25
+whetstone-worker/src/test/java/com/deliveryhero/whetstone/worker/CodegenTest.kt
+  s_3ac0d563d0c9fe::t_b73f51f33280ab 3,28,33-39
+whetstone/build.gradle.kts
+  s_3ac0d563d0c9fe::t_044b1ffdf256f7 11
+  s_3ac0d563d0c9fe::t_a7d4ef7ca55785 5
+build.gradle.kts
+  s_3ac0d563d0c9fe::t_90d68c9ffe2460 6
+sample/build.gradle.kts
+  s_3ac0d563d0c9fe::t_af58d49d1ccfeb 59-61
+  s_3ac0d563d0c9fe::t_c798eff941e767 65-66
+  s_3ac0d563d0c9fe::t_8360e03303114f 67-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "bdd6579df1afd3cdf8ed432134e7880cf714a80c",
+  "prompts": {},
+  "sessions": {
+    "s_1d70da31e308f3": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "7c8d9f98-0f3b-478e-bee5-19e133a75190",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Damilola Akapo <fdamilola@gmail.com>"
+    },
+    "s_3ac0d563d0c9fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dcb335ed-5ffc-449a-85da-4374adfcca13",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Damilola Akapo <fdamilola@gmail.com>"
+    }
+  }
+}
