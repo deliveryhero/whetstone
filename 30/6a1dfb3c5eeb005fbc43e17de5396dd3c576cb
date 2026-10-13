@@ -1,0 +1,19 @@
+RELEASING.md
+  s_d455b37d26fce4::t_ade5897f5764f0 63-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "306a1dfb3c5eeb005fbc43e17de5396dd3c576cb",
+  "prompts": {},
+  "sessions": {
+    "s_d455b37d26fce4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf27ba-090a-4d36-8bfb-ca11a25850db",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "herogen-agent <herogen.agent_svc@deliveryhero.com>"
+    }
+  }
+}
