@@ -1,0 +1,19 @@
+gradle.properties
+  s_3ac0d563d0c9fe::t_13448a284164df 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "291625642045cd7162482204b4efa088e3640843",
+  "prompts": {},
+  "sessions": {
+    "s_3ac0d563d0c9fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dcb335ed-5ffc-449a-85da-4374adfcca13",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Damilola Akapo <fdamilola@gmail.com>"
+    }
+  }
+}
