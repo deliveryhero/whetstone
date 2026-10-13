@@ -60,7 +60,8 @@ depends on:
   Repository Settings and available to `.github/workflows/publish-release.yml`.
 - The GitHub App being installed on the repository with `Contents: write` permission and
   included in the `main` branch-protection bypass list
-  ("Allow specified actors to bypass required pull requests"). Without this the push
+  ("Allow specified actors to bypass required pull requests" — search for the App name,
+  e.g., `Delivery Hero Mobile Infra`). Without this the push
   is rejected with `GH006: Protected branch update failed`.
 
 If a fork needs to run this workflow, install the GitHub App (or a substitute) on the
