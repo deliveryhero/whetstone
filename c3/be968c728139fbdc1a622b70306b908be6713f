@@ -1,0 +1,19 @@
+.github/workflows/publish-release.yml
+  s_d455b37d26fce4::t_10b6d0caa7385c 15-22,26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c3be968c728139fbdc1a622b70306b908be6713f",
+  "prompts": {},
+  "sessions": {
+    "s_d455b37d26fce4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf27ba-090a-4d36-8bfb-ca11a25850db",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "herogen-agent <herogen.agent_svc@deliveryhero.com>"
+    }
+  }
+}
