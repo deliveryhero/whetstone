@@ -52,17 +52,21 @@ When you create a GitHub release:
 ## Required repo configuration
 
 The post-release SNAPSHOT bump pushes a commit directly to the protected `main` branch.
-That push is performed by the `delivery-hero-tech` org bot and depends on:
+That push uses a GitHub App installation token minted at job start via
+`actions/create-github-app-token` (app ID `3401012` — Delivery Hero Mobile Infra) and
+depends on:
 
-- The `GH_TOKEN` repo secret (the bot's PAT) being available to
-  `.github/workflows/publish-release.yml` — wired via `actions/checkout`'s `token:`
-  input so the persisted git credentials carry the bot identity for the rest of the job.
-- `delivery-hero-tech` being included in the `main` branch-protection bypass list
-  ("Allow specified actors to bypass required pull requests"). Without this the push
+- `GH_APP_ID` repo variable and `GH_APP_PRIVATE_KEY` repo secret being configured in
+  Repository Settings and available to `.github/workflows/publish-release.yml`.
+- The GitHub App being installed on the repository with `Contents: write` permission and
+  included in the `main` branch-protection bypass list
+  ("Allow specified actors to bypass required pull requests" — search for the App name,
+  e.g., `Delivery Hero Mobile Infra`). Without this the push
   is rejected with `GH006: Protected branch update failed`.
 
-If a fork needs to run this workflow, configure a `GH_TOKEN` secret with an
-equivalent bot/PAT and add that identity to the fork's branch-protection bypass list.
+If a fork needs to run this workflow, install the GitHub App (or a substitute) on the
+fork, configure the `GH_APP_ID` variable and `GH_APP_PRIVATE_KEY` secret, and add the
+App to the fork's branch-protection bypass list.
 
 ## Version Scheme
 
@@ -117,6 +121,6 @@ Note: Using GitHub Releases is strongly recommended as it provides full automati
 - Check the [Maven Central Publisher Portal](https://central.sonatype.com/publishing/deployments) for deployment status.
 
 **Next SNAPSHOT version not committed to `main`**
-- Most common cause: `GH_TOKEN` is missing or the bot is not on the branch-protection bypass list — see [Required repo configuration](#required-repo-configuration). The default `GITHUB_TOKEN` cannot push to a protected `main`, and the failure surfaces only at the bump step (after the artifact is already published to Maven Central).
+- Most common cause: `GH_APP_ID` or `GH_APP_PRIVATE_KEY` is missing/invalid, or the GitHub App is not on the branch-protection bypass list — see [Required repo configuration](#required-repo-configuration). The default `GITHUB_TOKEN` cannot push to a protected `main`, and the failure surfaces only at the bump step (after the artifact is already published to Maven Central).
 - Other causes: check the GitHub Actions logs for the "Bump to next SNAPSHOT version" step.
 - Workaround: open a PR manually bumping `gradle.properties` to `X.Y.(Z+1)-SNAPSHOT`.
