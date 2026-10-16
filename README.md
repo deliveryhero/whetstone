@@ -14,8 +14,8 @@ The goals of Whetstone are:
 
 ## Why would you use Whetstone instead of Hilt?
 
-- All generated code is in Kotlin, which can have significant benefits in a Kotlin only codebase
-- Whetstone avoids KAPT completely for performance reasons by taking advantage of Anvil compiler.
+- Whetstone-generated code is in Kotlin, which can have significant benefits in a Kotlin only codebase.
+- Whetstone uses Anvil to generate Dagger factories in library modules. Application modules still use KAPT for Dagger component generation; the Whetstone plugin configures this automatically.
 - Whetstone is extensible by using the powers of Dagger and Anvil.
 - Whetstone significantly reduces boiler plate.
 - Whetstone doesn't do bytecode manipulation for complementing classes. Hilt does.
@@ -149,7 +149,7 @@ class MyApplication : Application(), ApplicationComponentOwner {
     @Inject
     lateinit var dependency: MyDependency
 
-    fun onCreate() {
+    override fun onCreate() {
         Whetstone.inject(this)
         super.onCreate()
     }
@@ -219,7 +219,7 @@ class MyView @JvmOverloads constructor(
 Fragments support only construction injection, exclusively. This is possible because we are able to hook into the system to influence exactly how fragments should be created. To achieve this, the activity hosting the fragment must install Whetstone's fragment factory.
 
 ```kotlin
-class MyActivity : Activity() {
+class MyActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Whetstone.inject(this)
@@ -247,7 +247,10 @@ class MyFragment @Inject constructor(
 Note that all injected fragments must be created via the fragment manager. For example:
 
 ```kotlin
-val myFragment = fragmentManager.instantiate<MyFragment>()
+val myFragment = supportFragmentManager.fragmentFactory.instantiate(
+    classLoader,
+    MyFragment::class.java.name,
+) as MyFragment
 ```
 
 For fragments that don't require any external dependencies, the simple no-arg constructor can still be used, and we gracefully fallback to the default behavior
@@ -283,7 +286,12 @@ class UploadWorker @Inject constructor(
     @ForScope(WorkerScope::class) context: Context,
     workerParameters: WorkerParameters,
     private val dependency: MyDependency,
-): Worker(appContext, workerParameters)
+): Worker(context, workerParameters) {
+    override fun doWork(): Result {
+        // Use dependency to perform the work.
+        return Result.success()
+    }
+}
 ```
 
 To disable automatic initialization, you can remove the initializer from your AndroidManifest.xml
