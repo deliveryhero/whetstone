@@ -1,9 +1,8 @@
 package com.deliveryhero.whetstone.compiler.handlers
 
-import com.squareup.anvil.compiler.internal.reference.AnnotationReference
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
-import org.jetbrains.kotlin.name.FqName
 
 /**
  * Provides all the information necessary to generate a bindings module for any class
@@ -37,15 +36,15 @@ internal interface ModuleInfoProvider {
      * Other methods of this interface will only be called if the [supportedAnnotation] is
      * present in the class being processed.
      */
-    val supportedAnnotation: FqName
+    val supportedAnnotation: String
 
     /**
      * Supplies the scope [ClassName] to which the generated module will be contributed.
      *
-     * The [AnnotationReference] of the [supportedAnnotation] is provided here in case such key
+     * The [KSAnnotation] of the [supportedAnnotation] is provided here in case such key
      * can be extracted directly from it.
      */
-    fun getScope(annotation: AnnotationReference): ClassName
+    fun getScope(annotation: KSAnnotation): ClassName
 
     /**
      * Supplies the target [TypeName] whose type will be bound to [getOutput]'s result.

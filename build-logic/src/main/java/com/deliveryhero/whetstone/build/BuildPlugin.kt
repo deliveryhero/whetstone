@@ -49,10 +49,8 @@ class BuildPlugin : Plugin<Project> {
         extensions.configure(CommonExtension::class) {
             compileSdk = 35
             defaultConfig.minSdk = 21
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_11
-                targetCompatibility = JavaVersion.VERSION_11
-            }
+            compileOptions.sourceCompatibility = JavaVersion.VERSION_11
+            compileOptions.targetCompatibility = JavaVersion.VERSION_11
         }
     }
 
@@ -95,16 +93,14 @@ class BuildPlugin : Plugin<Project> {
     private fun Project.configureLint() {
         plugins.withId("com.android.base") {
             extensions.configure(CommonExtension::class.java) {
-                lint {
-                    xmlReport = true
-                    htmlReport = true
+                lint.xmlReport = true
+                lint.htmlReport = true
 
-                    val moduleName = project.name
-                    val lintReportDir = rootProject.layout.buildDirectory.dir("reports/lint/$moduleName")
+                val moduleName = project.name
+                val lintReportDir = rootProject.layout.buildDirectory.dir("reports/lint/$moduleName")
 
-                    xmlOutput = lintReportDir.get().file("lint-report.xml").asFile
-                    htmlOutput = lintReportDir.get().file("lint-report.html").asFile
-                }
+                lint.xmlOutput = lintReportDir.get().file("lint-report.xml").asFile
+                lint.htmlOutput = lintReportDir.get().file("lint-report.html").asFile
             }
         }
     }

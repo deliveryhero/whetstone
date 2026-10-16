@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.0"
+agp = "9.3.0"
 androidxActivity = "1.10.1"
 androidxAppCompat = "1.7.0"
 androidxCompose = "1.7.8"
@@ -7,12 +7,15 @@ androidxCore = "1.16.0"
 androidxFragment = "1.8.6"
 androidxLifecycle = "2.8.7"
 androidxWork = "2.10.0"
-anvil = "2.6.1"
+anvilKsp = "0.5.4"
 constraintlayout = "2.2.0"
-dagger = "2.56.2"
-kotlin = "2.2.0"
+dagger = "2.60.1"
+kotlin = "2.2.21"
+ksp = "2.2.21-2.0.5"
+kotlinpoetKsp = "2.0.0"
 mavenPublish = "0.34.0"
 autoService = "1.1.1"
+autoServiceKsp = "1.2.0"
 detekt = "1.23.8"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -22,12 +25,12 @@ material = "1.12.0"
 [plugins]
 androidApp = { id = "com.android.application", version.ref = "agp" }
 androidLib = { id = "com.android.library", version.ref = "agp" }
-anvil = { id = "com.squareup.anvil", version.ref = "anvil" }
+anvil = { id = "dev.zacsweers.anvil", version.ref = "anvilKsp" }
 binaryValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinSam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -47,12 +50,15 @@ androidxLifecycleSavedState = { module = "androidx.lifecycle:lifecycle-viewmodel
 androidxLifecycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
 androidxLifecycleViewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidxWorkRuntime = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
-anvilAnnotations = { module = "com.squareup.anvil:annotations", version.ref = "anvil" }
-anvilCompiler = { module = "com.squareup.anvil:compiler-api", version.ref = "anvil" }
-anvilCompilerUtils = { module = "com.squareup.anvil:compiler-utils", version.ref = "anvil" }
-anvilGradle = { module = "com.squareup.anvil:gradle-plugin", version.ref = "anvil" }
+anvilAnnotations = { module = "dev.zacsweers.anvil:annotations", version.ref = "anvilKsp" }
+anvilCompiler = { module = "dev.zacsweers.anvil:compiler-api", version.ref = "anvilKsp" }
+anvilCompilerUtils = { module = "dev.zacsweers.anvil:compiler-utils", version.ref = "anvilKsp" }
+anvilGradle = { module = "dev.zacsweers.anvil:gradle-plugin", version.ref = "anvilKsp" }
+kspGradle = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+kspApi = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+kotlinpoetKsp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoetKsp" }
 autoServiceAnnotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
-autoServiceCompiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
+autoServiceKsp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "autoServiceKsp" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }

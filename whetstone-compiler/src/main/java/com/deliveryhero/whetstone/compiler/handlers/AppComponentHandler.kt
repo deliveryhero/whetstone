@@ -2,96 +2,90 @@ package com.deliveryhero.whetstone.compiler.handlers
 
 import com.deliveryhero.whetstone.compiler.CodegenHandler
 import com.deliveryhero.whetstone.compiler.FqNames
-import com.deliveryhero.whetstone.compiler.FqNames.APPLICATION
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.GeneratedFileType
-import com.deliveryhero.whetstone.compiler.getValue
+import com.deliveryhero.whetstone.compiler.argumentValue
+import com.deliveryhero.whetstone.compiler.fqName
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.anvil.annotations.MergeComponent
-import com.squareup.anvil.compiler.internal.asClassName
-import com.squareup.anvil.compiler.internal.buildFile
-import com.squareup.anvil.compiler.internal.reference.ClassReference
-import com.squareup.anvil.compiler.internal.safePackageString
-import com.squareup.kotlinpoet.*
-import dagger.Component
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.TypeSpec
 import javax.inject.Singleton
 
 internal class AppComponentHandler : CodegenHandler {
 
-    override fun processClass(clas: ClassReference, module: ModuleDescriptor): Collection<GeneratedFileInfo> {
+    override fun processClass(clas: KSClassDeclaration): Collection<GeneratedFileInfo> {
         if (!shouldGenerateRoot(clas)) return emptyList()
-        return listOf(generateAppComponent(module, clas))
+        return listOf(generateAppComponent(clas))
     }
 
-    private fun shouldGenerateRoot(clas: ClassReference): Boolean {
-        val contributesApp = clas.annotations.find { it.fqName == FqNames.CONTRIBUTES_APP }
-        return contributesApp?.getValue<Boolean>("generateAppComponent", 0) == true
+    private fun shouldGenerateRoot(clas: KSClassDeclaration): Boolean {
+        val contributesApp = clas.annotations.find { it.fqName() == FqNames.CONTRIBUTES_APP }
+        return contributesApp?.argumentValue<Boolean>("generateAppComponent") == true
     }
 
-    private fun generateAppComponent(module: ModuleDescriptor, clas: ClassReference): GeneratedFileInfo {
-        val packageName = clas.packageFqName.safePackageString(
-            dotPrefix = false,
-            dotSuffix = false,
-        )
+    private fun generateAppComponent(clas: KSClassDeclaration): GeneratedFileInfo {
+        val packageName = clas.packageName.asString()
         val outputFileName = "GeneratedApplicationComponent"
+        val generatedComponentCn = ClassName(packageName, outputFileName)
 
-        val content = FileSpec.buildFile(
-            packageName = packageName,
-            fileName = outputFileName,
-            generatorComment = "Automatically generated file. DO NOT MODIFY"
-        ) {
-            writeAppComponent(module, packageName, outputFileName)
-        }
+        val content = FileSpec.builder(packageName, outputFileName)
+            .addFileComment("Automatically generated file. DO NOT MODIFY")
+            .addType(buildAppComponentSpec(generatedComponentCn))
+            .build()
+            .toString()
 
         return GeneratedFileInfo(
             packageName = packageName,
             fileName = outputFileName,
             content = content,
-            sourceFiles = setOf(clas.containingFileAsJavaFile),
+            sourceFiles = setOfNotNull(clas.containingFile),
             fileType = GeneratedFileType.KOTLIN,
         )
     }
 
-    private fun FileSpec.Builder.writeAppComponent(module: ModuleDescriptor, packageName: String, className: String) {
-        val applicationComponentCn = FqNames.APPLICATION_COMPONENT.asClassName(module)
-        val applicationScopeCn = FqNames.APPLICATION_SCOPE.asClassName(module)
-        val generatedComponentCn = ClassName(packageName, className)
-
+    private fun buildAppComponentSpec(generatedComponentCn: ClassName): TypeSpec {
         val mergeComponent = AnnotationSpec.builder(MergeComponent::class)
-            .addMember("%T::class", applicationScopeCn)
+            .addMember("%T::class", FqNames.APPLICATION_SCOPE_CN)
             .build()
-        val singleIn = AnnotationSpec.builder(FqNames.SINGLE_IN.asClassName(module))
-            .addMember("%T::class", applicationScopeCn)
+        val singleIn = AnnotationSpec.builder(FqNames.SINGLE_IN_CN)
+            .addMember("%T::class", FqNames.APPLICATION_SCOPE_CN)
             .build()
         val factorySpec = TypeSpec.interfaceBuilder(generatedComponentCn.nestedClass("Factory"))
-            .addSuperinterface(applicationComponentCn.nestedClass("Factory"))
-            .addAnnotation(Component.Factory::class)
+            .addSuperinterface(FqNames.APPLICATION_COMPONENT_CN.nestedClass("Factory"))
+            .addAnnotation(MergeComponent.Factory::class)
             .build()
-        val appParam = ParameterSpec.builder("application", APPLICATION.asClassName(module))
-            .build()
+        val appParam = ParameterSpec.builder("application", FqNames.APPLICATION_CN).build()
         val companionObjectSpec = TypeSpec.companionObjectBuilder("Default")
             .addSuperinterface(generatedComponentCn.nestedClass("Factory"))
             .addFunction(
                 FunSpec.builder("create")
                     .addParameter(appParam)
-                    .returns(applicationComponentCn)
+                    .returns(FqNames.APPLICATION_COMPONENT_CN)
                     .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
-                    .addCode(CodeBlock.of(
-                        "return DaggerGeneratedApplicationComponent.factory().create(%L)",
-                        appParam.name
-                    ))
-                    .build())
+                    .addCode(
+                        CodeBlock.of(
+                            "return DaggerGeneratedApplicationComponent.factory().create(%L)",
+                            appParam.name
+                        )
+                    )
+                    .build()
+            )
             .build()
 
-        val appComponentSpec = TypeSpec.interfaceBuilder(generatedComponentCn)
-            .addSuperinterface(applicationComponentCn)
+        return TypeSpec.interfaceBuilder(generatedComponentCn)
+            .addSuperinterface(FqNames.APPLICATION_COMPONENT_CN)
             .addAnnotation(mergeComponent)
             .addAnnotation(singleIn)
             .addAnnotation(Singleton::class)
             .addType(factorySpec)
             .addType(companionObjectSpec)
             .build()
-
-        addType(appComponentSpec)
     }
 }

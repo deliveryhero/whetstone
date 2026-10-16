@@ -20,17 +20,26 @@ fun loadParentProperties() {
         val value = providers.gradleProperty(key).getOrElse(v.toString())
         extra.set(key, value)
     }
+
+    // java-gradle-plugin's auto-generated "pluginMaven"/marker publications need the project's
+    // own group/version set directly; loadParentProperties() only exposed these as extra
+    // properties above, which vanniktech's own publication reads but the plugin-marker
+    // publication does not.
+    group = extra["GROUP"].toString()
+    version = extra["VERSION_NAME"].toString()
 }
 
 kotlin {
     jvmToolchain(17)
     explicitApi()
-    compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+    // AGP 9.3.0's own jar targets Java 17, so this module (which has it on its
+    // compile classpath via compileOnly) must target at least Java 17 too.
+    compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 gradlePlugin {
@@ -48,6 +57,7 @@ tasks.named<Delete>("clean") {
 
 dependencies {
     implementation(libs.anvilGradle)
+    implementation(libs.kspGradle)
     compileOnly(libs.androidGradle)
     compileOnly(libs.kotlinGradle)
 }
@@ -94,8 +104,3 @@ abstract class GenerateBuildConfigTask : DefaultTask() {
     }
 }
 
-afterEvaluate {
-    with(tasks) {
-        findByName("kaptGenerateStubsKotlin")?.dependsOn(findByName("generateBuildConfig"))
-    }
-}

@@ -4,13 +4,13 @@ import com.deliveryhero.whetstone.compiler.CodegenHandler
 import com.deliveryhero.whetstone.compiler.FqNames
 import com.deliveryhero.whetstone.compiler.GeneratedFileInfo
 import com.deliveryhero.whetstone.compiler.GeneratedFileType
-import com.deliveryhero.whetstone.compiler.getValue
+import com.deliveryhero.whetstone.compiler.classNameArgument
+import com.deliveryhero.whetstone.compiler.fqName
+import com.deliveryhero.whetstone.compiler.metaAnnotations
+import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.anvil.annotations.ContributesTo
-import com.squareup.anvil.compiler.internal.buildFile
-import com.squareup.anvil.compiler.internal.reference.AnnotationReference
-import com.squareup.anvil.compiler.internal.reference.ClassReference
-import com.squareup.anvil.compiler.internal.reference.asClassName
-import com.squareup.anvil.compiler.internal.safePackageString
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -19,43 +19,42 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.toClassName
 import dagger.Binds
 import dagger.Module
 import dagger.internal.IdentifierNameString
 import dagger.internal.KeepFieldType
 import dagger.multibindings.IntoMap
 import dagger.multibindings.LazyClassKey
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.name.FqName
 
 private const val PROGUARD_KEEP_RULE = "-keep,allowobfuscation,allowshrinking class"
 
 internal class BindingsModuleHandler(private val generateFactories: Boolean) : CodegenHandler {
 
-    private val dynamicProviderMap = hashMapOf<FqName, ModuleInfoProvider?>().apply {
+    private val dynamicProviderMap = hashMapOf<String, ModuleInfoProvider?>().apply {
         val injectorModule = ExplicitInjectorModuleInfoProvider()
         put(injectorModule.supportedAnnotation, injectorModule)
     }
 
-    override fun processClass(clas: ClassReference, module: ModuleDescriptor): Collection<GeneratedFileInfo> {
+    override fun processClass(clas: KSClassDeclaration): Collection<GeneratedFileInfo> {
         val provider = findProvider(clas) ?: return emptyList()
         return generateModule(provider, clas)
     }
 
-    private fun findProvider(clas: ClassReference): ModuleInfoProvider? {
+    private fun findProvider(clas: KSClassDeclaration): ModuleInfoProvider? {
         var result: ModuleInfoProvider? = null
         for (annotation in clas.annotations) {
-            val annotationFqName = annotation.fqName
+            val annotationFqName = annotation.fqName() ?: continue
             dynamicProviderMap.getOrPutNullable(annotationFqName) {
-                for (meta in annotation.classReference.annotations) {
-                    when (meta.fqName) {
+                for (meta in annotation.metaAnnotations()) {
+                    when (meta.fqName()) {
                         FqNames.AUTO_INSTANCE -> {
-                            val base = meta.getAsClassName("base", 0)
-                            val scope = meta.getAsClassName("scope", 1)
+                            val base = meta.classNameArgument("base")
+                            val scope = meta.classNameArgument("scope")
                             return@getOrPutNullable InstanceModuleInfoProvider(annotationFqName, scope, base)
                         }
                         FqNames.AUTO_INJECTOR -> {
-                            val scope = meta.getAsClassName("scope", 0)
+                            val scope = meta.classNameArgument("scope")
                             return@getOrPutNullable InjectorModuleInfoProvider(annotationFqName, scope)
                         }
                     }
@@ -64,7 +63,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
                 null
             }?.let { provider ->
                 require(result == null) {
-                    "Found more than 1 Contributes* annotation in class '${clas.fqName}'"
+                    "Found more than 1 Contributes* annotation in class '${clas.qualifiedName?.asString()}'"
                 }
                 result = provider
             }
@@ -72,15 +71,12 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
         return result
     }
 
-    private fun generateModule(provider: ModuleInfoProvider, clas: ClassReference): List<GeneratedFileInfo> {
-        val className = clas.asClassName()
-        val packageName = clas.packageFqName.safePackageString(
-            dotPrefix = false,
-            dotSuffix = false,
-        )
+    private fun generateModule(provider: ModuleInfoProvider, clas: KSClassDeclaration): List<GeneratedFileInfo> {
+        val className = clas.toClassName()
+        val packageName = className.packageName
         val outputFileName = className.simpleName + "BindingsModule"
 
-        val annotation = clas.annotations.single { it.fqName == provider.supportedAnnotation }
+        val annotation = clas.annotations.single { it.fqName() == provider.supportedAnnotation }
         val componentScopeCn = provider.getScope(annotation)
         val contributesToAnnotation = AnnotationSpec.builder(ContributesTo::class)
             .addMember("%T::class", componentScopeCn)
@@ -99,65 +95,61 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             .addAnnotation(classKeyAnnotation)
             .build()
 
-        val content = FileSpec.buildFile(
-            packageName = packageName,
-            fileName = outputFileName,
-            generatorComment = "Automatically generated file. DO NOT MODIFY!"
-        ) {
-            val moduleInterfaceSpec = TypeSpec.interfaceBuilder(outputFileName)
-                .addAnnotation(Module::class)
-                .addAnnotation(contributesToAnnotation)
-                .addFunction(bindsFunction)
-                .build()
+        val moduleInterfaceSpec = TypeSpec.interfaceBuilder(outputFileName)
+            .addAnnotation(Module::class)
+            .addAnnotation(contributesToAnnotation)
+            .addFunction(bindsFunction)
+            .build()
 
-            addType(moduleInterfaceSpec)
-        }
+        val content = FileSpec.builder(packageName, outputFileName)
+            .addFileComment("Automatically generated file. DO NOT MODIFY!")
+            .addType(moduleInterfaceSpec)
+            .build()
+            .toString()
 
         val generatedFiles = mutableListOf<GeneratedFileInfo>()
-
 
         generatedFiles += GeneratedFileInfo(
             packageName = packageName,
             fileName = outputFileName,
             content = content,
-            sourceFiles = setOf(clas.containingFileAsJavaFile),
+            sourceFiles = setOfNotNull(clas.containingFile),
             fileType = GeneratedFileType.KOTLIN,
         )
 
         if (generateFactories) {
-            val contentLazyMapKey = FileSpec.buildFile(
-                packageName = packageName,
-                fileName = outputFileName,
-                generatorComment = "Automatically generated file. DO NOT MODIFY!"
-            ) {
+            // Whetstone is explicitly generating this extra type to properly support
+            // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
+            // isn't happening now, so until then, we'll maintain this workaround
+            val lazyMapKeyContent = FileSpec.builder(packageName, outputFileName)
+                .addFileComment("Automatically generated file. DO NOT MODIFY!")
+                .addType(generateLazyClassKey(outputFileName, className))
+                .build()
+                .toString()
 
-                // Whetstone is explicitly generating this extra type to properly support
-                // Dagger's LazyClassKey. Ideally, this should be handled by Anvil, but that
-                // isn't happening now, so until then, we'll maintain this workaround
-                addType(generateLazyClassKey(outputFileName, className))
-            }
             generatedFiles += GeneratedFileInfo(
                 packageName = packageName,
                 fileName = "${outputFileName}_Binds_LazyMapKey",
-                content = contentLazyMapKey,
-                sourceFiles = setOf(clas.containingFileAsJavaFile),
+                content = lazyMapKeyContent,
+                sourceFiles = setOfNotNull(clas.containingFile),
                 fileType = GeneratedFileType.KOTLIN,
             )
 
-            val proguardFileInfo =
-                generatedProguardFileInfo(
-                    outputFileName = packageName + "_" + outputFileName,
-                    className = className,
-                )
-            generatedFiles += proguardFileInfo
+            generatedFiles += generatedProguardFileInfo(
+                outputFileName = "${packageName}_$outputFileName",
+                className = className,
+                sourceFile = clas.containingFile,
+            )
         }
 
         return generatedFiles
     }
 
-    private fun generatedProguardFileInfo(outputFileName: String, className: ClassName): GeneratedFileInfo {
-        "${outputFileName}_Binds_LazyMapKey"
-        // Generate the Proguard rule for the LazyMapKey helper.
+    private fun generatedProguardFileInfo(
+        outputFileName: String,
+        className: ClassName,
+        sourceFile: KSFile?,
+    ): GeneratedFileInfo {
         val proguardRuleContent = "$PROGUARD_KEEP_RULE ${className.canonicalName}"
 
         // The file must be placed in "META-INF/proguard/" for AGP to find it.
@@ -166,7 +158,7 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
             packageName = "META-INF/proguard",
             fileName = "${outputFileName}_LazyClassKeys".replace('.', '_'),
             content = proguardRuleContent,
-            sourceFiles = emptySet(),
+            sourceFiles = setOfNotNull(sourceFile),
             fileType = GeneratedFileType.PROGUARD,
         )
     }
@@ -190,9 +182,5 @@ internal class BindingsModuleHandler(private val generateFactories: Boolean) : C
 
     private fun <K, V> MutableMap<K, V?>.getOrPutNullable(key: K, func: () -> V?): V? {
         return if (key in this) get(key) else func().also { put(key, it) }
-    }
-
-    private fun AnnotationReference.getAsClassName(name: String, index: Int): ClassName {
-        return getValue<ClassReference>(name, index).asClassName()
     }
 }
